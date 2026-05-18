@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PlanosRouteImport } from './routes/planos'
+import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as ParaEmpresasRouteImport } from './routes/para-empresas'
 import { Route as EmpresaRouteImport } from './routes/empresa'
 import { Route as ContatoRouteImport } from './routes/contato'
@@ -22,6 +23,7 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
+import { Route as UHandleRouteImport } from './routes/u.$handle'
 import { Route as ProfissionaisSlugRouteImport } from './routes/profissionais.$slug'
 import { Route as EmpresaVerificacaoRouteImport } from './routes/empresa.verificacao'
 import { Route as EmpresaPaginaRouteImport } from './routes/empresa.pagina'
@@ -42,6 +44,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const PlanosRoute = PlanosRouteImport.update({
   id: '/planos',
   path: '/planos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ParaEmpresasRoute = ParaEmpresasRouteImport.update({
@@ -97,6 +104,11 @@ const IndexRoute = IndexRouteImport.update({
 const VagasSlugRoute = VagasSlugRouteImport.update({
   id: '/vagas/$slug',
   path: '/vagas/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UHandleRoute = UHandleRouteImport.update({
+  id: '/u/$handle',
+  path: '/u/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfissionaisSlugRoute = ProfissionaisSlugRouteImport.update({
@@ -166,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
   '/para-empresas': typeof ParaEmpresasRoute
+  '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/verificacoes': typeof AdminVerificacoesRoute
@@ -177,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/empresa/pagina': typeof EmpresaPaginaRoute
   '/empresa/verificacao': typeof EmpresaVerificacaoRoute
   '/profissionais/$slug': typeof ProfissionaisSlugRoute
+  '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -192,6 +206,7 @@ export interface FileRoutesByTo {
   '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
   '/para-empresas': typeof ParaEmpresasRoute
+  '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/verificacoes': typeof AdminVerificacoesRoute
@@ -203,6 +218,7 @@ export interface FileRoutesByTo {
   '/empresa/pagina': typeof EmpresaPaginaRoute
   '/empresa/verificacao': typeof EmpresaVerificacaoRoute
   '/profissionais/$slug': typeof ProfissionaisSlugRoute
+  '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -219,6 +235,7 @@ export interface FileRoutesById {
   '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
   '/para-empresas': typeof ParaEmpresasRoute
+  '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/verificacoes': typeof AdminVerificacoesRoute
@@ -230,6 +247,7 @@ export interface FileRoutesById {
   '/empresa/pagina': typeof EmpresaPaginaRoute
   '/empresa/verificacao': typeof EmpresaVerificacaoRoute
   '/profissionais/$slug': typeof ProfissionaisSlugRoute
+  '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -247,6 +265,7 @@ export interface FileRouteTypes {
     | '/contato'
     | '/empresa'
     | '/para-empresas'
+    | '/perfil'
     | '/planos'
     | '/sitemap.xml'
     | '/admin/verificacoes'
@@ -258,6 +277,7 @@ export interface FileRouteTypes {
     | '/empresa/pagina'
     | '/empresa/verificacao'
     | '/profissionais/$slug'
+    | '/u/$handle'
     | '/vagas/$slug'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
@@ -273,6 +293,7 @@ export interface FileRouteTypes {
     | '/contato'
     | '/empresa'
     | '/para-empresas'
+    | '/perfil'
     | '/planos'
     | '/sitemap.xml'
     | '/admin/verificacoes'
@@ -284,6 +305,7 @@ export interface FileRouteTypes {
     | '/empresa/pagina'
     | '/empresa/verificacao'
     | '/profissionais/$slug'
+    | '/u/$handle'
     | '/vagas/$slug'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
@@ -299,6 +321,7 @@ export interface FileRouteTypes {
     | '/contato'
     | '/empresa'
     | '/para-empresas'
+    | '/perfil'
     | '/planos'
     | '/sitemap.xml'
     | '/admin/verificacoes'
@@ -310,6 +333,7 @@ export interface FileRouteTypes {
     | '/empresa/pagina'
     | '/empresa/verificacao'
     | '/profissionais/$slug'
+    | '/u/$handle'
     | '/vagas/$slug'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
@@ -326,12 +350,14 @@ export interface RootRouteChildren {
   ContatoRoute: typeof ContatoRoute
   EmpresaRoute: typeof EmpresaRouteWithChildren
   ParaEmpresasRoute: typeof ParaEmpresasRoute
+  PerfilRoute: typeof PerfilRoute
   PlanosRoute: typeof PlanosRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminVerificacoesRoute: typeof AdminVerificacoesRoute
   CSlugRoute: typeof CSlugRoute
   CvSlugRoute: typeof CvSlugRoute
   ProfissionaisSlugRoute: typeof ProfissionaisSlugRoute
+  UHandleRoute: typeof UHandleRoute
   VagasSlugRoute: typeof VagasSlugRoute
   ApiPublicAsaasWebhookRoute: typeof ApiPublicAsaasWebhookRoute
   ApiPublicCronGerarPostRoute: typeof ApiPublicCronGerarPostRoute
@@ -351,6 +377,13 @@ declare module '@tanstack/react-router' {
       path: '/planos'
       fullPath: '/planos'
       preLoaderRoute: typeof PlanosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/para-empresas': {
@@ -428,6 +461,13 @@ declare module '@tanstack/react-router' {
       path: '/vagas/$slug'
       fullPath: '/vagas/$slug'
       preLoaderRoute: typeof VagasSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/u/$handle': {
+      id: '/u/$handle'
+      path: '/u/$handle'
+      fullPath: '/u/$handle'
+      preLoaderRoute: typeof UHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profissionais/$slug': {
@@ -548,12 +588,14 @@ const rootRouteChildren: RootRouteChildren = {
   ContatoRoute: ContatoRoute,
   EmpresaRoute: EmpresaRouteWithChildren,
   ParaEmpresasRoute: ParaEmpresasRoute,
+  PerfilRoute: PerfilRoute,
   PlanosRoute: PlanosRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminVerificacoesRoute: AdminVerificacoesRoute,
   CSlugRoute: CSlugRoute,
   CvSlugRoute: CvSlugRoute,
   ProfissionaisSlugRoute: ProfissionaisSlugRoute,
+  UHandleRoute: UHandleRoute,
   VagasSlugRoute: VagasSlugRoute,
   ApiPublicAsaasWebhookRoute: ApiPublicAsaasWebhookRoute,
   ApiPublicCronGerarPostRoute: ApiPublicCronGerarPostRoute,
@@ -561,3 +603,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
