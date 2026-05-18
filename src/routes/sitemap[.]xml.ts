@@ -9,10 +9,16 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const staticPaths = ["/", "/como-funciona", "/para-empresas", "/contato", "/blog", "/auth", "/cadastro"];
+        const staticPaths = ["/", "/como-funciona", "/para-empresas", "/contato", "/blog", "/auth", "/cadastro", "/categorias", "/planos"];
 
-        const dynamicPaths = PROFISSOES.flatMap((p) =>
+        // Vagas: profissão × cidade
+        const vagaPaths = PROFISSOES.flatMap((p) =>
           CIDADES.map((c) => `/vagas/${p.slug}-em-${c.toLowerCase().replace(/\s+/g, "-")}`)
+        );
+
+        // Profissionais anonimizados: profissão × cidade
+        const profissionaisPaths = PROFISSOES.flatMap((p) =>
+          CIDADES.map((c) => `/profissionais/${p.slug}-em-${c.toLowerCase().replace(/\s+/g, "-")}`)
         );
 
         let blogPaths: string[] = [];
@@ -24,7 +30,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           blogPaths = (data ?? []).map((p) => `/blog/${p.slug}`);
         } catch {}
 
-        const urls = [...staticPaths, ...dynamicPaths, ...blogPaths]
+        const urls = [...staticPaths, ...vagaPaths, ...profissionaisPaths, ...blogPaths]
           .map((path) => `  <url><loc>${BASE_URL}${path}</loc><changefreq>daily</changefreq></url>`)
           .join("\n");
 
