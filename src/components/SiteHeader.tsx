@@ -79,7 +79,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-2 md:hidden">
           {user && <NotificationBell />}
           {!user && (
-            <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-accent px-3 py-2 text-xs font-semibold text-primary-foreground shadow-soft">
+            <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground shadow-soft">
               Entrar
             </Link>
           )}
