@@ -18,8 +18,8 @@ export type VagaPublica = {
   latitude: number | null;
   longitude: number | null;
   endereco: string | null;
-  requisitos: unknown[];
-  perguntas_triagem: unknown[];
+  requisitos: string[];
+  perguntas_triagem: string[];
   faixa_salarial_sugerida: string | null;
   risco_fraude: number;
   risco_motivo: string | null;
