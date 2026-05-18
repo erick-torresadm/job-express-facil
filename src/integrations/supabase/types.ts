@@ -120,7 +120,22 @@ export type Database = {
           updated_at?: string
           vaga_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "candidaturas_curriculo_id_fkey"
+            columns: ["curriculo_id"]
+            isOneToOne: false
+            referencedRelation: "curriculos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidaturas_vaga_id_fkey"
+            columns: ["vaga_id"]
+            isOneToOne: false
+            referencedRelation: "vagas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       curriculos: {
         Row: {
@@ -231,7 +246,15 @@ export type Database = {
           user_id?: string
           vaga_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "favoritos_vaga_id_fkey"
+            columns: ["vaga_id"]
+            isOneToOne: false
+            referencedRelation: "vagas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notificacoes: {
         Row: {
@@ -381,7 +404,15 @@ export type Database = {
           empresa_id?: string
           id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "revelacoes_curriculo_id_fkey"
+            columns: ["curriculo_id"]
+            isOneToOne: false
+            referencedRelation: "curriculos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
