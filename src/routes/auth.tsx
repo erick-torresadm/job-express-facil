@@ -42,6 +42,15 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
+        if (role === "empresa") {
+          const digits = cpfCnpj.replace(/\D/g, "");
+          if (digits.length !== 11 && digits.length !== 14) {
+            throw new Error("Informe um CPF (11 dígitos) ou CNPJ (14 dígitos) válido.");
+          }
+          if (whatsapp.replace(/\D/g, "").length < 10) {
+            throw new Error("Informe um WhatsApp válido com DDD.");
+          }
+        }
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -52,6 +61,7 @@ function AuthPage() {
               full_name: fullName,
               whatsapp,
               company_name: role === "empresa" ? companyName : null,
+              cpf_cnpj: role === "empresa" ? cpfCnpj.replace(/\D/g, "") : null,
             },
           },
         });
