@@ -189,6 +189,15 @@ function Hero() {
 }
 
 function PhoneMockup() {
+  const [chipIdx, setChipIdx] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setChipIdx((i) => (i + 1) % WHATS_POOL.length);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, []);
+  const chip = WHATS_POOL[chipIdx];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -203,15 +212,30 @@ function PhoneMockup() {
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       >
         <div className="flex items-center gap-2">
-          <div className="grid h-8 w-8 place-items-center rounded-lg bg-[#25D366]/15 text-[#25D366]">
-            <MessageCircle className="h-4 w-4" />
+          <div
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[10px] font-bold text-white"
+            style={{ background: chip.color }}
+          >
+            {chip.initials}
           </div>
-          <div>
-            <p className="text-[10px] font-bold uppercase text-muted-foreground">Entrevista</p>
-            <p className="text-xs font-bold">Magazine Luiza convidou</p>
+          <div className="min-w-[140px]">
+            <p className="text-[10px] font-bold uppercase text-muted-foreground">Nova mensagem</p>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={chipIdx}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.3 }}
+                className="truncate text-xs font-bold"
+              >
+                {chip.company} chamou
+              </motion.p>
+            </AnimatePresence>
           </div>
         </div>
       </motion.div>
+
 
       {/* Floating chip — bottom */}
       <motion.div
