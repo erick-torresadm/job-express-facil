@@ -18,14 +18,21 @@ export type Database = {
         Row: {
           bairro: string | null
           cidade: string | null
+          cnh: string | null
           created_at: string
           dicas: Json
+          disponibilidade: string | null
           duracao_segundos: number
           email: string | null
+          endereco: string | null
           experiencias: Json
           habilidades: Json
           id: string
+          idiomas: Json
+          latitude: number | null
+          longitude: number | null
           nome: string
+          pretensao_salarial: string | null
           profissao: string
           resumo: string
           slug: string
@@ -39,14 +46,21 @@ export type Database = {
         Insert: {
           bairro?: string | null
           cidade?: string | null
+          cnh?: string | null
           created_at?: string
           dicas?: Json
+          disponibilidade?: string | null
           duracao_segundos?: number
           email?: string | null
+          endereco?: string | null
           experiencias?: Json
           habilidades?: Json
           id?: string
+          idiomas?: Json
+          latitude?: number | null
+          longitude?: number | null
           nome: string
+          pretensao_salarial?: string | null
           profissao: string
           resumo: string
           slug: string
@@ -60,14 +74,21 @@ export type Database = {
         Update: {
           bairro?: string | null
           cidade?: string | null
+          cnh?: string | null
           created_at?: string
           dicas?: Json
+          disponibilidade?: string | null
           duracao_segundos?: number
           email?: string | null
+          endereco?: string | null
           experiencias?: Json
           habilidades?: Json
           id?: string
+          idiomas?: Json
+          latitude?: number | null
+          longitude?: number | null
           nome?: string
+          pretensao_salarial?: string | null
           profissao?: string
           resumo?: string
           slug?: string
@@ -212,15 +233,24 @@ export type Database = {
           bairro: string
           cidade: string
           created_at: string
+          custo_alimentacao_mes: number | null
           descricao: string | null
           empresa_id: string
           empresa_nome: string
+          endereco: string | null
+          faixa_salarial_sugerida: string | null
           horario: string
           id: string
+          latitude: number | null
+          longitude: number | null
+          perguntas_triagem: Json
           profissao: string
           profissao_slug: string
           requisitos: Json
+          risco_fraude: number
+          risco_motivo: string | null
           salario: string
+          slug: string | null
           titulo: string
           updated_at: string
           urgente: boolean
@@ -230,15 +260,24 @@ export type Database = {
           bairro: string
           cidade?: string
           created_at?: string
+          custo_alimentacao_mes?: number | null
           descricao?: string | null
           empresa_id: string
           empresa_nome: string
+          endereco?: string | null
+          faixa_salarial_sugerida?: string | null
           horario: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
+          perguntas_triagem?: Json
           profissao: string
           profissao_slug: string
           requisitos?: Json
+          risco_fraude?: number
+          risco_motivo?: string | null
           salario: string
+          slug?: string | null
           titulo: string
           updated_at?: string
           urgente?: boolean
@@ -248,15 +287,24 @@ export type Database = {
           bairro?: string
           cidade?: string
           created_at?: string
+          custo_alimentacao_mes?: number | null
           descricao?: string | null
           empresa_id?: string
           empresa_nome?: string
+          endereco?: string | null
+          faixa_salarial_sugerida?: string | null
           horario?: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
+          perguntas_triagem?: Json
           profissao?: string
           profissao_slug?: string
           requisitos?: Json
+          risco_fraude?: number
+          risco_motivo?: string | null
           salario?: string
+          slug?: string | null
           titulo?: string
           updated_at?: string
           urgente?: boolean

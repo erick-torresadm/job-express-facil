@@ -1,8 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check, ArrowLeft, Zap, Wand2, Loader2 } from "lucide-react";
+import { Check, ArrowLeft, Zap, Wand2, Loader2, ShieldCheck, TrendingUp } from "lucide-react";
 import { BAIRROS, PROFISSOES } from "@/lib/mock-data";
 import { gerarDescricaoVaga } from "@/lib/ai.functions";
+import {
+  geocodificarEndereco, estimarCustoAlimentacao, sugerirSalarioFaixa,
+  analisarVagaFraude, gerarPerguntasTriagem,
+} from "@/lib/intel.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -23,6 +27,7 @@ function NovaVaga() {
     horario: "",
     bairro: BAIRROS[0],
     cidade: "São Paulo",
+    endereco: "",
     profissao: PROFISSOES[0].nome,
     urgente: false,
     descricao: "",
@@ -32,8 +37,16 @@ function NovaVaga() {
   const [salvando, setSalvando] = useState(false);
   const [gerando, setGerando] = useState(false);
   const [erroIA, setErroIA] = useState<string | null>(null);
+  const [faixaSugerida, setFaixaSugerida] = useState<{ min: number; medio: number; max: number; fonte: string } | null>(null);
 
   const upd = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }));
+
+  const consultarSalario = async () => {
+    try {
+      const r = await sugerirSalarioFaixa({ data: { profissao: form.profissao, cidade: form.cidade, horario: form.horario } });
+      setFaixaSugerida(r);
+    } catch { /* silencioso */ }
+  };
 
   const sugerir = async () => {
     setErroIA(null);
@@ -68,6 +81,22 @@ function NovaVaga() {
     const { data: profile } = await supabase.from("profiles").select("company_name,full_name").eq("id", user.id).maybeSingle();
     const empresaNome = profile?.company_name || profile?.full_name || "Empresa";
 
+    // Roda IA em paralelo (não bloqueia a publicação se algo falhar)
+    const enderecoBusca = form.endereco || `${form.bairro}, ${form.cidade}`;
+    const [geo, fraude, triagem, alim, faixa] = await Promise.allSettled([
+      geocodificarEndereco({ data: { endereco: enderecoBusca, cidade: form.cidade } }),
+      analisarVagaFraude({ data: { titulo: form.titulo, descricao: form.descricao || form.titulo, salario: form.salario, empresa: empresaNome } }),
+      gerarPerguntasTriagem({ data: { titulo: form.titulo, profissao: form.profissao, descricao: form.descricao } }),
+      estimarCustoAlimentacao({ data: { bairro: form.bairro, cidade: form.cidade } }),
+      sugerirSalarioFaixa({ data: { profissao: form.profissao, cidade: form.cidade, horario: form.horario } }),
+    ]);
+
+    const geoData = geo.status === "fulfilled" ? geo.value : null;
+    const fraudeData = fraude.status === "fulfilled" ? fraude.value : null;
+    const triagemData = triagem.status === "fulfilled" ? triagem.value : null;
+    const alimData = alim.status === "fulfilled" ? alim.value : null;
+    const faixaData = faixa.status === "fulfilled" ? faixa.value : null;
+
     const { error } = await supabase.from("vagas").insert({
       empresa_id: user.id,
       titulo: form.titulo,
@@ -76,19 +105,31 @@ function NovaVaga() {
       horario: form.horario,
       bairro: form.bairro,
       cidade: form.cidade,
+      endereco: form.endereco || null,
+      latitude: geoData?.latitude ?? null,
+      longitude: geoData?.longitude ?? null,
       profissao: form.profissao,
       profissao_slug: prof?.slug ?? form.profissao.toLowerCase().replace(/\s+/g, "-"),
       descricao: form.descricao || null,
       requisitos: form.requisitos,
       urgente: form.urgente,
       ativa: true,
+      perguntas_triagem: triagemData?.perguntas ?? [],
+      risco_fraude: fraudeData?.risco ?? 0,
+      risco_motivo: fraudeData?.motivos?.join("; ") ?? null,
+      custo_alimentacao_mes: alimData?.mensal_medio ?? null,
+      faixa_salarial_sugerida: faixaData ? `R$ ${faixaData.min}–${faixaData.max} (médio R$ ${faixaData.medio})` : null,
     });
     setSalvando(false);
     if (error) {
       toast.error("Erro ao publicar: " + error.message);
       return;
     }
-    toast.success("Vaga publicada!");
+    if (fraudeData && fraudeData.risco >= 70) {
+      toast.warning("Vaga publicada mas marcada como suspeita pela IA. Revise.");
+    } else {
+      toast.success("Vaga publicada!");
+    }
     setSaved(true);
   };
 
@@ -125,7 +166,17 @@ function NovaVaga() {
           <input required value={form.titulo} onChange={(e) => upd("titulo", e.target.value)} placeholder="Ex: Pedreiro de acabamento" className="input-base" />
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Salário"><input required value={form.salario} onChange={(e) => upd("salario", e.target.value)} placeholder="R$ 2.500 + benefícios" className="input-base" /></Field>
+          <Field label="Salário">
+            <input required value={form.salario} onChange={(e) => upd("salario", e.target.value)} placeholder="R$ 2.500 + benefícios" className="input-base" />
+            <button type="button" onClick={consultarSalario} className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
+              <TrendingUp className="h-3 w-3" /> Ver faixa de mercado
+            </button>
+            {faixaSugerida && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Mercado: <strong>R$ {faixaSugerida.min}–{faixaSugerida.max}</strong> (médio R$ {faixaSugerida.medio})
+              </p>
+            )}
+          </Field>
           <Field label="Horário"><input required value={form.horario} onChange={(e) => upd("horario", e.target.value)} placeholder="Seg–Sex, 7h às 17h" className="input-base" /></Field>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
@@ -142,6 +193,13 @@ function NovaVaga() {
           <Field label="Cidade">
             <input value={form.cidade} onChange={(e) => upd("cidade", e.target.value)} className="input-base" />
           </Field>
+        </div>
+        <Field label="Endereço completo (opcional, melhora cálculo de distância)">
+          <input value={form.endereco} onChange={(e) => upd("endereco", e.target.value)} placeholder="Rua, número — bairro" className="input-base" />
+        </Field>
+        <div className="flex items-start gap-2 rounded-xl border border-primary/30 bg-primary/5 p-3 text-xs text-muted-foreground">
+          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <span>Ao publicar, a IA gera 3 perguntas de pré-triagem, calcula custo de transporte/alimentação pros candidatos e verifica risco de golpe automaticamente.</span>
         </div>
 
         <div className="rounded-xl border-2 border-dashed border-primary/40 bg-primary/5 p-4">

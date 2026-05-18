@@ -1,7 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { MapPin, Clock, DollarSign, Flame, ArrowLeft } from "lucide-react";
 import { PROFISSOES, CIDADES } from "@/lib/mock-data";
 import { listarVagasPublicas, type VagaPublica } from "@/lib/vagas.functions";
+import { calcularRotaCusto, calcularMatchScore } from "@/lib/intel.functions";
+import { DistanciaCustoCard, MatchScoreBadge, FraudBadge } from "@/components/VagaCards";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 
 // SEO-first dynamic page: any slug like "pedreiro-em-osasco" renders a populated page.
 // Inspired by faceted search SEO: page exists for crawlers, content is generated on demand.
@@ -100,11 +105,14 @@ function VagasPage() {
                 <li key={v.id} className="rounded-2xl border-2 border-border bg-card p-4 shadow-soft">
                   <div className="mb-1 flex items-start justify-between gap-2">
                     <h3 className="font-extrabold leading-tight">{v.titulo}</h3>
-                    {v.urgente && (
-                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-destructive px-2 py-1 text-[10px] font-extrabold uppercase text-destructive-foreground">
-                        <Flame className="h-3 w-3" /> Urgente
-                      </span>
-                    )}
+                    <div className="flex shrink-0 gap-1.5">
+                      <FraudBadge risco={v.risco_fraude} />
+                      {v.urgente && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-destructive px-2 py-1 text-[10px] font-extrabold uppercase text-destructive-foreground">
+                          <Flame className="h-3 w-3" /> Urgente
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <p className="text-sm text-muted-foreground">{v.empresa_nome}</p>
                   <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm sm:grid-cols-3">
@@ -112,6 +120,10 @@ function VagasPage() {
                     <span className="inline-flex items-center gap-1.5"><Clock className="h-4 w-4 text-primary" /> {v.horario}</span>
                     <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4 text-primary" /> {v.bairro}</span>
                   </div>
+                  {v.faixa_salarial_sugerida && (
+                    <p className="mt-2 text-xs text-muted-foreground">Faixa de mercado: {v.faixa_salarial_sugerida}</p>
+                  )}
+                  <VagaDistancia vaga={v} />
                 </li>
               ))}
             </ul>
@@ -144,6 +156,62 @@ function VagasPage() {
           </div>
         </section>
       </main>
+    </div>
+  );
+}
+
+function VagaDistancia({ vaga }: { vaga: VagaPublica }) {
+  const { user } = useAuth();
+  const [rota, setRota] = useState<{ km: number; minutosTransporte: number; custoMensal: number } | null>(null);
+  const [match, setMatch] = useState<{ score: number; fatores: string[] } | null>(null);
+
+  useEffect(() => {
+    if (!user || vaga.latitude == null || vaga.longitude == null) return;
+    (async () => {
+      const { data: cv } = await supabase
+        .from("curriculos")
+        .select("latitude,longitude,cidade,bairro,profissao,habilidades,pretensao_salarial")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!cv) return;
+
+      let km: number | null = null;
+      if (cv.latitude != null && cv.longitude != null) {
+        try {
+          const r = await calcularRotaCusto({
+            data: {
+              origemLat: cv.latitude, origemLng: cv.longitude,
+              destinoLat: vaga.latitude!, destinoLng: vaga.longitude!,
+              cidade: vaga.cidade,
+            },
+          });
+          setRota({ km: r.km, minutosTransporte: r.minutosTransporte, custoMensal: r.custoMensal });
+          km = r.km;
+        } catch { /* ignora */ }
+      }
+
+      const habs = Array.isArray(cv.habilidades) ? (cv.habilidades as unknown[]).map(String) : [];
+      const m = calcularMatchScore({
+        candidato: { profissao: cv.profissao, cidade: cv.cidade, bairro: cv.bairro, habilidades: habs, pretensao_salarial: cv.pretensao_salarial },
+        vaga: { profissao: vaga.profissao, cidade: vaga.cidade, bairro: vaga.bairro, salario: vaga.salario, requisitos: vaga.requisitos },
+        kmDistancia: km,
+      });
+      setMatch(m);
+    })();
+  }, [user, vaga]);
+
+  if (!user) return null;
+  return (
+    <div className="mt-3 space-y-2">
+      {match && <MatchScoreBadge score={match.score} fatores={match.fatores} />}
+      {rota && (
+        <DistanciaCustoCard
+          km={rota.km}
+          minutosTransporte={rota.minutosTransporte}
+          custoTransporteMes={rota.custoMensal}
+          custoAlimentacaoMes={vaga.custo_alimentacao_mes}
+        />
+      )}
     </div>
   );
 }
