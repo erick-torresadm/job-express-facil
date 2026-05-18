@@ -22,8 +22,18 @@ export const Route = createFileRoute("/cadastro")({
 });
 
 type Step = "profissao" | "local" | "curriculo" | "contato" | "perfil";
-type Midia = { tipo: "audio" | "video"; duracao: number } | null;
+type Midia = { tipo: "audio" | "video"; duracao: number; blob: Blob; mimeType: string } | null;
 type Contato = { nome: string; email: string; whatsapp: string };
+
+async function blobToBase64(blob: Blob): Promise<string> {
+  const buf = new Uint8Array(await blob.arrayBuffer());
+  let bin = "";
+  const CHUNK = 8192;
+  for (let i = 0; i < buf.length; i += CHUNK) {
+    bin += String.fromCharCode.apply(null, Array.from(buf.subarray(i, Math.min(i + CHUNK, buf.length))));
+  }
+  return btoa(bin);
+}
 
 function CandidatoFlow() {
   const [step, setStep] = useState<Step>("profissao");
@@ -158,8 +168,8 @@ function StepLocal({ onBack, onDone }: { onBack: () => void; onDone: (l: { bairr
 function StepCurriculo({ onBack, onDone }: { onBack: () => void; onDone: (m: Midia) => void }) {
   const [modo, setModo] = useState<"escolher" | "audio" | "video">("escolher");
 
-  if (modo === "audio") return <GravadorAudio onBack={() => setModo("escolher")} onDone={(d) => onDone({ tipo: "audio", duracao: d })} />;
-  if (modo === "video") return <GravadorVideo onBack={() => setModo("escolher")} onDone={(d) => onDone({ tipo: "video", duracao: d })} />;
+  if (modo === "audio") return <GravadorAudio onBack={() => setModo("escolher")} onDone={(d, blob, mt) => onDone({ tipo: "audio", duracao: d, blob, mimeType: mt })} />;
+  if (modo === "video") return <GravadorVideo onBack={() => setModo("escolher")} onDone={(d, blob, mt) => onDone({ tipo: "video", duracao: d, blob, mimeType: mt })} />;
 
   return (
     <section>
@@ -193,14 +203,17 @@ function StepCurriculo({ onBack, onDone }: { onBack: () => void; onDone: (m: Mid
   );
 }
 
-function GravadorAudio({ onBack, onDone }: { onBack: () => void; onDone: (s: number) => void }) {
+function GravadorAudio({ onBack, onDone }: { onBack: () => void; onDone: (s: number, blob: Blob, mimeType: string) => void }) {
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [blob, setBlob] = useState<Blob | null>(null);
+  const [mimeType, setMimeType] = useState<string>("audio/webm");
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
 
   useEffect(() => () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -212,8 +225,18 @@ function GravadorAudio({ onBack, onDone }: { onBack: () => void; onDone: (s: num
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
-      const mr = new MediaRecorder(stream);
+      const mt = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm"
+        : MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4" : "";
+      const mr = mt ? new MediaRecorder(stream, { mimeType: mt }) : new MediaRecorder(stream);
+      setMimeType(mr.mimeType || mt || "audio/webm");
       recorderRef.current = mr;
+      chunksRef.current = [];
+      mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      mr.onstop = () => {
+        const b = new Blob(chunksRef.current, { type: mr.mimeType || "audio/webm" });
+        setBlob(b);
+        setDone(true);
+      };
       mr.start();
       setRecording(true); setSeconds(0);
       intervalRef.current = setInterval(() => {
@@ -229,7 +252,7 @@ function GravadorAudio({ onBack, onDone }: { onBack: () => void; onDone: (s: num
     if (intervalRef.current) clearInterval(intervalRef.current);
     recorderRef.current?.stop();
     streamRef.current?.getTracks().forEach((t) => t.stop());
-    setRecording(false); setDone(true);
+    setRecording(false);
   };
 
   return (
@@ -254,8 +277,8 @@ function GravadorAudio({ onBack, onDone }: { onBack: () => void; onDone: (s: num
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
       </div>
 
-      {done && (
-        <button onClick={() => onDone(seconds)}
+      {done && blob && (
+        <button onClick={() => onDone(seconds, blob, mimeType)}
           className="btn-touch shadow-pop mt-6 flex w-full items-center justify-center gap-2 bg-primary text-primary-foreground">
           <Send className="h-5 w-5" /> Usar este áudio
         </button>
@@ -264,11 +287,13 @@ function GravadorAudio({ onBack, onDone }: { onBack: () => void; onDone: (s: num
   );
 }
 
-function GravadorVideo({ onBack, onDone }: { onBack: () => void; onDone: (s: number) => void }) {
+function GravadorVideo({ onBack, onDone }: { onBack: () => void; onDone: (s: number, blob: Blob, mimeType: string) => void }) {
   const [stage, setStage] = useState<"idle" | "preview" | "recording" | "done">("idle");
   const [seconds, setSeconds] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [blob, setBlob] = useState<Blob | null>(null);
+  const [mimeType, setMimeType] = useState<string>("video/webm");
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -291,12 +316,16 @@ function GravadorVideo({ onBack, onDone }: { onBack: () => void; onDone: (s: num
         await videoRef.current.play().catch(() => {});
       }
       chunksRef.current = [];
-      const mr = new MediaRecorder(stream);
+      const mt = MediaRecorder.isTypeSupported("video/webm") ? "video/webm"
+        : MediaRecorder.isTypeSupported("video/mp4") ? "video/mp4" : "";
+      const mr = mt ? new MediaRecorder(stream, { mimeType: mt }) : new MediaRecorder(stream);
+      setMimeType(mr.mimeType || mt || "video/webm");
       recorderRef.current = mr;
       mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
       mr.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "video/webm" });
-        setPreviewUrl(URL.createObjectURL(blob));
+        const b = new Blob(chunksRef.current, { type: mr.mimeType || "video/webm" });
+        setBlob(b);
+        setPreviewUrl(URL.createObjectURL(b));
         setStage("done");
       };
       mr.start();
@@ -358,8 +387,8 @@ function GravadorVideo({ onBack, onDone }: { onBack: () => void; onDone: (s: num
               className="btn-touch w-full border-2 border-border bg-card">
               Regravar
             </button>
-            <button onClick={() => onDone(seconds)}
-              className="btn-touch shadow-pop flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground">
+            <button onClick={() => blob && onDone(seconds, blob, mimeType)} disabled={!blob}
+              className="btn-touch shadow-pop flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground disabled:opacity-60">
               <Send className="h-5 w-5" /> Usar este vídeo
             </button>
           </div>
@@ -450,6 +479,7 @@ function StepPerfil({ profissao, local, midia, contato }: {
     let cancel = false;
     (async () => {
       try {
+        const midiaBase64 = midia ? await blobToBase64(midia.blob) : undefined;
         const p = await analisarCandidato({
           data: {
             nome: contato.nome,
@@ -461,6 +491,8 @@ function StepPerfil({ profissao, local, midia, contato }: {
             temAudio: midia?.tipo === "audio",
             temVideo: midia?.tipo === "video",
             duracaoSegundos: midia?.duracao ?? 0,
+            midiaBase64,
+            midiaMimeType: midia?.mimeType,
           },
         });
         if (!cancel) setPerfil(p);

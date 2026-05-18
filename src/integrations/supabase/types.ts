@@ -31,6 +31,7 @@ export type Database = {
           slug: string
           tem_audio: boolean
           tem_video: boolean
+          transcricao: string | null
           updated_at: string
           user_id: string | null
           whatsapp: string | null
@@ -51,6 +52,7 @@ export type Database = {
           slug: string
           tem_audio?: boolean
           tem_video?: boolean
+          transcricao?: string | null
           updated_at?: string
           user_id?: string | null
           whatsapp?: string | null
@@ -71,6 +73,7 @@ export type Database = {
           slug?: string
           tem_audio?: boolean
           tem_video?: boolean
+          transcricao?: string | null
           updated_at?: string
           user_id?: string | null
           whatsapp?: string | null
