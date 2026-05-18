@@ -128,7 +128,11 @@ function RootComponent() {
     pathname.startsWith("/empresa") ||
     pathname.startsWith("/auth") ||
     pathname.startsWith("/cadastro") ||
-    pathname.startsWith("/cv/");
+    pathname.startsWith("/cv/") ||
+    pathname.startsWith("/perfil") ||
+    pathname.startsWith("/candidato") ||
+    pathname.startsWith("/u/") ||
+    pathname.startsWith("/admin");
 
   return (
     <QueryClientProvider client={queryClient}>
