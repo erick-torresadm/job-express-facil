@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Check, Sparkles, Loader2, X, CreditCard, QrCode, Lock } from "lucide-react";
+import { Check, Sparkles, Loader2, X, CreditCard, QrCode, Lock, Minus, Flame, Clock } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { criarAssinaturaAsaas, criarAssinaturaCartao } from "@/lib/asaas.functions";
@@ -25,9 +25,31 @@ const PRECO_FULL = 82.4;
 
 const brl = (n: number) => n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+function useCountdown(targetMs: number) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const diff = Math.max(0, targetMs - now);
+  const h = Math.floor(diff / 3_600_000);
+  const m = Math.floor((diff % 3_600_000) / 60_000);
+  const s = Math.floor((diff % 60_000) / 1000);
+  return { h, m, s, done: diff === 0 };
+}
+
 function PlanosPage() {
   const [ciclo, setCiclo] = useState<"mensal" | "anual">("mensal");
   const [checkout, setCheckout] = useState<null | { plano: "basico" | "full" }>(null);
+
+  // Escassez: oferta acaba no fim do dia (horário do navegador)
+  const fimDoDia = (() => {
+    const d = new Date();
+    d.setHours(23, 59, 59, 999);
+    return d.getTime();
+  })();
+  const { h, m, s } = useCountdown(fimDoDia);
+  const vagasRestantes = 7; // gatilho de escassez visual
 
   return (
     <div className="min-h-screen bg-secondary">
@@ -38,12 +60,25 @@ function PlanosPage() {
         </div>
       </header>
 
+      {/* Banner de escassez */}
+      <div className="bg-gradient-to-r from-accent via-primary to-accent text-primary-foreground">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 py-2 text-xs font-bold">
+          <span className="inline-flex items-center gap-1"><Flame className="h-3.5 w-3.5" /> Oferta de lançamento — 25% off vs. concorrência</span>
+          <span className="hidden sm:inline opacity-60">•</span>
+          <span className="inline-flex items-center gap-1">
+            <Clock className="h-3.5 w-3.5" /> Termina em {String(h).padStart(2, "0")}:{String(m).padStart(2, "0")}:{String(s).padStart(2, "0")}
+          </span>
+          <span className="hidden sm:inline opacity-60">•</span>
+          <span>Restam apenas <span className="rounded bg-background/20 px-1.5 py-0.5">{vagasRestantes} vagas</span> nesse preço</span>
+        </div>
+      </div>
+
       <section className="mx-auto max-w-6xl px-4 py-12 text-center">
         <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 px-3 py-1 text-xs font-bold text-accent-foreground">
           <Sparkles className="h-3 w-3" /> Até 25% mais barato que Catho, Infojobs e Vagas.com
         </span>
         <h1 className="mt-4 text-4xl font-extrabold lg:text-5xl">Contrate sem perder tempo</h1>
-        <p className="mt-3 text-muted-foreground">Comece com 10 contatos grátis. Sem fidelidade — cancele quando quiser.</p>
+        <p className="mt-3 text-muted-foreground">Comece com 15 contatos grátis. Sem fidelidade — cancele quando quiser.</p>
 
         <div className="mt-6 inline-flex rounded-full bg-card p-1 shadow-soft">
           {(["mensal", "anual"] as const).map((c) => (
@@ -57,11 +92,11 @@ function PlanosPage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-5xl gap-6 px-4 pb-16 lg:grid-cols-3">
+      <section className="mx-auto grid max-w-5xl gap-6 px-4 pb-12 lg:grid-cols-3">
         <PlanoCard
           nome="Free"
-          preco="R$ 0" subtitulo="Para experimentar"
-          features={["10 contatos liberados", "Acesso a todos os currículos", "1 vaga ativa", "Suporte por e-mail"]}
+          preco="R$ 0" subtitulo="Para sempre"
+          features={["Vagas ilimitadas", "15 contatos liberados/mês", "Ver perfis dos candidatos", "Notificações por e-mail", "Suporte por e-mail"]}
           cta="Começar grátis" onClick="link-auth"
         />
         <PlanoCard
@@ -70,11 +105,11 @@ function PlanosPage() {
           subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
           comparativo="Catho Profissional: R$ 59,90/mês"
           features={[
+            "Tudo do Free, mais:",
             "100 contatos liberados/mês",
-            "5 vagas ativas simultâneas",
+            "Filtros avançados (bairro, salário, CNH)",
             "Página personalizada (logo + cor)",
-            "Notificações de novos candidatos",
-            "Filtros por bairro e profissão",
+            "Selo Empresa Verificada",
           ]}
           cta="Assinar Básico" onClick={() => setCheckout({ plano: "basico" })}
         />
@@ -84,15 +119,47 @@ function PlanosPage() {
           subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
           comparativo="Catho Destaque: R$ 109,90/mês"
           features={[
+            "Tudo do Básico, mais:",
             "Contatos ilimitados",
-            "Vagas ilimitadas",
-            "Perguntas extras no formulário",
+            "Perguntas extras na candidatura",
             "Match automático por IA",
-            "Detecção de fraude e salário sugerido",
+            "Detecção de fraude + salário sugerido",
             "Suporte prioritário",
           ]}
           cta="Assinar Full" onClick={() => setCheckout({ plano: "full" })}
         />
+      </section>
+
+      {/* Tabela comparativa */}
+      <section className="mx-auto max-w-6xl px-4 pb-12">
+        <h2 className="text-center text-2xl font-extrabold">Compare com a concorrência</h2>
+        <p className="mt-1 text-center text-sm text-muted-foreground">Os mesmos recursos por até <strong>25% menos</strong>.</p>
+        <div className="mt-6 overflow-x-auto rounded-3xl border border-border bg-card shadow-soft">
+          <table className="w-full min-w-[680px] text-sm">
+            <thead>
+              <tr className="border-b border-border bg-secondary/60">
+                <th className="px-4 py-3 text-left font-bold">Recurso</th>
+                <th className="px-4 py-3 text-center font-bold">VagasAgora<br /><span className="text-xs text-muted-foreground">Básico R$ 44,90</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Catho<br /><span className="text-xs">R$ 59,90</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Infojobs<br /><span className="text-xs">R$ 79,00</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Vagas.com<br /><span className="text-xs">R$ 69,00</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <CompRow recurso="Vagas ativas ilimitadas" v c="limitado" i="limitado" vc="limitado" />
+              <CompRow recurso="Plano grátis com contatos" v c={false} i={false} vc={false} />
+              <CompRow recurso="Página personalizada com logo" v c i={false} vc />
+              <CompRow recurso="Filtros por bairro" v c={false} i={false} vc={false} />
+              <CompRow recurso="Match por IA (Full)" v="full" c={false} i={false} vc={false} />
+              <CompRow recurso="Detecção de fraude (Full)" v="full" c={false} i={false} vc={false} />
+              <CompRow recurso="Sem fidelidade" v c={false} i={false} vc={false} />
+              <CompRow recurso="Suporte em português" v c i vc />
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-3 text-center text-[11px] text-muted-foreground">
+          Preços de concorrentes coletados em mai/2026 nos sites oficiais — sujeitos a alteração.
+        </p>
       </section>
 
       <section className="mx-auto max-w-3xl px-4 pb-16 text-center">
@@ -108,6 +175,32 @@ function PlanosPage() {
     </div>
   );
 }
+
+function CompRow({ recurso, v, c, i, vc }: {
+  recurso: string;
+  v: boolean | "full" | "limitado";
+  c: boolean | "limitado";
+  i: boolean | "limitado";
+  vc: boolean | "limitado";
+}) {
+  return (
+    <tr className="border-b border-border last:border-0">
+      <td className="px-4 py-3 font-medium">{recurso}</td>
+      <td className="px-4 py-3 text-center"><Cell value={v} highlight /></td>
+      <td className="px-4 py-3 text-center"><Cell value={c} /></td>
+      <td className="px-4 py-3 text-center"><Cell value={i} /></td>
+      <td className="px-4 py-3 text-center"><Cell value={vc} /></td>
+    </tr>
+  );
+}
+
+function Cell({ value, highlight }: { value: boolean | "full" | "limitado"; highlight?: boolean }) {
+  if (value === true) return <Check className={`mx-auto h-5 w-5 ${highlight ? "text-accent" : "text-muted-foreground"}`} />;
+  if (value === false) return <X className="mx-auto h-5 w-5 text-muted-foreground/40" />;
+  if (value === "full") return <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">só Full</span>;
+  return <span className="text-[11px] font-bold text-muted-foreground">limitado</span>;
+}
+
 
 function PlanoCard({ nome, preco, subtitulo, features, cta, onClick, destaque, comparativo }: {
   nome: string; preco: string; subtitulo: string;
