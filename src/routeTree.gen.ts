@@ -21,6 +21,7 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
+import { Route as EmpresaVerificacaoRouteImport } from './routes/empresa.verificacao'
 import { Route as EmpresaPaginaRouteImport } from './routes/empresa.pagina'
 import { Route as EmpresaNovaVagaRouteImport } from './routes/empresa.nova-vaga'
 import { Route as EmpresaMinhasVagasRouteImport } from './routes/empresa.minhas-vagas'
@@ -90,6 +91,11 @@ const VagasSlugRoute = VagasSlugRouteImport.update({
   path: '/vagas/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmpresaVerificacaoRoute = EmpresaVerificacaoRouteImport.update({
+  id: '/verificacao',
+  path: '/verificacao',
+  getParentRoute: () => EmpresaRoute,
+} as any)
 const EmpresaPaginaRoute = EmpresaPaginaRouteImport.update({
   id: '/pagina',
   path: '/pagina',
@@ -149,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
+  '/empresa/verificacao': typeof EmpresaVerificacaoRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -171,6 +178,7 @@ export interface FileRoutesByTo {
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
+  '/empresa/verificacao': typeof EmpresaVerificacaoRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -194,6 +202,7 @@ export interface FileRoutesById {
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
+  '/empresa/verificacao': typeof EmpresaVerificacaoRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -218,6 +227,7 @@ export interface FileRouteTypes {
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
+    | '/empresa/verificacao'
     | '/vagas/$slug'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
@@ -240,6 +250,7 @@ export interface FileRouteTypes {
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
+    | '/empresa/verificacao'
     | '/vagas/$slug'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
@@ -262,6 +273,7 @@ export interface FileRouteTypes {
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
+    | '/empresa/verificacao'
     | '/vagas/$slug'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
@@ -372,6 +384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VagasSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/empresa/verificacao': {
+      id: '/empresa/verificacao'
+      path: '/verificacao'
+      fullPath: '/empresa/verificacao'
+      preLoaderRoute: typeof EmpresaVerificacaoRouteImport
+      parentRoute: typeof EmpresaRoute
+    }
     '/empresa/pagina': {
       id: '/empresa/pagina'
       path: '/pagina'
@@ -445,12 +464,14 @@ interface EmpresaRouteChildren {
   EmpresaMinhasVagasRoute: typeof EmpresaMinhasVagasRoute
   EmpresaNovaVagaRoute: typeof EmpresaNovaVagaRoute
   EmpresaPaginaRoute: typeof EmpresaPaginaRoute
+  EmpresaVerificacaoRoute: typeof EmpresaVerificacaoRoute
 }
 
 const EmpresaRouteChildren: EmpresaRouteChildren = {
   EmpresaMinhasVagasRoute: EmpresaMinhasVagasRoute,
   EmpresaNovaVagaRoute: EmpresaNovaVagaRoute,
   EmpresaPaginaRoute: EmpresaPaginaRoute,
+  EmpresaVerificacaoRoute: EmpresaVerificacaoRoute,
 }
 
 const EmpresaRouteWithChildren =
@@ -477,3 +498,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
