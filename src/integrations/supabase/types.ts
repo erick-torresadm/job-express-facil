@@ -154,6 +154,7 @@ export type Database = {
           id: string
           idiomas: Json
           latitude: number | null
+          linkedin_url: string | null
           longitude: number | null
           nome: string
           pretensao_salarial: string | null
@@ -183,6 +184,7 @@ export type Database = {
           id?: string
           idiomas?: Json
           latitude?: number | null
+          linkedin_url?: string | null
           longitude?: number | null
           nome: string
           pretensao_salarial?: string | null
@@ -212,6 +214,7 @@ export type Database = {
           id?: string
           idiomas?: Json
           latitude?: number | null
+          linkedin_url?: string | null
           longitude?: number | null
           nome?: string
           pretensao_salarial?: string | null

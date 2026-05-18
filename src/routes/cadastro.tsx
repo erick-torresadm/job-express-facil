@@ -2,11 +2,11 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import {
   Mic, Camera, MapPin, Volume2, Square, Check, Video,
-  ArrowLeft, Zap, FileDown, Send, SkipForward, Loader2, Lock, Eye, EyeOff,
+  ArrowLeft, Zap, FileDown, Send, SkipForward, Loader2, Lock, Eye, EyeOff, Linkedin,
 } from "lucide-react";
 import { PROFISSOES } from "@/lib/mock-data";
 import { analisarCandidato, type PerfilGerado } from "@/lib/ai.functions";
-import { claimCurriculo } from "@/lib/curriculo.functions";
+import { claimCurriculo, updateLinkedin } from "@/lib/curriculo.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/cadastro")({
@@ -984,6 +984,10 @@ function StepPerfil({ profissao, local, midia, texto, contato }: {
         <FileDown className="h-5 w-5" /> Ver, baixar PDF e compartilhar
       </Link>
 
+      <LinkedinCard slug={p.slug} />
+
+
+
       <h2 className="mt-8 mb-3 text-lg font-extrabold">Turbine seu perfil 🚀</h2>
 
       <div className="space-y-3">
@@ -1011,6 +1015,69 @@ function Field({ label, value }: { label: string; value: string }) {
     <div>
       <p className="text-xs font-bold uppercase text-muted-foreground">{label}</p>
       <p className="text-base font-medium">{value}</p>
+    </div>
+  );
+}
+
+function LinkedinCard({ slug }: { slug: string }) {
+  const [url, setUrl] = useState("");
+  const [saved, setSaved] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+
+  const salvar = async () => {
+    setErro(null);
+    setSaving(true);
+    try {
+      const res = await updateLinkedin({ data: { slug, linkedinUrl: url.trim() } });
+      setSaved(res.linkedinUrl ?? null);
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : "Erro ao salvar");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="mb-3 rounded-3xl border-2 border-border bg-card p-5 shadow-soft">
+      <div className="flex items-start gap-3">
+        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#0A66C2] text-white">
+          <Linkedin className="h-6 w-6" />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-extrabold">Adicione seu LinkedIn</h3>
+          <p className="text-sm text-muted-foreground">Empresas confiam mais quando veem seu perfil. Opcional.</p>
+        </div>
+      </div>
+      {saved ? (
+        <div className="mt-3 flex items-center justify-between gap-2 rounded-xl bg-accent/10 px-3 py-2">
+          <span className="truncate text-sm font-semibold text-accent">✓ {saved}</span>
+          <button onClick={() => { setSaved(null); setUrl(saved); }} className="text-xs font-bold text-muted-foreground hover:underline">
+            Editar
+          </button>
+        </div>
+      ) : (
+        <div className="mt-3 space-y-2">
+          <input
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            type="url"
+            inputMode="url"
+            placeholder="https://linkedin.com/in/seu-perfil"
+            maxLength={255}
+            className="h-12 w-full rounded-xl border-2 border-border bg-background px-3 text-sm outline-none focus:border-primary"
+          />
+          {erro && <p className="text-xs font-medium text-destructive">{erro}</p>}
+          <button
+            onClick={salvar}
+            disabled={saving || url.trim().length === 0}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0A66C2] px-4 py-2.5 text-sm font-bold text-white shadow-pop disabled:opacity-60"
+          >
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Linkedin className="h-4 w-4" />}
+            {saving ? "Salvando…" : "Salvar LinkedIn"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

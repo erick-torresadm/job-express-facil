@@ -10,7 +10,7 @@ export const getCurriculoPublico = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { data: cv } = await supabaseAdmin
       .from("curriculos")
-      .select("slug, nome, profissao, bairro, cidade, resumo, experiencias, habilidades, dicas, idiomas, cnh, disponibilidade, pretensao_salarial, tem_audio, tem_video, duracao_segundos, created_at")
+      .select("slug, nome, profissao, bairro, cidade, resumo, experiencias, habilidades, dicas, idiomas, cnh, disponibilidade, pretensao_salarial, tem_audio, tem_video, duracao_segundos, linkedin_url, created_at")
       .eq("slug", data.slug)
       .maybeSingle();
     return cv ?? null;
@@ -41,4 +41,37 @@ export const claimCurriculo = createServerFn({ method: "POST" })
       .is("user_id", null);
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
+
+// Atualiza apenas o URL do LinkedIn no currículo do próprio usuário.
+export const updateLinkedin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({
+      slug: z.string().trim().min(1).max(100),
+      linkedinUrl: z
+        .string()
+        .trim()
+        .max(255)
+        .regex(/^https?:\/\/([a-z]{2,3}\.)?linkedin\.com\/.+/i, "URL precisa ser do LinkedIn")
+        .or(z.literal(""))
+        .transform((v) => (v === "" ? null : v))
+        .nullable(),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { userId } = context;
+    const { data: cv } = await supabaseAdmin
+      .from("curriculos")
+      .select("id, user_id")
+      .eq("slug", data.slug)
+      .maybeSingle();
+    if (!cv) throw new Error("Currículo não encontrado.");
+    if (cv.user_id !== userId) throw new Error("Você não é o dono deste currículo.");
+    const { error } = await supabaseAdmin
+      .from("curriculos")
+      .update({ linkedin_url: data.linkedinUrl })
+      .eq("id", cv.id);
+    if (error) throw new Error(error.message);
+    return { ok: true, linkedinUrl: data.linkedinUrl };
   });

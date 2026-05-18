@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { Printer, Share2, MessageCircle, MapPin, Briefcase, Check, ArrowLeft, Copy, Lock } from "lucide-react";
+import { Printer, Share2, MessageCircle, MapPin, Briefcase, Check, ArrowLeft, Copy, Lock, Linkedin } from "lucide-react";
 import { getCurriculoPublico } from "@/lib/curriculo.functions";
 
 type Curriculo = {
@@ -16,6 +16,7 @@ type Curriculo = {
   tem_audio: boolean;
   tem_video: boolean;
   duracao_segundos: number;
+  linkedin_url: string | null;
   created_at: string;
 };
 
@@ -130,6 +131,16 @@ function CurriculoPage() {
             <p className="mt-5 border-t border-background/20 pt-4 text-base leading-relaxed opacity-95">
               {cv.resumo}
             </p>
+            {cv.linkedin_url && (
+              <a
+                href={cv.linkedin_url}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="mt-4 inline-flex items-center gap-2 rounded-full bg-background/20 px-4 py-2 text-sm font-bold backdrop-blur transition hover:bg-background/30"
+              >
+                <Linkedin className="h-4 w-4" /> Ver perfil no LinkedIn
+              </a>
+            )}
           </header>
 
           {/* Contato protegido — só empresas verificadas após revelar */}
