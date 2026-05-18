@@ -80,6 +80,36 @@ export type Database = {
         }
         Relationships: []
       }
+      notificacoes: {
+        Row: {
+          created_at: string
+          id: string
+          lida: boolean
+          link: string | null
+          mensagem: string | null
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lida?: boolean
+          link?: string | null
+          mensagem?: string | null
+          titulo: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lida?: boolean
+          link?: string | null
+          mensagem?: string | null
+          titulo?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -128,6 +158,63 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      vagas: {
+        Row: {
+          ativa: boolean
+          bairro: string
+          cidade: string
+          created_at: string
+          descricao: string | null
+          empresa_id: string
+          empresa_nome: string
+          horario: string
+          id: string
+          profissao: string
+          profissao_slug: string
+          requisitos: Json
+          salario: string
+          titulo: string
+          updated_at: string
+          urgente: boolean
+        }
+        Insert: {
+          ativa?: boolean
+          bairro: string
+          cidade?: string
+          created_at?: string
+          descricao?: string | null
+          empresa_id: string
+          empresa_nome: string
+          horario: string
+          id?: string
+          profissao: string
+          profissao_slug: string
+          requisitos?: Json
+          salario: string
+          titulo: string
+          updated_at?: string
+          urgente?: boolean
+        }
+        Update: {
+          ativa?: boolean
+          bairro?: string
+          cidade?: string
+          created_at?: string
+          descricao?: string | null
+          empresa_id?: string
+          empresa_nome?: string
+          horario?: string
+          id?: string
+          profissao?: string
+          profissao_slug?: string
+          requisitos?: Json
+          salario?: string
+          titulo?: string
+          updated_at?: string
+          urgente?: boolean
         }
         Relationships: []
       }
