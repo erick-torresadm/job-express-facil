@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { getPaginaPublica, enviarCurriculoEmpresa } from "@/lib/empresa.functions";
 import { Building2, MapPin, Send } from "lucide-react";
 import { toast } from "sonner";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 type CampoExtra = { label: string; tipo: "texto" | "numero" | "sim_nao"; obrigatorio: boolean };
 type Pagina = Awaited<ReturnType<typeof getPaginaPublica>>;
