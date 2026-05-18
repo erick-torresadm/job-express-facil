@@ -16,6 +16,7 @@ function asaasHeaders() {
   if (!key) throw new Error("ASAAS_API_KEY não configurada");
   return {
     "Content-Type": "application/json",
+    Accept: "application/json",
     access_token: key,
     "User-Agent": "VagasAgora/1.0",
   };
@@ -34,6 +35,10 @@ async function asaas<T>(path: string, init?: RequestInit): Promise<T> {
 type AsaasCustomer = { id: string; cpfCnpj?: string | null };
 type AsaasSubscription = { id: string; nextDueDate: string };
 type AsaasPayment = { id: string; invoiceUrl: string; status: string };
+
+function customerHasCpfCnpj(customer: AsaasCustomer, cpfCnpj: string) {
+  return customer.cpfCnpj?.replace(/\D/g, "") === cpfCnpj;
+}
 
 export const criarAssinaturaAsaas = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -87,11 +92,13 @@ export const criarAssinaturaAsaas = createServerFn({ method: "POST" })
       try {
         const existing = await asaas<AsaasCustomer>(`/customers/${customerId}`, { method: "GET" });
         // Sempre força update para garantir cpfCnpj atualizado
-        const updated = await asaas<AsaasCustomer>(`/customers/${customerId}`, {
-          method: "PUT",
-          body: JSON.stringify(customerPayload),
-        });
-        if (!updated.cpfCnpj || updated.cpfCnpj.replace(/\D/g, "") !== cpfLimpo) {
+        const updated = customerHasCpfCnpj(existing, cpfLimpo)
+          ? existing
+          : await asaas<AsaasCustomer>(`/customers/${customerId}`, {
+              method: "PUT",
+              body: JSON.stringify(customerPayload),
+            });
+        if (!customerHasCpfCnpj(updated, cpfLimpo)) {
           // Update não persistiu — recria
           needsCreate = true;
         }
@@ -107,9 +114,13 @@ export const criarAssinaturaAsaas = createServerFn({ method: "POST" })
         body: JSON.stringify(customerPayload),
       });
       customerId = customer.id;
-      if (!customer.cpfCnpj) {
+      if (!customerHasCpfCnpj(customer, cpfLimpo)) {
         throw new Error("Asaas não aceitou o CPF/CNPJ informado. Confira os dados e tente novamente.");
       }
+    }
+
+    if (!customerId) {
+      throw new Error("Não foi possível criar o cadastro do cliente na Asaas.");
     }
 
     await supabaseAdmin
@@ -118,10 +129,12 @@ export const criarAssinaturaAsaas = createServerFn({ method: "POST" })
       .eq("id", userId);
 
     // 2) Cria a assinatura recorrente
-    // Mensal: só cartão (recorrência automática). Anual: cartão, PIX ou boleto.
+    // UNDEFINED mantém cartão, Pix e boleto disponíveis no checkout da Asaas.
+    // Criar direto como CREDIT_CARD sem capturar cartão na API pode gerar cobrança
+    // antes do cadastro estar completo e disparar erro de CPF/CNPJ ausente.
     const nextDueDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     const cycle = data.ciclo === "anual" ? "YEARLY" : "MONTHLY";
-    const billingType = data.ciclo === "mensal" ? "CREDIT_CARD" : "UNDEFINED";
+    const billingType = "UNDEFINED";
     const subscription = await asaas<AsaasSubscription>("/subscriptions", {
       method: "POST",
       body: JSON.stringify({
