@@ -159,3 +159,59 @@ function VagasPage() {
     </div>
   );
 }
+
+function VagaDistancia({ vaga }: { vaga: VagaPublica }) {
+  const { user } = useAuth();
+  const [rota, setRota] = useState<{ km: number; minutosTransporte: number; custoMensal: number } | null>(null);
+  const [match, setMatch] = useState<{ score: number; fatores: string[] } | null>(null);
+
+  useEffect(() => {
+    if (!user || vaga.latitude == null || vaga.longitude == null) return;
+    (async () => {
+      const { data: cv } = await supabase
+        .from("curriculos")
+        .select("latitude,longitude,cidade,bairro,profissao,habilidades,pretensao_salarial")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!cv) return;
+
+      let km: number | null = null;
+      if (cv.latitude != null && cv.longitude != null) {
+        try {
+          const r = await calcularRotaCusto({
+            data: {
+              origemLat: cv.latitude, origemLng: cv.longitude,
+              destinoLat: vaga.latitude!, destinoLng: vaga.longitude!,
+              cidade: vaga.cidade,
+            },
+          });
+          setRota({ km: r.km, minutosTransporte: r.minutosTransporte, custoMensal: r.custoMensal });
+          km = r.km;
+        } catch { /* ignora */ }
+      }
+
+      const habs = Array.isArray(cv.habilidades) ? (cv.habilidades as unknown[]).map(String) : [];
+      const m = calcularMatchScore({
+        candidato: { profissao: cv.profissao, cidade: cv.cidade, bairro: cv.bairro, habilidades: habs, pretensao_salarial: cv.pretensao_salarial },
+        vaga: { profissao: vaga.profissao, cidade: vaga.cidade, bairro: vaga.bairro, salario: vaga.salario, requisitos: vaga.requisitos },
+        kmDistancia: km,
+      });
+      setMatch(m);
+    })();
+  }, [user, vaga]);
+
+  if (!user) return null;
+  return (
+    <div className="mt-3 space-y-2">
+      {match && <MatchScoreBadge score={match.score} fatores={match.fatores} />}
+      {rota && (
+        <DistanciaCustoCard
+          km={rota.km}
+          minutosTransporte={rota.minutosTransporte}
+          custoTransporteMes={rota.custoMensal}
+          custoAlimentacaoMes={vaga.custo_alimentacao_mes}
+        />
+      )}
+    </div>
+  );
+}
