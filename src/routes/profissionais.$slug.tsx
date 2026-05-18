@@ -147,7 +147,7 @@ function ProfissionaisPage() {
 
         {profissionais.length > 0 && (
           <section className="mt-8 space-y-3">
-            {profissionais.map((p, i) => (
+            {profissionais.map((p: { id: string; profissao: string; bairro: string | null; cidade: string | null; resumo: string }, i: number) => (
               <article
                 key={p.id}
                 className="rounded-2xl border border-border bg-card p-5 transition hover:border-primary"
