@@ -431,7 +431,7 @@ function WhatsappFeed() {
         transition={{ duration: 1.8, repeat: Infinity }}
       >
         <Check className="h-3.5 w-3.5 text-[oklch(0.4_0.15_140)]" />
-        <p className="text-[11px] font-bold text-[oklch(0.4_0.15_140)]">{totalChamadas.current} empresas chamaram hoje</p>
+        <p className="text-[11px] font-bold text-[oklch(0.4_0.15_140)]">{totalChamadas.current} recrutadores te chamaram hoje</p>
       </motion.div>
     </div>
   );
