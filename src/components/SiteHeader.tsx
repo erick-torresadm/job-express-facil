@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Briefcase, Menu, X, Building2, LogOut, User as UserIcon } from "lucide-react";
+import { Menu, X, Building2, LogOut, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { NotificationBell } from "@/components/NotificationBell";
 
@@ -24,16 +24,12 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+    <header className="sticky top-3 z-30 px-3 md:top-5 md:px-6">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border border-border/60 bg-background/70 px-4 py-2.5 shadow-pop backdrop-blur-xl supports-[backdrop-filter]:bg-background/50">
         <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-          <div className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-pop">
-            <Briefcase className="h-5 w-5" />
-          </div>
-          <div className="leading-tight">
-            <p className="text-base font-extrabold tracking-tight">VagasAgora</p>
-            <p className="text-[11px] text-muted-foreground">Emprego perto de você</p>
-          </div>
+          <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-lg font-extrabold tracking-tight text-transparent">
+            VagasAgora
+          </span>
         </Link>
 
         {/* Desktop nav */}
@@ -43,19 +39,22 @@ export function SiteHeader() {
               key={l.to}
               to={l.to}
               activeOptions={{ exact: l.to === "/" }}
-              activeProps={{ className: "text-foreground bg-secondary" }}
+              activeProps={{ className: "text-foreground bg-secondary/80" }}
               inactiveProps={{ className: "text-muted-foreground" }}
-              className="rounded-full px-3 py-2 text-sm font-semibold hover:text-foreground"
+              className="rounded-full px-3.5 py-2 text-sm font-semibold transition-colors hover:bg-secondary/60 hover:text-foreground"
             >
               {l.label}
             </Link>
           ))}
+        </nav>
+
+        <div className="hidden items-center gap-2 md:flex">
           {user ? (
             <>
               <NotificationBell />
               <Link
                 to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
-                className="ml-1 inline-flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-semibold"
+                className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-semibold"
               >
                 <UserIcon className="h-4 w-4" /> Minha conta
               </Link>
@@ -66,28 +65,28 @@ export function SiteHeader() {
             </>
           ) : (
             <>
-              <Link to="/auth" className="ml-2 rounded-full px-4 py-2 text-sm font-semibold text-foreground hover:bg-secondary">
+              <Link to="/auth" className="rounded-full px-4 py-2 text-sm font-semibold text-foreground hover:bg-secondary/60">
                 Entrar
               </Link>
-              <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
+              <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:scale-[1.02]">
                 <Building2 className="h-4 w-4" /> Criar conta
               </Link>
             </>
           )}
-        </nav>
+        </div>
 
         {/* Mobile actions */}
         <div className="flex items-center gap-2 md:hidden">
           {user && <NotificationBell />}
           {!user && (
-            <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">
+            <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-accent px-3 py-2 text-xs font-semibold text-primary-foreground shadow-soft">
               Entrar
             </Link>
           )}
           <button
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Fechar menu" : "Abrir menu"}
-            className="grid h-10 w-10 place-items-center rounded-xl border border-border bg-card"
+            className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card/80"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -96,42 +95,40 @@ export function SiteHeader() {
 
       {/* Mobile drawer */}
       {open && (
-        <nav className="border-t border-border bg-background md:hidden">
-          <div className="mx-auto max-w-6xl px-4 py-2">
-            {navLinks.map((l) => (
+        <nav className="mx-auto mt-2 max-w-6xl rounded-3xl border border-border/60 bg-background/95 p-2 shadow-pop backdrop-blur-xl md:hidden">
+          {navLinks.map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              onClick={() => setOpen(false)}
+              activeOptions={{ exact: l.to === "/" }}
+              activeProps={{ className: "text-accent bg-secondary/60" }}
+              className="block rounded-2xl px-3 py-3 text-base font-semibold text-foreground hover:bg-secondary"
+            >
+              {l.label}
+            </Link>
+          ))}
+          <div className="my-2 h-px bg-border" />
+          {user ? (
+            <>
               <Link
-                key={l.to}
-                to={l.to}
+                to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
                 onClick={() => setOpen(false)}
-                activeOptions={{ exact: l.to === "/" }}
-                activeProps={{ className: "text-accent" }}
-                className="block rounded-xl px-3 py-3 text-base font-semibold text-foreground hover:bg-secondary"
+                className="flex items-center gap-2 rounded-2xl px-3 py-3 text-base font-semibold text-foreground"
               >
-                {l.label}
+                <UserIcon className="h-5 w-5" /> Minha conta
               </Link>
-            ))}
-            <div className="my-2 h-px bg-border" />
-            {user ? (
-              <>
-                <Link
-                  to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-3 py-3 text-base font-semibold text-foreground"
-                >
-                  <UserIcon className="h-5 w-5" /> Minha conta
-                </Link>
-                <button onClick={handleSignOut}
-                  className="flex w-full items-center gap-2 rounded-xl px-3 py-3 text-left text-base font-semibold text-destructive">
-                  <LogOut className="h-5 w-5" /> Sair
-                </button>
-              </>
-            ) : (
-              <Link to="/auth" onClick={() => setOpen(false)}
-                className="flex items-center gap-2 rounded-xl bg-primary px-3 py-3 text-base font-semibold text-primary-foreground">
-                <Building2 className="h-5 w-5" /> Criar conta
-              </Link>
-            )}
-          </div>
+              <button onClick={handleSignOut}
+                className="flex w-full items-center gap-2 rounded-2xl px-3 py-3 text-left text-base font-semibold text-destructive">
+                <LogOut className="h-5 w-5" /> Sair
+              </button>
+            </>
+          ) : (
+            <Link to="/auth" onClick={() => setOpen(false)}
+              className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-accent px-3 py-3 text-base font-semibold text-primary-foreground">
+              <Building2 className="h-5 w-5" /> Criar conta
+            </Link>
+          )}
         </nav>
       )}
     </header>
