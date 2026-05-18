@@ -35,11 +35,62 @@ export const Route = createFileRoute("/vagas/$slug")({
     const count = vagas.length > 0 ? vagas.length : 0;
     return { profissao, cidade, vagas, count };
   },
-  head: ({ loaderData }) => {
+  head: ({ params, loaderData }) => {
     const d = loaderData ?? { profissao: "Vagas", cidade: "Brasil", count: 0, vagas: [] as VagaPublica[] };
     const { profissao, cidade, count } = d;
-    const title = count > 0 ? `${count} vagas de ${profissao} em ${cidade} — VagasAgora` : `Vagas de ${profissao} em ${cidade} — VagasAgora`;
-    const description = count > 0 ? `${count} vagas de ${profissao} abertas em ${cidade} hoje. Cadastre seu currículo grátis em 1 minuto por áudio e candidate-se direto pelo celular.` : `Vagas de ${profissao} abertas em ${cidade}. Cadastre seu currículo grátis em 1 minuto por áudio.`;
+    const title = count > 0
+      ? `${count} vagas de ${profissao} em ${cidade} hoje — VagasAgora`
+      : `Vagas de ${profissao} em ${cidade} — Cadastre-se grátis | VagasAgora`;
+    const description = count > 0
+      ? `${count} vagas de ${profissao} abertas em ${cidade} agora. CLT, PJ e meio período. Cadastre seu currículo grátis em 1 minuto por áudio e candidate-se direto pelo WhatsApp.`
+      : `Vagas de ${profissao} em ${cidade}. Cadastre seu currículo grátis em 1 minuto por áudio e seja avisado assim que uma empresa publicar uma vaga.`;
+    const canonical = `https://vagasagora.com.br/vagas/${params.slug}`;
+
+    const validThrough = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
+    const jobPostings = d.vagas.map((v) => ({
+      "@context": "https://schema.org",
+      "@type": "JobPosting",
+      title: v.titulo,
+      description: v.descricao
+        ? v.descricao
+        : `${v.titulo} na empresa ${v.empresa_nome}. Horário: ${v.horario}. Salário: ${v.salario}. Localização: ${v.bairro}, ${v.cidade}.`,
+      identifier: {
+        "@type": "PropertyValue",
+        name: "VagasAgora",
+        value: v.id,
+      },
+      datePosted: v.created_at,
+      validThrough,
+      employmentType: "FULL_TIME",
+      hiringOrganization: {
+        "@type": "Organization",
+        name: v.empresa_nome,
+        sameAs: "https://vagasagora.com.br",
+      },
+      jobLocation: {
+        "@type": "Place",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: v.endereco ?? undefined,
+          addressLocality: v.cidade,
+          addressRegion: "BR",
+          addressCountry: "BR",
+        },
+      },
+      baseSalary: {
+        "@type": "MonetaryAmount",
+        currency: "BRL",
+        value: {
+          "@type": "QuantitativeValue",
+          value: v.salario,
+          unitText: "MONTH",
+        },
+      },
+      url: canonical,
+      directApply: true,
+    }));
+
     return {
       meta: [
         { title },
@@ -47,30 +98,36 @@ export const Route = createFileRoute("/vagas/$slug")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
+        { property: "og:url", content: canonical },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "keywords", content: `vagas ${profissao}, emprego ${profissao} ${cidade}, vagas em ${cidade}, ${profissao} CLT, trabalho ${profissao}` },
       ],
-      links: [{ rel: "canonical", href: `/vagas/${profissao.toLowerCase()}-em-${cidade.toLowerCase()}`.replace(/\s+/g, "-") }],
-      scripts: [{
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "ItemList",
-          itemListElement: d.vagas.map((v, i) => ({
-            "@type": "JobPosting",
-            position: i + 1,
-            title: v.titulo,
-            description: `${v.titulo} na empresa ${v.empresa_nome}. Horário: ${v.horario}. Localização: ${v.bairro}, ${v.cidade}.`,
-            hiringOrganization: { "@type": "Organization", name: v.empresa_nome },
-            jobLocation: { "@type": "Place", address: { "@type": "PostalAddress", addressLocality: v.cidade, addressRegion: "SP", addressCountry: "BR" } },
-            baseSalary: v.salario,
-            datePosted: new Date().toISOString().split("T")[0],
-            employmentType: "FULL_TIME",
-          })),
-        }),
-      }],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        ...jobPostings.map((jp) => ({
+          type: "application/ld+json",
+          children: JSON.stringify(jp),
+        })),
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://vagasagora.com.br/" },
+              { "@type": "ListItem", position: 2, name: "Vagas", item: "https://vagasagora.com.br/categorias" },
+              { "@type": "ListItem", position: 3, name: `${profissao} em ${cidade}`, item: canonical },
+            ],
+          }),
+        },
+      ],
     };
   },
   component: VagasPage,
 });
+
 
 function VagasPage() {
   const data = Route.useLoaderData();
