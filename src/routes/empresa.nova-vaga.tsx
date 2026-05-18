@@ -27,6 +27,7 @@ function NovaVaga() {
     horario: "",
     bairro: BAIRROS[0],
     cidade: "São Paulo",
+    endereco: "",
     profissao: PROFISSOES[0].nome,
     urgente: false,
     descricao: "",
@@ -36,8 +37,16 @@ function NovaVaga() {
   const [salvando, setSalvando] = useState(false);
   const [gerando, setGerando] = useState(false);
   const [erroIA, setErroIA] = useState<string | null>(null);
+  const [faixaSugerida, setFaixaSugerida] = useState<{ min: number; medio: number; max: number; fonte: string } | null>(null);
 
   const upd = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }));
+
+  const consultarSalario = async () => {
+    try {
+      const r = await sugerirSalarioFaixa({ data: { profissao: form.profissao, cidade: form.cidade, horario: form.horario } });
+      setFaixaSugerida(r);
+    } catch { /* silencioso */ }
+  };
 
   const sugerir = async () => {
     setErroIA(null);
