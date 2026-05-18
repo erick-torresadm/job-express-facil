@@ -606,7 +606,7 @@ function LiveActivity() {
   }, []);
 
   return (
-    <section className="bg-primary py-20 text-primary-foreground md:py-28">
+    <section className="bg-primary py-14 text-primary-foreground sm:py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4">
         <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.1fr]">
           <motion.div
@@ -932,7 +932,7 @@ function Depoimentos() {
     { n: "Beatriz Oliveira", p: "Head de RH · Magazine Luiza", t: "Reduzimos o tempo médio de contratação de 32 para 9 dias. A qualidade dos candidatos é absurda.", c: "oklch(0.7 0.15 200)" },
   ];
   return (
-    <section className="bg-primary py-20 text-primary-foreground md:py-28">
+    <section className="bg-primary py-14 text-primary-foreground sm:py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4">
         <motion.div
           initial="hidden"
