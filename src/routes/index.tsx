@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AnimatePresence, motion, useScroll, useTransform, type Variants } from "motion/react";
+import { AnimatePresence, animate, motion, useInView, useMotionValue, useScroll, useTransform, type Variants } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import {
   MapPin, Mic, Video, Zap, ShieldCheck, Clock, Building2, HardHat,
   ArrowRight, Star, Check, CheckCheck, Sparkles, MessageCircle, TrendingUp, Users,
+  Briefcase, Award, Rocket, Target,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
