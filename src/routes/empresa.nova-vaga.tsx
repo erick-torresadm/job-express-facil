@@ -1,8 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check, ArrowLeft, Zap, Wand2, Loader2 } from "lucide-react";
+import { Check, ArrowLeft, Zap, Wand2, Loader2, ShieldCheck, TrendingUp } from "lucide-react";
 import { BAIRROS, PROFISSOES } from "@/lib/mock-data";
 import { gerarDescricaoVaga } from "@/lib/ai.functions";
+import {
+  geocodificarEndereco, estimarCustoAlimentacao, sugerirSalarioFaixa,
+  analisarVagaFraude, gerarPerguntasTriagem,
+} from "@/lib/intel.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
