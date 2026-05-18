@@ -139,6 +139,7 @@ function Hero() {
               >
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 <span className="relative">Encontrar vagas</span>
+                <ArrowRight className="relative h-5 w-5 transition group-hover:translate-x-1" />
               </Link>
               <Link
                 to="/auth"
