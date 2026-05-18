@@ -24,6 +24,7 @@ import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
 import { Route as ProfissionaisSlugRouteImport } from './routes/profissionais.$slug'
@@ -35,6 +36,8 @@ import { Route as CvSlugRouteImport } from './routes/cv.$slug'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminVerificacoesRouteImport } from './routes/admin.verificacoes'
+import { Route as AdminVagasRouteImport } from './routes/admin.vagas'
+import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
 import { Route as AdminAnunciosRouteImport } from './routes/admin.anuncios'
 import { Route as ApiPublicAsaasWebhookRouteImport } from './routes/api/public/asaas-webhook'
 import { Route as ApiPublicCronGerarPostRouteImport } from './routes/api/public/cron.gerar-post'
@@ -114,6 +117,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VagasSlugRoute = VagasSlugRouteImport.update({
   id: '/vagas/$slug',
   path: '/vagas/$slug',
@@ -169,6 +177,16 @@ const AdminVerificacoesRoute = AdminVerificacoesRouteImport.update({
   path: '/admin/verificacoes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminVagasRoute = AdminVagasRouteImport.update({
+  id: '/admin/vagas',
+  path: '/admin/vagas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
+  id: '/admin/usuarios',
+  path: '/admin/usuarios',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAnunciosRoute = AdminAnunciosRouteImport.update({
   id: '/admin/anuncios',
   path: '/admin/anuncios',
@@ -202,6 +220,8 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
   '/admin/anuncios': typeof AdminAnunciosRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
+  '/admin/vagas': typeof AdminVagasRoute
   '/admin/verificacoes': typeof AdminVerificacoesRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/c/$slug': typeof CSlugRoute
@@ -213,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/profissionais/$slug': typeof ProfissionaisSlugRoute
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
 }
@@ -233,6 +254,8 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
   '/admin/anuncios': typeof AdminAnunciosRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
+  '/admin/vagas': typeof AdminVagasRoute
   '/admin/verificacoes': typeof AdminVerificacoesRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/c/$slug': typeof CSlugRoute
@@ -244,6 +267,7 @@ export interface FileRoutesByTo {
   '/profissionais/$slug': typeof ProfissionaisSlugRoute
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
+  '/admin': typeof AdminIndexRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
 }
@@ -265,6 +289,8 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
   '/admin/anuncios': typeof AdminAnunciosRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
+  '/admin/vagas': typeof AdminVagasRoute
   '/admin/verificacoes': typeof AdminVerificacoesRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/c/$slug': typeof CSlugRoute
@@ -276,6 +302,7 @@ export interface FileRoutesById {
   '/profissionais/$slug': typeof ProfissionaisSlugRoute
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
 }
@@ -298,6 +325,8 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos'
     | '/admin/anuncios'
+    | '/admin/usuarios'
+    | '/admin/vagas'
     | '/admin/verificacoes'
     | '/blog/$slug'
     | '/c/$slug'
@@ -309,6 +338,7 @@ export interface FileRouteTypes {
     | '/profissionais/$slug'
     | '/u/$handle'
     | '/vagas/$slug'
+    | '/admin/'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
   fileRoutesByTo: FileRoutesByTo
@@ -329,6 +359,8 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos'
     | '/admin/anuncios'
+    | '/admin/usuarios'
+    | '/admin/vagas'
     | '/admin/verificacoes'
     | '/blog/$slug'
     | '/c/$slug'
@@ -340,6 +372,7 @@ export interface FileRouteTypes {
     | '/profissionais/$slug'
     | '/u/$handle'
     | '/vagas/$slug'
+    | '/admin'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
   id:
@@ -360,6 +393,8 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos'
     | '/admin/anuncios'
+    | '/admin/usuarios'
+    | '/admin/vagas'
     | '/admin/verificacoes'
     | '/blog/$slug'
     | '/c/$slug'
@@ -371,6 +406,7 @@ export interface FileRouteTypes {
     | '/profissionais/$slug'
     | '/u/$handle'
     | '/vagas/$slug'
+    | '/admin/'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
   fileRoutesById: FileRoutesById
@@ -392,12 +428,15 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermosRoute: typeof TermosRoute
   AdminAnunciosRoute: typeof AdminAnunciosRoute
+  AdminUsuariosRoute: typeof AdminUsuariosRoute
+  AdminVagasRoute: typeof AdminVagasRoute
   AdminVerificacoesRoute: typeof AdminVerificacoesRoute
   CSlugRoute: typeof CSlugRoute
   CvSlugRoute: typeof CvSlugRoute
   ProfissionaisSlugRoute: typeof ProfissionaisSlugRoute
   UHandleRoute: typeof UHandleRoute
   VagasSlugRoute: typeof VagasSlugRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   ApiPublicAsaasWebhookRoute: typeof ApiPublicAsaasWebhookRoute
   ApiPublicCronGerarPostRoute: typeof ApiPublicCronGerarPostRoute
 }
@@ -509,6 +548,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/vagas/$slug': {
       id: '/vagas/$slug'
       path: '/vagas/$slug'
@@ -586,6 +632,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminVerificacoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/vagas': {
+      id: '/admin/vagas'
+      path: '/admin/vagas'
+      fullPath: '/admin/vagas'
+      preLoaderRoute: typeof AdminVagasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/usuarios': {
+      id: '/admin/usuarios'
+      path: '/admin/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AdminUsuariosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/anuncios': {
       id: '/admin/anuncios'
       path: '/admin/anuncios'
@@ -654,12 +714,15 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermosRoute: TermosRoute,
   AdminAnunciosRoute: AdminAnunciosRoute,
+  AdminUsuariosRoute: AdminUsuariosRoute,
+  AdminVagasRoute: AdminVagasRoute,
   AdminVerificacoesRoute: AdminVerificacoesRoute,
   CSlugRoute: CSlugRoute,
   CvSlugRoute: CvSlugRoute,
   ProfissionaisSlugRoute: ProfissionaisSlugRoute,
   UHandleRoute: UHandleRoute,
   VagasSlugRoute: VagasSlugRoute,
+  AdminIndexRoute: AdminIndexRoute,
   ApiPublicAsaasWebhookRoute: ApiPublicAsaasWebhookRoute,
   ApiPublicCronGerarPostRoute: ApiPublicCronGerarPostRoute,
 }
