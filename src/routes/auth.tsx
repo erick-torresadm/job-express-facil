@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Briefcase, Building2, HardHat, Mail, Lock, User as UserIcon, Phone, Loader2 } from "lucide-react";
+import { Briefcase, Building2, HardHat, Mail, Lock, User as UserIcon, Phone, Loader2, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
