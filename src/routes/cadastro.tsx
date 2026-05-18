@@ -48,14 +48,15 @@ function CandidatoFlow() {
   return (
     <div className="bg-background">
       <header className="border-b border-border bg-background sticky top-0 z-10">
-        <div className="mx-auto max-w-md px-4 py-3 flex items-center justify-between">
+       <div className="mx-auto max-w-md px-4 py-3 flex items-center justify-between lg:max-w-5xl">
+
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" /> Voltar ao início
           </Link>
           <Link to="/" className="font-bold text-sm">VagasAgora</Link>
         </div>
       </header>
-      <main className="mx-auto max-w-md px-4 pb-24 pt-4">
+      <main className="mx-auto max-w-md px-4 pb-24 pt-4 lg:max-w-5xl">
         <Progress step={step} />
         {step === "profissao" && (
           <StepProfissao onPick={(p) => { setProfissao(p); setStep("local"); }} />
@@ -142,7 +143,7 @@ function StepProfissao({ onPick }: { onPick: (id: string) => void }) {
       </div>
 
       <p className="mb-2 text-xs font-bold uppercase text-muted-foreground">Sugestões populares</p>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {filtradas.map((p) => (
           <button key={p.id} onClick={() => onPick(p.nome)}
             className="btn-touch flex flex-col items-center justify-center gap-2 border-2 border-border bg-card p-4 text-card-foreground hover:border-accent hover:bg-accent/5">
@@ -151,7 +152,7 @@ function StepProfissao({ onPick }: { onPick: (id: string) => void }) {
           </button>
         ))}
         {filtradas.length === 0 && (
-          <p className="col-span-2 text-center text-sm text-muted-foreground">
+          <p className="col-span-2 text-center text-sm text-muted-foreground sm:col-span-3 lg:col-span-4 xl:col-span-5">
             Nenhuma sugestão — use o botão acima com a sua profissão.
           </p>
         )}
