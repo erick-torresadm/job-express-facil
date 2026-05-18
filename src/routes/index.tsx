@@ -135,6 +135,7 @@ function Hero() {
               Conectamos profissionais a vagas <strong className="font-bold text-white">CLT, PJ e estágio</strong> em
               milhares de empresas. Crie seu perfil em 1 minuto e seja chamado direto no WhatsApp —
               sem PDF, sem fila, sem burocracia.
+              <span className="mt-2 block font-bold text-white">100% grátis pra candidatos. Você nunca paga nada pra se candidatar.</span>
             </motion.p>
 
             <motion.div variants={fadeUp} className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center md:justify-start">
