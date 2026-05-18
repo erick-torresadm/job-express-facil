@@ -666,14 +666,18 @@ function Campo({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function StepPerfil({ profissao, local, midia, contato }: {
+function StepPerfil({ profissao, local, midia, texto, contato }: {
   profissao: string;
   local: { bairro: string; cidade: string };
   midia: Midia;
+  texto: string;
   contato: Contato;
 }) {
   const [perfil, setPerfil] = useState<PerfilGerado | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<PerfilGerado | null>(null);
+  const [salvando, setSalvando] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -692,22 +696,42 @@ function StepPerfil({ profissao, local, midia, contato }: {
             temAudio: midia?.tipo === "audio",
             temVideo: midia?.tipo === "video",
             duracaoSegundos: midia?.duracao ?? 0,
+            texto: texto && texto.length > 0 ? texto : undefined,
             midiaBase64,
             midiaMimeType: midia?.mimeType,
           },
         });
-        // Vincula o currículo recém criado ao usuário logado (RLS permite via policy curriculos_claim_anon)
         const { data: userData } = await supabase.auth.getUser();
         if (userData.user) {
           await supabase.from("curriculos").update({ user_id: userData.user.id }).eq("slug", p.slug);
         }
-        if (!cancel) setPerfil(p);
+        if (!cancel) { setPerfil(p); setDraft(p); }
       } catch (e) {
         if (!cancel) setErro(e instanceof Error ? e.message : "Erro ao gerar perfil");
       }
     })();
     return () => { cancel = true; };
-  }, [contato, profissao, local, midia]);
+  }, [contato, profissao, local, midia, texto]);
+
+  const salvarEdicao = async () => {
+    if (!draft) return;
+    setSalvando(true);
+    const { error } = await supabase
+      .from("curriculos")
+      .update({
+        resumo: draft.resumo,
+        experiencias: draft.experiencias,
+        habilidades: draft.habilidades,
+      })
+      .eq("slug", draft.slug);
+    setSalvando(false);
+    if (error) {
+      setErro(error.message);
+      return;
+    }
+    setPerfil(draft);
+    setEditing(false);
+  };
 
   if (!perfil && !erro) {
     return (
@@ -733,6 +757,7 @@ function StepPerfil({ profissao, local, midia, contato }: {
   }
 
   const p = perfil!;
+  const d = draft ?? p;
   const dur = midia?.duracao ?? 0;
 
   return (
@@ -745,6 +770,27 @@ function StepPerfil({ profissao, local, midia, contato }: {
         <p className="text-sm opacity-90">{p.resumo}</p>
       </div>
 
+      <div className="mb-3 flex justify-end gap-2">
+        {!editing ? (
+          <button onClick={() => { setDraft(p); setEditing(true); }}
+            className="rounded-full border-2 border-border bg-card px-4 py-2 text-sm font-bold hover:bg-muted">
+            ✏️ Editar currículo
+          </button>
+        ) : (
+          <>
+            <button onClick={() => { setDraft(p); setEditing(false); }}
+              className="rounded-full border-2 border-border bg-card px-4 py-2 text-sm font-bold">
+              Cancelar
+            </button>
+            <button onClick={salvarEdicao} disabled={salvando}
+              className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-bold text-accent-foreground shadow-pop disabled:opacity-60">
+              {salvando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+              {salvando ? "Salvando…" : "Salvar"}
+            </button>
+          </>
+        )}
+      </div>
+
       <div className="space-y-3 rounded-3xl border-2 border-border bg-card p-5 shadow-soft">
         <Field label="Nome" value={contato.nome} />
         <Field label="WhatsApp" value={contato.whatsapp.replace(/(\d{2})(\d{4,5})(\d{4})/, "($1) $2-$3")} />
@@ -754,27 +800,98 @@ function StepPerfil({ profissao, local, midia, contato }: {
         {midia && (
           <Field label={midia.tipo === "video" ? "Vídeo gravado" : "Áudio gravado"} value={`${dur} segundos`} />
         )}
+
+        <div>
+          <p className="mb-1 text-xs font-bold uppercase text-muted-foreground">Resumo</p>
+          {editing ? (
+            <textarea
+              value={d.resumo}
+              onChange={(e) => setDraft({ ...d, resumo: e.target.value })}
+              rows={2}
+              maxLength={300}
+              className="w-full rounded-xl border-2 border-border bg-background p-2 text-sm outline-none focus:border-primary"
+            />
+          ) : (
+            <p className="text-sm">{p.resumo}</p>
+          )}
+        </div>
+
         <div>
           <p className="mb-1 text-xs font-bold uppercase text-muted-foreground">Experiências</p>
-          <ul className="space-y-1 text-sm">
-            {p.experiencias.map((e, i) => <li key={i}>• {e}</li>)}
-          </ul>
+          {editing ? (
+            <div className="space-y-2">
+              {d.experiencias.map((e, i) => (
+                <div key={i} className="flex gap-2">
+                  <input
+                    value={e}
+                    onChange={(ev) => {
+                      const arr = [...d.experiencias];
+                      arr[i] = ev.target.value;
+                      setDraft({ ...d, experiencias: arr });
+                    }}
+                    className="flex-1 rounded-xl border-2 border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                  <button
+                    onClick={() => setDraft({ ...d, experiencias: d.experiencias.filter((_, j) => j !== i) })}
+                    className="rounded-xl border-2 border-border bg-card px-3 text-sm font-bold text-destructive"
+                    aria-label="Remover"
+                  >✕</button>
+                </div>
+              ))}
+              <button
+                onClick={() => setDraft({ ...d, experiencias: [...d.experiencias, ""] })}
+                className="w-full rounded-xl border-2 border-dashed border-border bg-card py-2 text-sm font-bold text-muted-foreground hover:bg-muted"
+              >+ Adicionar experiência</button>
+            </div>
+          ) : (
+            <ul className="space-y-1 text-sm">
+              {p.experiencias.map((e, i) => <li key={i}>• {e}</li>)}
+            </ul>
+          )}
         </div>
+
         <div>
           <p className="mb-1 text-xs font-bold uppercase text-muted-foreground">Habilidades</p>
-          <div className="flex flex-wrap gap-1.5">
-            {p.habilidades.map((h, i) => (
-              <span key={i} className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">{h}</span>
-            ))}
-          </div>
+          {editing ? (
+            <div className="space-y-2">
+              <div className="flex flex-wrap gap-1.5">
+                {d.habilidades.map((h, i) => (
+                  <span key={i} className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+                    {h}
+                    <button onClick={() => setDraft({ ...d, habilidades: d.habilidades.filter((_, j) => j !== i) })} aria-label="Remover habilidade">✕</button>
+                  </span>
+                ))}
+              </div>
+              <input
+                placeholder="Adicionar habilidade e apertar Enter"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const v = (e.target as HTMLInputElement).value.trim();
+                    if (v) {
+                      setDraft({ ...d, habilidades: [...d.habilidades, v] });
+                      (e.target as HTMLInputElement).value = "";
+                    }
+                  }
+                }}
+                className="w-full rounded-xl border-2 border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+              />
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              {p.habilidades.map((h, i) => (
+                <span key={i} className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">{h}</span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {p.dicas.length > 0 && (
+      {p.dicas.length > 0 && !editing && (
         <div className="mt-4 rounded-2xl border border-border bg-muted/30 p-4">
           <p className="mb-2 text-xs font-bold uppercase text-muted-foreground">Dicas pra você</p>
           <ul className="space-y-1 text-sm">
-            {p.dicas.map((d, i) => <li key={i}>💡 {d}</li>)}
+            {p.dicas.map((di, i) => <li key={i}>💡 {di}</li>)}
           </ul>
         </div>
       )}
