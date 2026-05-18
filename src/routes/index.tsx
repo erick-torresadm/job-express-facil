@@ -261,10 +261,10 @@ function StepPerfil({ profissao, local, audioDur }: { profissao: string; local: 
     <section>
       <div className="mb-4 rounded-3xl bg-gradient-to-br from-accent to-accent/70 p-6 text-accent-foreground shadow-pop">
         <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-background/30 px-3 py-1 text-xs font-bold">
-          <Sparkles className="h-3.5 w-3.5" /> IA processou seu áudio
+          <Check className="h-3.5 w-3.5" /> Currículo recebido
         </div>
         <h1 className="text-2xl font-extrabold">Pronto, José!</h1>
-        <p className="text-sm opacity-90">Áudio de {audioDur}s transformado em currículo.</p>
+        <p className="text-sm opacity-90">Seu áudio de {audioDur}s já está com a gente.</p>
       </div>
 
       <div className="space-y-3 rounded-3xl border-2 border-border bg-card p-5 shadow-soft">
