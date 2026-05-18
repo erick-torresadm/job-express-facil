@@ -724,32 +724,32 @@ function CTA() {
 
         <div className="relative">
           <div className="mx-auto inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold">
-            <ShieldCheck className="h-3.5 w-3.5 text-accent" /> Sem letra miúda
+            <ShieldCheck className="h-3.5 w-3.5 text-accent" /> Cadastro verificado · LGPD
           </div>
           <h2 className="mx-auto mt-5 max-w-2xl text-4xl font-extrabold tracking-[-0.02em] md:text-6xl">
-            Cadastra em 1 minuto.<br />
-            <span className="text-accent">Pode ser hoje.</span>
+            Sua próxima oportunidade<br />
+            <span className="text-accent">já está aberta.</span>
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-            Trabalhador ou empresa, é só escolher abaixo.
+            Junte-se a 340 mil profissionais que estão a um WhatsApp da próxima vaga.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               to="/cadastro"
               className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-8 py-4 text-base font-bold text-primary-foreground shadow-pop transition active:scale-[0.98]"
             >
-              <HardHat className="h-5 w-5" /> Sou trabalhador
+              <HardHat className="h-5 w-5" /> Quero ser contratado
               <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
             </Link>
             <Link
               to="/auth"
               className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-border bg-background px-8 py-4 text-base font-bold text-foreground transition hover:border-accent active:scale-[0.98]"
             >
-              <Building2 className="h-5 w-5" /> Sou empresa
+              <Building2 className="h-5 w-5" /> Quero contratar
             </Link>
           </div>
           <p className="mt-6 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Clock className="h-3.5 w-3.5" /> Leva menos de 60 segundos
+            <Clock className="h-3.5 w-3.5" /> Perfil completo em menos de 60 segundos
           </p>
         </div>
       </motion.div>
