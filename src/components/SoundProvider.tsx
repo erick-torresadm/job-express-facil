@@ -9,28 +9,25 @@ export function SoundProvider() {
     loadMuted();
     force((n) => n + 1);
 
+    // Toca som APENAS em elementos com data-sound explícito.
+    // Assim só ações importantes (salvar, seguir, curtir, candidatar, etc) soam.
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (!target) return;
-      const el = target.closest(
-        'button, a, [role="button"], [data-sound], input[type="checkbox"], input[type="radio"], summary'
-      ) as HTMLElement | null;
+      const el = target.closest("[data-sound]") as HTMLElement | null;
       if (!el) return;
       if (el.hasAttribute("disabled") || el.getAttribute("aria-disabled") === "true") return;
-
-      const custom = el.getAttribute("data-sound");
-      if (custom) {
-        playSound(custom as any);
-        return;
-      }
-      // Heurística por tipo
-      if (el.tagName === "A") return playSound("swoosh");
-      const type = (el as HTMLButtonElement).type;
-      if (type === "submit") return playSound("pop");
-      playSound("click");
+      const kind = el.getAttribute("data-sound");
+      if (!kind || kind === "none") return;
+      playSound(kind as any);
     };
 
-    const onSubmit = () => playSound("success");
+    // Submit de formulário = ação relevante, mantém o "success"
+    const onSubmit = (e: Event) => {
+      const form = e.target as HTMLFormElement | null;
+      if (form?.dataset.sound === "none") return;
+      playSound("success");
+    };
 
     document.addEventListener("click", onClick, true);
     document.addEventListener("submit", onSubmit, true);
