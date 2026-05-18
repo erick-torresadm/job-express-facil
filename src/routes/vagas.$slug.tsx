@@ -66,7 +66,8 @@ export const Route = createFileRoute("/vagas/$slug")({
 });
 
 function VagasPage() {
-  const { profissao, cidade, vagas, count } = Route.useLoaderData();
+  const data = Route.useLoaderData();
+  const { profissao, cidade, vagas, count } = data ?? { profissao: "Vagas", cidade: "Brasil", vagas: [] as typeof VAGAS, count: 0 };
 
   return (
     <div className="min-h-screen bg-background">
