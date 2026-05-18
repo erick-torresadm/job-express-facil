@@ -3,6 +3,7 @@ import { ArrowLeft, Calendar, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { AdSlot } from "@/components/AdSlot";
 
 async function fetchPost(slug: string) {
   const { data, error } = await supabase
@@ -144,6 +145,10 @@ function PostPage() {
           )}
 
           <div className="prose-vagas mt-6">{renderMarkdown(post.conteudo)}</div>
+
+          <AdSlot placement="blog_post_fim" format="banner" className="mt-10" />
+
+
 
           <div className="mt-12 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 to-accent/10 p-6 text-center">
             <h3 className="text-2xl font-extrabold">Pronto pra começar?</h3>
