@@ -81,27 +81,29 @@ function Hero() {
         />
       </motion.div>
 
-      <motion.div style={{ y }} className="relative mx-auto max-w-6xl px-4 pb-20 pt-12 md:pb-32 md:pt-24">
-        <div className="grid items-center gap-12 md:grid-cols-[1.1fr_0.9fr]">
+      <motion.div style={{ y }} className="relative mx-auto max-w-6xl px-4 pb-16 pt-10 sm:pb-20 sm:pt-12 md:pb-32 md:pt-24">
+        <div className="grid items-center gap-10 md:gap-12 md:grid-cols-[1.1fr_0.9fr]">
           <motion.div
             initial="hidden"
             animate="show"
             variants={{ show: { transition: { staggerChildren: 0.08 } } }}
+            className="text-center md:text-left"
           >
             <motion.span
               variants={fadeUp}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-semibold backdrop-blur-md"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-[11px] font-semibold backdrop-blur-md sm:text-xs"
             >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[oklch(0.85_0.18_140)] opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[oklch(0.85_0.18_140)]" />
               </span>
-              12.847 vagas ativas · atualizado agora
+              <span className="hidden xs:inline">12.847 vagas ativas · atualizado agora</span>
+              <span className="xs:hidden">12.847 vagas ativas agora</span>
             </motion.span>
 
             <motion.h1
               variants={fadeUp}
-              className="mt-5 text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.03em] sm:text-6xl md:text-[4.5rem]"
+              className="mt-5 text-[2rem] font-extrabold leading-[1.05] tracking-[-0.03em] xs:text-[2.4rem] sm:text-6xl md:text-[4.5rem]"
             >
               Sua próxima vaga{" "}
               <span className="relative inline-block">
@@ -129,16 +131,16 @@ function Hero() {
               </span>
             </motion.h1>
 
-            <motion.p variants={fadeUp} className="mt-6 max-w-xl text-base leading-relaxed text-white/75 md:text-lg">
+            <motion.p variants={fadeUp} className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-white/75 sm:text-base md:mx-0 md:mt-6 md:text-lg">
               Conectamos profissionais a vagas <strong className="font-bold text-white">CLT, PJ e estágio</strong> em
               milhares de empresas. Crie seu perfil em 1 minuto e seja chamado direto no WhatsApp —
               sem PDF, sem fila, sem burocracia.
             </motion.p>
 
-            <motion.div variants={fadeUp} className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <motion.div variants={fadeUp} className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center md:justify-start">
               <Link
                 to="/cadastro"
-                className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-white px-7 py-4 text-base font-bold text-primary shadow-pop transition active:scale-[0.98]"
+                className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-white px-6 py-3.5 text-[15px] font-bold text-primary shadow-pop transition active:scale-[0.98] sm:px-7 sm:py-4 sm:text-base"
               >
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 <span className="relative">Encontrar vagas</span>
@@ -146,13 +148,13 @@ function Hero() {
               </Link>
               <Link
                 to="/auth"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/25 bg-white/5 px-7 py-4 text-base font-bold text-white backdrop-blur-md transition hover:bg-white/10 active:scale-[0.98]"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/25 bg-white/5 px-6 py-3.5 text-[15px] font-bold text-white backdrop-blur-md transition hover:bg-white/10 active:scale-[0.98] sm:px-7 sm:py-4 sm:text-base"
               >
                 <Building2 className="h-5 w-5" /> Contratar talentos
               </Link>
             </motion.div>
 
-            <motion.div variants={fadeUp} className="mt-8 flex items-center gap-4">
+            <motion.div variants={fadeUp} className="mt-7 flex items-center justify-center gap-4 md:justify-start">
               <div className="flex -space-x-2">
                 {["oklch(0.72_0.15_30)", "oklch(0.72_0.15_140)", "oklch(0.72_0.15_200)", "oklch(0.72_0.15_300)"].map((c, i) => (
                   <motion.div
@@ -165,7 +167,7 @@ function Hero() {
                   />
                 ))}
               </div>
-              <div className="text-xs text-white/70">
+              <div className="text-left text-xs text-white/70">
                 <div className="flex items-center gap-1 text-white">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-3 w-3 fill-[oklch(0.85_0.18_85)] text-[oklch(0.85_0.18_85)]" />
@@ -176,6 +178,7 @@ function Hero() {
               </div>
             </motion.div>
           </motion.div>
+
 
           {/* Phone with floating notifications */}
           <div className="flex flex-col items-center">
@@ -216,7 +219,7 @@ function PhoneMockup() {
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
-      className="relative mx-auto hidden w-full max-w-[320px] sm:block"
+      className="relative mx-auto w-full max-w-[280px] sm:max-w-[320px]"
     >
       {/* Floating chip — top */}
       <motion.div
@@ -508,7 +511,7 @@ function Stats() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-background via-secondary/30 to-background py-20 md:py-28">
+    <section className="relative overflow-hidden bg-gradient-to-b from-background via-secondary/30 to-background py-14 sm:py-20 md:py-28">
       <motion.div
         aria-hidden
         className="absolute inset-0 opacity-[0.04]"
@@ -530,7 +533,7 @@ function Stats() {
           className="mx-auto max-w-2xl text-center"
         >
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Os números</p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">
+          <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.02em] sm:text-4xl md:text-5xl">
             A maior rede de empregos <span className="text-muted-foreground">da nova economia.</span>
           </h2>
         </motion.div>
@@ -558,7 +561,7 @@ function Stats() {
               <div className="relative mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-pop">
                 {s.icon}
               </div>
-              <p className="relative text-4xl font-extrabold tracking-[-0.03em] md:text-5xl">
+              <p className="relative text-3xl font-extrabold tracking-[-0.03em] sm:text-4xl md:text-5xl">
                 <Counter to={s.n} suffix={s.suffix} />
               </p>
               <p className="relative mt-2 text-sm font-bold">{s.l}</p>
@@ -603,7 +606,7 @@ function LiveActivity() {
   }, []);
 
   return (
-    <section className="bg-primary py-20 text-primary-foreground md:py-28">
+    <section className="bg-primary py-14 text-primary-foreground sm:py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4">
         <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.1fr]">
           <motion.div
@@ -624,7 +627,7 @@ function LiveActivity() {
             </motion.span>
             <motion.h2
               variants={fadeUp}
-              className="mt-5 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl"
+              className="mt-5 text-3xl font-extrabold tracking-[-0.02em] sm:text-4xl md:text-5xl"
             >
               Pessoas sendo contratadas <br />
               <span className="bg-gradient-to-r from-white to-[oklch(0.78_0.14_220)] bg-clip-text text-transparent">
@@ -748,7 +751,7 @@ function Como() {
     { icon: <Zap className="h-6 w-6" />, t: "Recrutador te chama", d: "Convite de entrevista direto no WhatsApp. Sem espera, sem ansiedade." },
   ];
   return (
-    <section className="mx-auto max-w-6xl px-4 py-20 md:py-28">
+    <section className="mx-auto max-w-6xl px-4 py-14 sm:py-20 md:py-28">
       <motion.div
         initial="hidden"
         whileInView="show"
@@ -757,7 +760,7 @@ function Como() {
         className="mx-auto max-w-2xl text-center"
       >
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Como funciona</p>
-        <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">
+        <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.02em] sm:text-4xl md:text-5xl">
           Do perfil à entrevista <span className="text-muted-foreground">em 48 horas.</span>
         </h2>
         <p className="mt-4 text-muted-foreground">Esqueça PDFs, anexos e cartas de apresentação. A gente cuida do processo, você foca na vaga.</p>
@@ -804,7 +807,7 @@ function Profissoes() {
     { e: "🎓", n: "Estágio & Trainee", v: "476 vagas" },
   ];
   return (
-    <section className="bg-secondary/40 py-20 md:py-28">
+    <section className="bg-secondary/40 py-14 sm:py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4">
         <motion.div
           initial="hidden"
@@ -815,7 +818,7 @@ function Profissoes() {
         >
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Áreas em alta</p>
-            <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">Empresas contratando agora.</h2>
+            <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.02em] sm:text-4xl md:text-5xl">Empresas contratando agora.</h2>
           </div>
           <Link to="/cadastro" className="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:text-accent">
             Ver todas as vagas <ArrowRight className="h-4 w-4" />
@@ -852,7 +855,7 @@ function Profissoes() {
 
 function ParaQuem() {
   return (
-    <section className="mx-auto max-w-6xl px-4 py-20 md:py-28">
+    <section className="mx-auto max-w-6xl px-4 py-14 sm:py-20 md:py-28">
       <motion.div
         initial="hidden"
         whileInView="show"
@@ -929,7 +932,7 @@ function Depoimentos() {
     { n: "Beatriz Oliveira", p: "Head de RH · Magazine Luiza", t: "Reduzimos o tempo médio de contratação de 32 para 9 dias. A qualidade dos candidatos é absurda.", c: "oklch(0.7 0.15 200)" },
   ];
   return (
-    <section className="bg-primary py-20 text-primary-foreground md:py-28">
+    <section className="bg-primary py-14 text-primary-foreground sm:py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4">
         <motion.div
           initial="hidden"
@@ -939,7 +942,7 @@ function Depoimentos() {
           className="mx-auto max-w-2xl text-center"
         >
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-[oklch(0.78_0.14_220)]">Quem já está dentro</p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">Carreiras que decolaram aqui.</h2>
+          <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.02em] sm:text-4xl md:text-5xl">Carreiras que decolaram aqui.</h2>
         </motion.div>
 
         <motion.div
@@ -979,7 +982,7 @@ function Depoimentos() {
 
 function CTA() {
   return (
-    <section className="mx-auto max-w-6xl px-4 py-20 md:py-28">
+    <section className="mx-auto max-w-6xl px-4 py-14 sm:py-20 md:py-28">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -1007,7 +1010,7 @@ function CTA() {
           <div className="mx-auto inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold">
             <ShieldCheck className="h-3.5 w-3.5 text-accent" /> Cadastro verificado · LGPD
           </div>
-          <h2 className="mx-auto mt-5 max-w-2xl text-4xl font-extrabold tracking-[-0.02em] md:text-6xl">
+          <h2 className="mx-auto mt-5 max-w-2xl text-3xl font-extrabold tracking-[-0.02em] sm:text-4xl md:text-6xl">
             Sua próxima oportunidade<br />
             <span className="text-accent">já está aberta.</span>
           </h2>
