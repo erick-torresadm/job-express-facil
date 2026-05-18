@@ -47,6 +47,14 @@ function CandidatoFlow() {
 
   return (
     <div className="bg-background">
+      <header className="border-b border-border bg-background sticky top-0 z-10">
+        <div className="mx-auto max-w-md px-4 py-3 flex items-center justify-between">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="h-4 w-4" /> Voltar ao início
+          </Link>
+          <Link to="/" className="font-bold text-sm">VagasAgora</Link>
+        </div>
+      </header>
       <main className="mx-auto max-w-md px-4 pb-24 pt-4">
         <Progress step={step} />
         {step === "profissao" && (
