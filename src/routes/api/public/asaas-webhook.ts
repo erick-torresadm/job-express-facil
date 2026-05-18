@@ -49,7 +49,7 @@ export const Route = createFileRoute("/api/public/asaas-webhook")({
           return new Response(JSON.stringify({ ok: true, ignored: true }), { status: 200 });
         }
 
-        const update: Record<string, unknown> = { status: novoStatus };
+        const update: { status: typeof novoStatus; proximo_vencimento?: string } = { status: novoStatus };
         if (payload.payment?.dueDate) update.proximo_vencimento = payload.payment.dueDate;
 
         const { error } = await supabaseAdmin
