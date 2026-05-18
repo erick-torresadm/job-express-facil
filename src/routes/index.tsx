@@ -169,7 +169,7 @@ function Hero() {
                   ))}
                   <span className="ml-1 font-bold">4.9</span>
                 </div>
-                <p>+12 mil trabalhadores cadastrados</p>
+                <p>+340 mil profissionais e 8.200 empresas</p>
               </div>
             </motion.div>
           </motion.div>
