@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { Printer, Share2, MessageCircle, MapPin, Briefcase, Check, ArrowLeft, Copy, Lock } from "lucide-react";
+import { Printer, Share2, MessageCircle, MapPin, Briefcase, Check, ArrowLeft, Copy, Lock, Linkedin } from "lucide-react";
 import { getCurriculoPublico } from "@/lib/curriculo.functions";
 
 type Curriculo = {
@@ -16,6 +16,7 @@ type Curriculo = {
   tem_audio: boolean;
   tem_video: boolean;
   duracao_segundos: number;
+  linkedin_url: string | null;
   created_at: string;
 };
 
