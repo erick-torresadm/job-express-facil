@@ -60,6 +60,7 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number) {
 }
 
 export const calcularRotaCusto = createServerFn({ method: "POST" })
+  .middleware([])
   .inputValidator((input) =>
     z.object({
       origemLat: z.number(), origemLng: z.number(),
@@ -149,6 +150,7 @@ function parseJson<T>(s: string): T {
 // Custo médio de alimentação no bairro (estimativa via IA)
 // =================================================================
 export const estimarCustoAlimentacao = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
     z.object({
       bairro: z.string().min(2).max(80),
@@ -170,6 +172,7 @@ Responda APENAS JSON: {"diario_min": number, "diario_max": number, "mensal_medio
 // Sugestão de salário justo por profissão + cidade
 // =================================================================
 export const sugerirSalarioFaixa = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
     z.object({
       profissao: z.string().min(2).max(80),
@@ -194,6 +197,7 @@ Valores em reais (R$), sem decimais.`;
 // Anti-golpe: avalia descrição da vaga
 // =================================================================
 export const analisarVagaFraude = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
     z.object({
       titulo: z.string().min(2).max(200),
@@ -222,6 +226,7 @@ Responda APENAS JSON: {"risco": number, "motivos": ["string", "..."], "veredito"
 // Perguntas de pré-triagem geradas pela IA
 // =================================================================
 export const gerarPerguntasTriagem = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
     z.object({
       titulo: z.string().min(2).max(200),
