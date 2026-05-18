@@ -279,6 +279,142 @@ function PhoneMockup() {
   );
 }
 
+type WhatsMsg = {
+  id: number;
+  company: string;
+  role: string;
+  msg: string;
+  time: string;
+  initials: string;
+  color: string;
+};
+
+const WHATS_POOL: Omit<WhatsMsg, "id" | "time">[] = [
+  { company: "Construtora Vila Nova", role: "Pedreiro", msg: "Oi José! Vi seu perfil. Tem disponibilidade pra começar segunda? R$ 180/dia 🧱", initials: "CV", color: "oklch(0.65 0.18 145)" },
+  { company: "Padaria Bom Sabor", role: "Ajudante", msg: "Boa tarde! Estamos contratando ajudante de cozinha aqui na Mooca. Bora conversar?", initials: "PB", color: "oklch(0.7 0.16 60)" },
+  { company: "Transportes Águia", role: "Motorista", msg: "Você tem CNH D? Temos rota fixa no Tatuapé, salário + benefícios 🚚", initials: "TA", color: "oklch(0.6 0.18 250)" },
+  { company: "Condomínio Jardins", role: "Porteiro", msg: "Vaga 12x36 noturno disponível. Quando pode fazer entrevista? 🏢", initials: "CJ", color: "oklch(0.62 0.16 290)" },
+  { company: "Limpa Tudo SP", role: "Diarista", msg: "Olá! Precisamos de diarista 3x por semana, perto da sua casa ✨", initials: "LT", color: "oklch(0.7 0.17 30)" },
+  { company: "Pizzaria Forno a Lenha", role: "Entregador", msg: "Tem moto? Pagamos por entrega + fixo. Começa hoje? 🛵🍕", initials: "PF", color: "oklch(0.6 0.2 15)" },
+];
+
+function WhatsappFeed() {
+  const [messages, setMessages] = useState<WhatsMsg[]>([
+    { id: 1, time: "09:38", ...WHATS_POOL[0] },
+    { id: 2, time: "09:40", ...WHATS_POOL[1] },
+  ]);
+  const [typing, setTyping] = useState(false);
+  const counter = useRef(3);
+  const poolIdx = useRef(2);
+
+  useEffect(() => {
+    let cancelled = false;
+    const tick = () => {
+      if (cancelled) return;
+      setTyping(true);
+      setTimeout(() => {
+        if (cancelled) return;
+        setTyping(false);
+        const next = WHATS_POOL[poolIdx.current % WHATS_POOL.length];
+        poolIdx.current += 1;
+        const id = counter.current++;
+        const now = new Date();
+        const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+        setMessages((prev) => [...prev.slice(-1), { id, time, ...next }]);
+      }, 1400);
+    };
+    const interval = setInterval(tick, 4200);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
+
+  return (
+    <div className="flex flex-1 flex-col gap-2 overflow-hidden">
+      <div className="flex items-center justify-between px-1">
+        <div className="flex items-center gap-1.5">
+          <MessageCircle className="h-3 w-3 text-[oklch(0.55_0.15_150)]" />
+          <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Empresas chamando</span>
+        </div>
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[oklch(0.65_0.18_145)] opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-[oklch(0.65_0.18_145)]" />
+        </span>
+      </div>
+
+      <div className="relative flex flex-1 flex-col justify-end gap-2">
+        <AnimatePresence initial={false} mode="popLayout">
+          {messages.map((m) => (
+            <motion.div
+              key={m.id}
+              layout
+              initial={{ opacity: 0, y: -18, scale: 0.92 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -40, scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 320, damping: 28 }}
+              className="rounded-2xl rounded-tl-sm border border-border bg-card p-2.5 shadow-sm"
+            >
+              <div className="flex items-start gap-2">
+                <div
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-[10px] font-bold text-white shadow-inner"
+                  style={{ background: m.color }}
+                >
+                  {m.initials}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="truncate text-[11px] font-bold text-foreground">{m.company}</p>
+                    <span className="shrink-0 text-[9px] text-muted-foreground">{m.time}</span>
+                  </div>
+                  <p className="text-[9px] font-semibold uppercase tracking-wide text-[oklch(0.55_0.15_150)]">{m.role}</p>
+                  <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-foreground/80">{m.msg}</p>
+                  <div className="mt-1 flex items-center justify-end">
+                    <CheckCheck className="h-3 w-3 text-[oklch(0.6_0.18_230)]" />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+
+          {typing && (
+            <motion.div
+              key="typing"
+              layout
+              initial={{ opacity: 0, y: -10, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.25 }}
+              className="flex w-fit items-center gap-1.5 rounded-full bg-muted px-3 py-1.5"
+            >
+              {[0, 1, 2].map((i) => (
+                <motion.span
+                  key={i}
+                  className="h-1.5 w-1.5 rounded-full bg-foreground/50"
+                  animate={{ y: [0, -3, 0], opacity: [0.4, 1, 0.4] }}
+                  transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.15 }}
+                />
+              ))}
+              <span className="text-[9px] font-semibold text-muted-foreground">nova mensagem…</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <motion.div
+        className="mt-1 flex items-center gap-2 rounded-2xl bg-[oklch(0.85_0.15_140)]/15 p-2.5 ring-1 ring-[oklch(0.65_0.18_145)]/40"
+        animate={{ boxShadow: ["0 0 0 0 oklch(0.65 0.18 145 / 0.4)", "0 0 0 8px oklch(0.65 0.18 145 / 0)"] }}
+        transition={{ duration: 1.8, repeat: Infinity }}
+      >
+        <Check className="h-3.5 w-3.5 text-[oklch(0.4_0.15_140)]" />
+        <p className="text-[11px] font-bold text-[oklch(0.4_0.15_140)]">{messages.length + counter.current - 3} empresas chamaram hoje</p>
+      </motion.div>
+    </div>
+  );
+}
+
+
+
 function Marquee() {
   const items = ["Pedreiro", "Doméstica", "Motorista", "Porteiro", "Ajudante", "Cozinheiro", "Entregador", "Jardineiro", "Babá", "Garçom", "Vendedor", "Operador"];
   return (
