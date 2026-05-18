@@ -290,22 +290,44 @@ type WhatsMsg = {
 };
 
 const WHATS_POOL: Omit<WhatsMsg, "id" | "time">[] = [
-  { company: "Construtora Vila Nova", role: "Pedreiro", msg: "Oi José! Vi seu perfil. Tem disponibilidade pra começar segunda? R$ 180/dia 🧱", initials: "CV", color: "oklch(0.65 0.18 145)" },
-  { company: "Padaria Bom Sabor", role: "Ajudante", msg: "Boa tarde! Estamos contratando ajudante de cozinha aqui na Mooca. Bora conversar?", initials: "PB", color: "oklch(0.7 0.16 60)" },
-  { company: "Transportes Águia", role: "Motorista", msg: "Você tem CNH D? Temos rota fixa no Tatuapé, salário + benefícios 🚚", initials: "TA", color: "oklch(0.6 0.18 250)" },
-  { company: "Condomínio Jardins", role: "Porteiro", msg: "Vaga 12x36 noturno disponível. Quando pode fazer entrevista? 🏢", initials: "CJ", color: "oklch(0.62 0.16 290)" },
-  { company: "Limpa Tudo SP", role: "Diarista", msg: "Olá! Precisamos de diarista 3x por semana, perto da sua casa ✨", initials: "LT", color: "oklch(0.7 0.17 30)" },
-  { company: "Pizzaria Forno a Lenha", role: "Entregador", msg: "Tem moto? Pagamos por entrega + fixo. Começa hoje? 🛵🍕", initials: "PF", color: "oklch(0.6 0.2 15)" },
+  { company: "Construtora Vila Nova", role: "Pedreiro", msg: "Oi José! Tem disponibilidade pra começar segunda? R$ 180/dia 🧱", initials: "CV", color: "oklch(0.65 0.18 145)" },
+  { company: "Padaria Bom Sabor", role: "Ajudante de cozinha", msg: "Boa tarde! Contratando ajudante aqui na Mooca. Bora conversar?", initials: "PB", color: "oklch(0.7 0.16 60)" },
+  { company: "Transportes Águia", role: "Motorista", msg: "Tem CNH D? Rota fixa no Tatuapé, salário + benefícios 🚚", initials: "TA", color: "oklch(0.6 0.18 250)" },
+  { company: "Condomínio Jardins", role: "Porteiro", msg: "Vaga 12x36 noturno. Quando pode fazer entrevista? 🏢", initials: "CJ", color: "oklch(0.62 0.16 290)" },
+  { company: "Limpa Tudo SP", role: "Diarista", msg: "Olá! Precisamos de diarista 3x por semana, perto de você ✨", initials: "LT", color: "oklch(0.7 0.17 30)" },
+  { company: "Pizzaria Forno a Lenha", role: "Entregador", msg: "Tem moto? Fixo + por entrega. Começa hoje? 🛵🍕", initials: "PF", color: "oklch(0.6 0.2 15)" },
+  { company: "Mercado São Jorge", role: "Repositor", msg: "Oi! Vaga de repositor noturno, vale-transporte + refeição 🛒", initials: "MS", color: "oklch(0.58 0.17 200)" },
+  { company: "Hotel Aurora", role: "Camareira", msg: "Bom dia! Procuramos camareira CLT, escala 6x1 🏨", initials: "HA", color: "oklch(0.7 0.14 320)" },
+  { company: "Auto Posto Real", role: "Frentista", msg: "Vaga de frentista, turno tarde. Aceita? ⛽", initials: "AP", color: "oklch(0.55 0.2 25)" },
+  { company: "Escola Infantil Saber", role: "Auxiliar", msg: "Olá! Auxiliar de classe, manhã. Vamos conversar? 📚", initials: "ES", color: "oklch(0.7 0.15 100)" },
+  { company: "Marmoraria Granito Sul", role: "Ajudante", msg: "Precisamos de ajudante forte, paga semanal 💪", initials: "MG", color: "oklch(0.5 0.05 260)" },
+  { company: "Salão Beleza Pura", role: "Recepcionista", msg: "Oi! Recepção de salão, segunda a sábado ✂️💅", initials: "BP", color: "oklch(0.72 0.18 350)" },
+  { company: "Padaria Pão Quente", role: "Padeiro", msg: "Padeiro madrugada, R$ 2.400 + cesta 🥖", initials: "PQ", color: "oklch(0.72 0.16 75)" },
+  { company: "Lava Rápido Brilho", role: "Lavador", msg: "Vaga lavador de carros, gorjeta + fixo 🚗", initials: "LB", color: "oklch(0.6 0.18 220)" },
+  { company: "Restaurante Sabor & Cia", role: "Garçom", msg: "Garçom para almoço, gorjeta boa. Topa? 🍽️", initials: "SC", color: "oklch(0.55 0.18 30)" },
+  { company: "Clínica Vida Plena", role: "Recepcionista", msg: "Recepção clínica, escala 5x2, CLT 🩺", initials: "CV", color: "oklch(0.65 0.13 180)" },
+  { company: "Oficina Mecânica Forte", role: "Auxiliar", msg: "Auxiliar mecânico, aprende na prática 🔧", initials: "OM", color: "oklch(0.5 0.1 50)" },
+  { company: "Atacado Compre Mais", role: "Empacotador", msg: "Empacotador fim de semana, paga semanal 📦", initials: "AC", color: "oklch(0.6 0.18 140)" },
+  { company: "Açougue Bom Corte", role: "Açougueiro", msg: "Tem experiência? Vaga aberta hoje 🥩", initials: "BC", color: "oklch(0.5 0.2 20)" },
+  { company: "Lanchonete Subway Tatuapé", role: "Atendente", msg: "Atendente balcão, 6h/dia, refeição inclusa 🥪", initials: "SU", color: "oklch(0.62 0.18 145)" },
+  { company: "Borracharia 24h", role: "Borracheiro", msg: "Plantão noturno, comissão por serviço 🛞", initials: "B2", color: "oklch(0.35 0.05 260)" },
+  { company: "Pet Shop Patinhas", role: "Banhista", msg: "Banho e tosa, gosta de cachorros? 🐶✨", initials: "PP", color: "oklch(0.75 0.14 50)" },
+  { company: "Estética Glow", role: "Manicure", msg: "Cabine livre, comissão 60%, agenda cheia 💅", initials: "EG", color: "oklch(0.72 0.16 340)" },
+  { company: "Construtora Horizonte", role: "Servente", msg: "Obra grande perto da Penha, começa amanhã 🏗️", initials: "CH", color: "oklch(0.58 0.16 60)" },
+  { company: "Sushi Express Mooca", role: "Auxiliar cozinha", msg: "Aux de cozinha japonesa, treina no local 🍣", initials: "SE", color: "oklch(0.5 0.18 25)" },
 ];
 
 function WhatsappFeed() {
-  const [messages, setMessages] = useState<WhatsMsg[]>([
-    { id: 1, time: "09:38", ...WHATS_POOL[0] },
-    { id: 2, time: "09:40", ...WHATS_POOL[1] },
-  ]);
+  const initial = WHATS_POOL.slice(0, 2).map((m, i) => ({
+    id: i + 1,
+    time: `09:${38 + i * 2}`,
+    ...m,
+  }));
+  const [messages, setMessages] = useState<WhatsMsg[]>(initial);
   const [typing, setTyping] = useState(false);
-  const counter = useRef(3);
-  const poolIdx = useRef(2);
+  const counter = useRef(initial.length + 1);
+  const poolIdx = useRef(initial.length);
+  const totalChamadas = useRef(7); // already received "hoje"
 
   useEffect(() => {
     let cancelled = false;
@@ -318,17 +340,19 @@ function WhatsappFeed() {
         const next = WHATS_POOL[poolIdx.current % WHATS_POOL.length];
         poolIdx.current += 1;
         const id = counter.current++;
+        totalChamadas.current += 1;
         const now = new Date();
         const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-        setMessages((prev) => [...prev.slice(-1), { id, time, ...next }]);
-      }, 1400);
+        setMessages((prev) => [...prev, { id, time, ...next }].slice(-6));
+      }, 1100);
     };
-    const interval = setInterval(tick, 4200);
+    const interval = setInterval(tick, 2800);
     return () => {
       cancelled = true;
       clearInterval(interval);
     };
   }, []);
+
 
   return (
     <div className="flex flex-1 flex-col gap-2 overflow-hidden">
