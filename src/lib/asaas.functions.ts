@@ -38,21 +38,20 @@ type AsaasPayment = { id: string; invoiceUrl: string; status: string };
 export const criarAssinaturaAsaas = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
-    z.object({
-      plano: z.enum(["basico", "full"]),
-      ciclo: z.enum(["mensal", "anual"]),
-      nome: z.string().trim().min(2).max(120),
-      email: z.string().trim().email(),
-      cpfCnpj: z.string().trim().min(11).max(20),
-      telefone: z.preprocess(
-        (v) => {
+    z
+      .object({
+        plano: z.enum(["basico", "full"]),
+        ciclo: z.enum(["mensal", "anual"]),
+        nome: z.string().trim().min(2).max(120),
+        email: z.string().trim().email(),
+        cpfCnpj: z.string().trim().min(11).max(20),
+        telefone: z.preprocess((v) => {
           if (typeof v !== "string") return undefined;
           const t = v.trim();
           return t.length === 0 ? undefined : t;
-        },
-        z.string().min(8).max(20).optional(),
-      ),
-    }).parse(input),
+        }, z.string().min(8).max(20).optional()),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const userId = context.userId;
