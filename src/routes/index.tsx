@@ -513,14 +513,14 @@ function Como() {
 
 function Profissoes() {
   const list = [
-    { e: "🧱", n: "Pedreiro", v: "248 vagas" },
-    { e: "🧹", n: "Doméstica", v: "192 vagas" },
-    { e: "🚗", n: "Motorista", v: "156 vagas" },
-    { e: "🛡️", n: "Porteiro", v: "98 vagas" },
-    { e: "🔧", n: "Ajudante", v: "311 vagas" },
-    { e: "🍳", n: "Cozinheiro", v: "87 vagas" },
-    { e: "📦", n: "Entregador", v: "204 vagas" },
-    { e: "🌿", n: "Jardineiro", v: "64 vagas" },
+    { e: "💼", n: "Administrativo", v: "1.842 vagas" },
+    { e: "🛍️", n: "Vendas & Varejo", v: "2.310 vagas" },
+    { e: "🎧", n: "Atendimento", v: "1.207 vagas" },
+    { e: "📊", n: "Financeiro", v: "684 vagas" },
+    { e: "📦", n: "Logística", v: "1.495 vagas" },
+    { e: "💻", n: "Tecnologia", v: "923 vagas" },
+    { e: "🏥", n: "Saúde", v: "812 vagas" },
+    { e: "🎓", n: "Estágio & Trainee", v: "476 vagas" },
   ];
   return (
     <section className="bg-secondary/40 py-20 md:py-28">
