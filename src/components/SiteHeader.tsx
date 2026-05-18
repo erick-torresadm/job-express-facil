@@ -114,7 +114,7 @@ export function SiteHeader() {
             {user ? (
               <>
                 <Link
-                  to={role === "empresa" ? "/empresa" : "/cadastro"}
+                  to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
                   onClick={() => setOpen(false)}
                   className="flex items-center gap-2 rounded-xl px-3 py-3 text-base font-semibold text-foreground"
                 >
