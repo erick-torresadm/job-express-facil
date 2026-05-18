@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { timingSafeEqual } from "node:crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 // Lovable AI Gateway (Gemini grátis via créditos do workspace, sem API key do Google)
