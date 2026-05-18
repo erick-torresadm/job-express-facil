@@ -2,11 +2,11 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import {
   Mic, Camera, MapPin, Volume2, Square, Check, Video,
-  ArrowLeft, Zap, FileDown, Send, SkipForward, Loader2, Lock, Eye, EyeOff,
+  ArrowLeft, Zap, FileDown, Send, SkipForward, Loader2, Lock, Eye, EyeOff, Linkedin,
 } from "lucide-react";
 import { PROFISSOES } from "@/lib/mock-data";
 import { analisarCandidato, type PerfilGerado } from "@/lib/ai.functions";
-import { claimCurriculo } from "@/lib/curriculo.functions";
+import { claimCurriculo, updateLinkedin } from "@/lib/curriculo.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/cadastro")({
