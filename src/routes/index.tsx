@@ -2,7 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import {
   Mic, Camera, MapPin, Volume2, Square, Check, Video,
-  Briefcase, Building2, ArrowLeft, Zap, FileDown, Send, SkipForward, Loader2,
+  ArrowLeft, Zap, FileDown, Send, SkipForward, Loader2,
 } from "lucide-react";
 import { PROFISSOES } from "@/lib/mock-data";
 import { analisarCandidato, type PerfilGerado } from "@/lib/ai.functions";
