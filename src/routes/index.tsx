@@ -6,6 +6,8 @@ import {
   ArrowRight, Star, Check, CheckCheck, Sparkles, MessageCircle, TrendingUp, Users,
   Briefcase, Award, Rocket, Target,
 } from "lucide-react";
+import { AdSlot } from "@/components/AdSlot";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,12 +34,19 @@ function Landing() {
       <Hero />
       <Marquee />
       <Como />
+      <div className="mx-auto w-full max-w-5xl px-4 py-6">
+        <AdSlot placement="home_meio" format="banner" />
+      </div>
       <Stats />
       <Profissoes />
       <LiveActivity />
       <ParaQuem />
+      <div className="mx-auto w-full max-w-5xl px-4 py-6">
+        <AdSlot placement="home_inferior" format="banner" />
+      </div>
       <Depoimentos />
       <CTA />
+
     </div>
   );
 }
