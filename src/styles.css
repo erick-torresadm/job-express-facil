@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Figtree:wght@400;500;600;700;800&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -34,58 +35,58 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
-  --shadow-soft: 0 4px 20px -4px oklch(0.4 0.15 250 / 0.15);
-  --shadow-pop: 0 8px 30px -6px oklch(0.55 0.2 145 / 0.35);
+  --font-display: "Outfit", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, sans-serif;
+  --shadow-soft: 0 4px 24px -6px oklch(0.15 0.08 255 / 0.12);
+  --shadow-pop: 0 12px 32px -8px oklch(0.15 0.13 255 / 0.35);
 }
 
 :root {
   --radius: 1rem;
-  /* Light bg — used in candidate flow */
-  --background: oklch(0.99 0.005 240);
-  --foreground: oklch(0.2 0.04 250);
+  /* Navy Trust palette */
+  --background: oklch(0.985 0.005 240);
+  --foreground: oklch(0.18 0.08 260);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.04 250);
+  --card-foreground: oklch(0.18 0.08 260);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.04 250);
-  /* Primary = deep trust blue (recruiter side) */
-  --primary: oklch(0.32 0.13 255);
+  --popover-foreground: oklch(0.18 0.08 260);
+  /* Primary = navy #0f1b3d */
+  --primary: oklch(0.22 0.1 260);
   --primary-foreground: oklch(0.99 0.005 240);
-  /* Secondary = soft surface */
-  --secondary: oklch(0.96 0.01 250);
-  --secondary-foreground: oklch(0.2 0.04 250);
-  --muted: oklch(0.96 0.01 250);
-  --muted-foreground: oklch(0.5 0.03 250);
-  /* Accent = vibrant green (candidate CTA) */
-  --accent: oklch(0.7 0.19 145);
-  --accent-foreground: oklch(0.15 0.05 145);
-  --success: oklch(0.7 0.19 145);
+  --secondary: oklch(0.955 0.012 250);
+  --secondary-foreground: oklch(0.22 0.1 260);
+  --muted: oklch(0.95 0.012 250);
+  --muted-foreground: oklch(0.5 0.04 255);
+  /* Accent = bright steel blue #3b6fa0 */
+  --accent: oklch(0.58 0.12 245);
+  --accent-foreground: oklch(0.99 0.005 240);
+  --success: oklch(0.68 0.16 150);
   --success-foreground: oklch(0.15 0.05 145);
   --warning: oklch(0.78 0.16 75);
   --warning-foreground: oklch(0.2 0.05 75);
   --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: oklch(0.99 0.005 240);
-  --border: oklch(0.92 0.01 250);
-  --input: oklch(0.92 0.01 250);
-  --ring: oklch(0.32 0.13 255);
+  --border: oklch(0.92 0.012 250);
+  --input: oklch(0.92 0.012 250);
+  --ring: oklch(0.58 0.12 245);
 }
 
 .dark {
-  --background: oklch(0.18 0.03 255);
+  --background: oklch(0.15 0.04 260);
   --foreground: oklch(0.98 0.005 240);
-  --card: oklch(0.22 0.04 255);
+  --card: oklch(0.2 0.05 260);
   --card-foreground: oklch(0.98 0.005 240);
-  --popover: oklch(0.22 0.04 255);
+  --popover: oklch(0.2 0.05 260);
   --popover-foreground: oklch(0.98 0.005 240);
-  --primary: oklch(0.75 0.15 240);
-  --primary-foreground: oklch(0.18 0.03 255);
-  --secondary: oklch(0.27 0.04 255);
+  --primary: oklch(0.7 0.14 245);
+  --primary-foreground: oklch(0.15 0.04 260);
+  --secondary: oklch(0.25 0.05 260);
   --secondary-foreground: oklch(0.98 0.005 240);
-  --muted: oklch(0.27 0.04 255);
-  --muted-foreground: oklch(0.7 0.02 250);
-  --accent: oklch(0.72 0.2 145);
-  --accent-foreground: oklch(0.15 0.05 145);
-  --success: oklch(0.72 0.2 145);
+  --muted: oklch(0.25 0.05 260);
+  --muted-foreground: oklch(0.7 0.03 250);
+  --accent: oklch(0.7 0.14 245);
+  --accent-foreground: oklch(0.15 0.04 260);
+  --success: oklch(0.72 0.18 150);
   --success-foreground: oklch(0.15 0.05 145);
   --warning: oklch(0.78 0.16 75);
   --warning-foreground: oklch(0.2 0.05 75);
@@ -93,7 +94,7 @@
   --destructive-foreground: oklch(0.98 0.005 240);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.75 0.15 240);
+  --ring: oklch(0.7 0.14 245);
 }
 
 @layer base {
@@ -101,15 +102,16 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: var(--font-display);
+    font-family: var(--font-body);
     -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
 }
 
 @layer utilities {
   .btn-touch {
-    @apply min-h-16 rounded-2xl text-lg font-semibold transition-all active:scale-[0.98];
+    @apply min-h-14 rounded-2xl text-base font-semibold transition-all active:scale-[0.98];
   }
   .shadow-pop { box-shadow: var(--shadow-pop); }
   .shadow-soft { box-shadow: var(--shadow-soft); }
