@@ -1,8 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check, ArrowLeft, Zap, Wand2, Loader2 } from "lucide-react";
 import { BAIRROS, PROFISSOES } from "@/lib/mock-data";
 import { gerarDescricaoVaga } from "@/lib/ai.functions";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/empresa/nova-vaga")({
   head: () => ({
@@ -12,23 +15,81 @@ export const Route = createFileRoute("/empresa/nova-vaga")({
 });
 
 function NovaVaga() {
-  const [form, setForm] = useState({ titulo: "", salario: "", horario: "", bairro: BAIRROS[0], profissao: PROFISSOES[0].nome, urgente: false, descricao: "", requisitos: [] as string[] });
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    titulo: "",
+    salario: "",
+    horario: "",
+    bairro: BAIRROS[0],
+    cidade: "São Paulo",
+    profissao: PROFISSOES[0].nome,
+    urgente: false,
+    descricao: "",
+    requisitos: [] as string[],
+  });
   const [saved, setSaved] = useState(false);
+  const [salvando, setSalvando] = useState(false);
   const [gerando, setGerando] = useState(false);
   const [erroIA, setErroIA] = useState<string | null>(null);
 
   const upd = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }));
 
   const sugerir = async () => {
-    setErroIA(null); setGerando(true);
+    setErroIA(null);
+    setGerando(true);
     try {
-      const r = await gerarDescricaoVaga({ data: { titulo: form.titulo || form.profissao, profissao: form.profissao, bairro: form.bairro, salario: form.salario || "A combinar", horario: form.horario || "Comercial" } });
+      const r = await gerarDescricaoVaga({
+        data: {
+          titulo: form.titulo || form.profissao,
+          profissao: form.profissao,
+          bairro: form.bairro,
+          salario: form.salario || "A combinar",
+          horario: form.horario || "Comercial",
+        },
+      });
       setForm((f) => ({ ...f, descricao: r.descricao, requisitos: r.requisitos }));
     } catch (e) {
       setErroIA(e instanceof Error ? e.message : "Erro ao gerar texto");
     } finally {
       setGerando(false);
     }
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      toast.error("Faça login como empresa para publicar");
+      navigate({ to: "/auth" });
+      return;
+    }
+    setSalvando(true);
+    const prof = PROFISSOES.find((p) => p.nome === form.profissao);
+    const { data: profile } = await supabase.from("profiles").select("company_name,full_name").eq("id", user.id).maybeSingle();
+    const empresaNome = profile?.company_name || profile?.full_name || "Empresa";
+
+    const { error } = await supabase.from("vagas").insert({
+      empresa_id: user.id,
+      titulo: form.titulo,
+      empresa_nome: empresaNome,
+      salario: form.salario,
+      horario: form.horario,
+      bairro: form.bairro,
+      cidade: form.cidade,
+      profissao: form.profissao,
+      profissao_slug: prof?.slug ?? form.profissao.toLowerCase().replace(/\s+/g, "-"),
+      descricao: form.descricao || null,
+      requisitos: form.requisitos,
+      urgente: form.urgente,
+      ativa: true,
+    });
+    setSalvando(false);
+    if (error) {
+      toast.error("Erro ao publicar: " + error.message);
+      return;
+    }
+    toast.success("Vaga publicada!");
+    setSaved(true);
   };
 
   if (saved) {
@@ -38,10 +99,15 @@ function NovaVaga() {
           <Check className="h-8 w-8" />
         </div>
         <h2 className="mt-4 text-2xl font-extrabold">Vaga publicada!</h2>
-        <p className="mt-1 text-sm text-muted-foreground">Já notificamos 142 candidatos da região.</p>
-        <Link to="/empresa" className="mt-6 inline-flex rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground">
-          Voltar pros candidatos
-        </Link>
+        <p className="mt-1 text-sm text-muted-foreground">Candidatos da região foram notificados.</p>
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
+          <Link to="/empresa" className="rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground">
+            Ver candidatos
+          </Link>
+          <Link to="/empresa/minhas-vagas" className="rounded-xl bg-secondary px-5 py-3 text-sm font-bold">
+            Minhas vagas
+          </Link>
+        </div>
       </div>
     );
   }
@@ -54,22 +120,27 @@ function NovaVaga() {
       <h1 className="text-2xl font-extrabold">Publicar nova vaga</h1>
       <p className="text-sm text-muted-foreground">Preenchimento em menos de 1 minuto.</p>
 
-      <form onSubmit={(e) => { e.preventDefault(); setSaved(true); }} className="mt-6 space-y-4 rounded-2xl border border-border bg-card p-6 shadow-soft">
-        <Field label="Título da vaga"><input required value={form.titulo} onChange={(e) => upd("titulo", e.target.value)} placeholder="Ex: Pedreiro de acabamento" className="input" /></Field>
+      <form onSubmit={submit} className="mt-6 space-y-4 rounded-2xl border border-border bg-card p-6 shadow-soft">
+        <Field label="Título da vaga">
+          <input required value={form.titulo} onChange={(e) => upd("titulo", e.target.value)} placeholder="Ex: Pedreiro de acabamento" className="input-base" />
+        </Field>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Salário"><input required value={form.salario} onChange={(e) => upd("salario", e.target.value)} placeholder="R$ 2.500 + benefícios" className="input" /></Field>
-          <Field label="Horário"><input required value={form.horario} onChange={(e) => upd("horario", e.target.value)} placeholder="Seg–Sex, 7h às 17h" className="input" /></Field>
+          <Field label="Salário"><input required value={form.salario} onChange={(e) => upd("salario", e.target.value)} placeholder="R$ 2.500 + benefícios" className="input-base" /></Field>
+          <Field label="Horário"><input required value={form.horario} onChange={(e) => upd("horario", e.target.value)} placeholder="Seg–Sex, 7h às 17h" className="input-base" /></Field>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Profissão">
-            <select value={form.profissao} onChange={(e) => upd("profissao", e.target.value)} className="input">
+            <select value={form.profissao} onChange={(e) => upd("profissao", e.target.value)} className="input-base">
               {PROFISSOES.map((p) => <option key={p.id}>{p.nome}</option>)}
             </select>
           </Field>
           <Field label="Bairro">
-            <select value={form.bairro} onChange={(e) => upd("bairro", e.target.value)} className="input">
+            <select value={form.bairro} onChange={(e) => upd("bairro", e.target.value)} className="input-base">
               {BAIRROS.map((b) => <option key={b}>{b}</option>)}
             </select>
+          </Field>
+          <Field label="Cidade">
+            <input value={form.cidade} onChange={(e) => upd("cidade", e.target.value)} className="input-base" />
           </Field>
         </div>
 
@@ -95,17 +166,18 @@ function NovaVaga() {
         <label className="flex cursor-pointer items-start gap-3 rounded-xl border-2 border-warning/40 bg-warning/5 p-4">
           <input type="checkbox" checked={form.urgente} onChange={(e) => upd("urgente", e.target.checked)} className="mt-1 h-5 w-5 accent-warning" />
           <div>
-            <p className="font-bold">⚡ Vaga URGENTE +R$ 29</p>
-            <p className="text-xs text-muted-foreground">Destaque vermelho no topo da lista, notificação push pra 500+ candidatos da região.</p>
+            <p className="font-bold">⚡ Marcar como URGENTE</p>
+            <p className="text-xs text-muted-foreground">Destaque no topo da listagem e prioridade na notificação.</p>
           </div>
         </label>
 
-        <button type="submit" className="btn-touch shadow-pop flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground">
-          <Zap className="h-5 w-5" /> Publicar vaga
+        <button type="submit" disabled={salvando} className="btn-touch shadow-pop flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground disabled:opacity-60">
+          {salvando ? <Loader2 className="h-5 w-5 animate-spin" /> : <Zap className="h-5 w-5" />}
+          {salvando ? "Publicando…" : "Publicar vaga"}
         </button>
       </form>
 
-      <style>{`.input { @apply h-11 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none focus:border-primary; }`}</style>
+      <style>{`.input-base { height: 2.75rem; width: 100%; border-radius: 0.75rem; border: 1px solid hsl(var(--border)); background: hsl(var(--background)); padding: 0 0.75rem; font-size: 0.875rem; outline: none; } .input-base:focus { border-color: hsl(var(--primary)); }`}</style>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
-import { Building2, Users, PlusSquare, BarChart3, Bell } from "lucide-react";
+import { Building2, Users, PlusSquare, BarChart3, Briefcase } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/empresa")({
   head: () => ({
@@ -30,6 +32,7 @@ function EmpresaLayout() {
         <nav className="flex-1 space-y-1 px-3">
           <NavItem to="/empresa" icon={<Users className="h-4 w-4" />} label="Candidatos" exact />
           <NavItem to="/empresa/nova-vaga" icon={<PlusSquare className="h-4 w-4" />} label="Nova vaga" />
+          <NavItem to="/empresa/minhas-vagas" icon={<Briefcase className="h-4 w-4" />} label="Minhas vagas" />
           <NavItem to="/empresa" icon={<BarChart3 className="h-4 w-4" />} label="Métricas" disabled />
         </nav>
         <div className="m-3 rounded-2xl bg-accent/15 p-4 text-xs">
@@ -40,11 +43,8 @@ function EmpresaLayout() {
 
       <div className="lg:pl-64">
         <header className="flex items-center justify-between border-b border-border bg-background px-4 py-3 lg:px-8">
-          <p className="text-sm text-muted-foreground">Olá, <strong className="text-foreground">Construtora Vega</strong></p>
-          <button className="relative rounded-full bg-secondary p-2">
-            <Bell className="h-4 w-4" />
-            <span className="absolute -right-0.5 -top-0.5 grid h-4 w-4 place-items-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">3</span>
-          </button>
+          <EmpresaSaudacao />
+          <NotificationBell />
         </header>
         <main className="p-4 lg:p-8">
           {isRoot ? <CandidatosList /> : <Outlet />}
@@ -69,6 +69,12 @@ function NavItem({ to, icon, label, exact, disabled }: { to: string; icon: React
       {icon} {label}
     </Link>
   );
+}
+
+function EmpresaSaudacao() {
+  const { user } = useAuth();
+  const nome = user?.user_metadata?.company_name || user?.user_metadata?.full_name || user?.email || "sua conta";
+  return <p className="text-sm text-muted-foreground">Olá, <strong className="text-foreground">{nome}</strong></p>;
 }
 
 // inline import to avoid circular file

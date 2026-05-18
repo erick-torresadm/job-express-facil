@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Briefcase, Menu, X, Building2, LogOut, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { NotificationBell } from "@/components/NotificationBell";
 
 const navLinks = [
   { to: "/", label: "Início" },
@@ -50,9 +51,10 @@ export function SiteHeader() {
           ))}
           {user ? (
             <>
+              <NotificationBell />
               <Link
                 to={role === "empresa" ? "/empresa" : "/cadastro"}
-                className="ml-2 inline-flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-semibold"
+                className="ml-1 inline-flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-semibold"
               >
                 <UserIcon className="h-4 w-4" /> Minha conta
               </Link>
@@ -75,6 +77,7 @@ export function SiteHeader() {
 
         {/* Mobile actions */}
         <div className="flex items-center gap-2 md:hidden">
+          {user && <NotificationBell />}
           {!user && (
             <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">
               Entrar

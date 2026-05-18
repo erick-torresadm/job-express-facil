@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin, Clock, DollarSign, Flame, ArrowLeft } from "lucide-react";
-import { VAGAS, PROFISSOES, CIDADES } from "@/lib/mock-data";
+import { PROFISSOES, CIDADES } from "@/lib/mock-data";
+import { listarVagasPublicas, type VagaPublica } from "@/lib/vagas.functions";
 
 // SEO-first dynamic page: any slug like "pedreiro-em-osasco" renders a populated page.
 // Inspired by faceted search SEO: page exists for crawlers, content is generated on demand.
@@ -20,19 +21,17 @@ function capitalize(s: string) {
 }
 
 export const Route = createFileRoute("/vagas/$slug")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const { profissao, cidade, profSlug } = parseSlug(params.slug);
-    const vagas = VAGAS.filter((v) => v.profissaoSlug === profSlug || v.cidade.toLowerCase() === cidade.toLowerCase());
-    // Fallback: if no real matches, show all so page never looks empty for crawlers
-    const list = vagas.length > 0 ? vagas : VAGAS.slice(0, 4);
-    const count = 47 + (params.slug.length % 200); // simulated count for SEO
-    return { profissao, cidade, vagas: list, count };
+    const { vagas } = await listarVagasPublicas({ data: { profissaoSlug: profSlug, limit: 30 } });
+    const count = vagas.length > 0 ? vagas.length : 0;
+    return { profissao, cidade, vagas, count };
   },
   head: ({ loaderData }) => {
-    const d = loaderData ?? { profissao: "Vagas", cidade: "Brasil", count: 0, vagas: [] as typeof VAGAS };
+    const d = loaderData ?? { profissao: "Vagas", cidade: "Brasil", count: 0, vagas: [] as VagaPublica[] };
     const { profissao, cidade, count } = d;
-    const title = `${count} vagas de ${profissao} em ${cidade} — Vaga Já`;
-    const description = `${count} vagas de ${profissao} abertas em ${cidade} hoje. Cadastre seu currículo grátis em 1 minuto por áudio e candidate-se direto pelo celular.`;
+    const title = count > 0 ? `${count} vagas de ${profissao} em ${cidade} — Vaga Já` : `Vagas de ${profissao} em ${cidade} — Vaga Já`;
+    const description = count > 0 ? `${count} vagas de ${profissao} abertas em ${cidade} hoje. Cadastre seu currículo grátis em 1 minuto por áudio e candidate-se direto pelo celular.` : `Vagas de ${profissao} abertas em ${cidade}. Cadastre seu currículo grátis em 1 minuto por áudio.`;
     return {
       meta: [
         { title },
@@ -51,8 +50,8 @@ export const Route = createFileRoute("/vagas/$slug")({
             "@type": "JobPosting",
             position: i + 1,
             title: v.titulo,
-            description: `${v.titulo} na empresa ${v.empresa}. Horário: ${v.horario}. Localização: ${v.bairro}, ${v.cidade}.`,
-            hiringOrganization: { "@type": "Organization", name: v.empresa },
+            description: `${v.titulo} na empresa ${v.empresa_nome}. Horário: ${v.horario}. Localização: ${v.bairro}, ${v.cidade}.`,
+            hiringOrganization: { "@type": "Organization", name: v.empresa_nome },
             jobLocation: { "@type": "Place", address: { "@type": "PostalAddress", addressLocality: v.cidade, addressRegion: "SP", addressCountry: "BR" } },
             baseSalary: v.salario,
             datePosted: new Date().toISOString().split("T")[0],
@@ -67,7 +66,7 @@ export const Route = createFileRoute("/vagas/$slug")({
 
 function VagasPage() {
   const data = Route.useLoaderData();
-  const { profissao, cidade, vagas, count } = data ?? { profissao: "Vagas", cidade: "Brasil", vagas: [] as typeof VAGAS, count: 0 };
+  const { profissao, cidade, vagas, count } = data ?? { profissao: "Vagas", cidade: "Brasil", vagas: [] as VagaPublica[], count: 0 };
 
   return (
     <div className="min-h-screen bg-background">
@@ -82,39 +81,42 @@ function VagasPage() {
 
       <main className="mx-auto max-w-2xl px-4 py-6">
         <h1 className="text-3xl font-extrabold leading-tight">
-          {count} vagas de <span className="text-accent">{profissao}</span> em {cidade}
+          {count > 0 ? <>{count} vagas de <span className="text-accent">{profissao}</span> em {cidade}</> : <>Vagas de <span className="text-accent">{profissao}</span> em {cidade}</>}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Atualizado hoje. Candidate-se grátis em 1 toque cadastrando seu currículo por áudio.
+          {count > 0 ? "Atualizado agora. Candidate-se grátis em 1 toque." : "Ainda sem vagas abertas nesta busca. Cadastre seu currículo e seja avisado assim que uma empresa publicar."}
         </p>
 
-        <Link to="/"
+        <Link to="/cadastro"
           className="btn-touch shadow-pop mt-5 flex w-full items-center justify-center bg-accent text-accent-foreground">
           🎤 Cadastrar meu currículo em 1 minuto
         </Link>
 
-        <h2 className="mt-8 mb-3 text-lg font-bold">Vagas em destaque</h2>
-        <ul className="space-y-3">
-          {vagas.map((v: (typeof VAGAS)[number]) => (
-            <li key={v.id} className="rounded-2xl border-2 border-border bg-card p-4 shadow-soft">
-              <div className="mb-1 flex items-start justify-between gap-2">
-                <h3 className="font-extrabold leading-tight">{v.titulo}</h3>
-                {v.urgente && (
-                  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-destructive px-2 py-1 text-[10px] font-extrabold uppercase text-destructive-foreground">
-                    <Flame className="h-3 w-3" /> Urgente
-                  </span>
-                )}
-              </div>
-              <p className="text-sm text-muted-foreground">{v.empresa}</p>
-              <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm sm:grid-cols-3">
-                <span className="inline-flex items-center gap-1.5"><DollarSign className="h-4 w-4 text-accent" /> {v.salario}</span>
-                <span className="inline-flex items-center gap-1.5"><Clock className="h-4 w-4 text-primary" /> {v.horario}</span>
-                <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4 text-primary" /> {v.bairro}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
-
+        {vagas.length > 0 && (
+          <>
+            <h2 className="mt-8 mb-3 text-lg font-bold">Vagas em destaque</h2>
+            <ul className="space-y-3">
+              {vagas.map((v: VagaPublica) => (
+                <li key={v.id} className="rounded-2xl border-2 border-border bg-card p-4 shadow-soft">
+                  <div className="mb-1 flex items-start justify-between gap-2">
+                    <h3 className="font-extrabold leading-tight">{v.titulo}</h3>
+                    {v.urgente && (
+                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-destructive px-2 py-1 text-[10px] font-extrabold uppercase text-destructive-foreground">
+                        <Flame className="h-3 w-3" /> Urgente
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground">{v.empresa_nome}</p>
+                  <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm sm:grid-cols-3">
+                    <span className="inline-flex items-center gap-1.5"><DollarSign className="h-4 w-4 text-accent" /> {v.salario}</span>
+                    <span className="inline-flex items-center gap-1.5"><Clock className="h-4 w-4 text-primary" /> {v.horario}</span>
+                    <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4 text-primary" /> {v.bairro}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
         <section className="mt-10 rounded-3xl bg-secondary p-6">
           <h2 className="text-lg font-extrabold">Como funciona Vaga Já em {cidade}?</h2>
           <p className="mt-2 text-sm text-muted-foreground">
