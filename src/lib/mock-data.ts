@@ -155,7 +155,7 @@ export const CANDIDATOS: Candidato[] = [
     id: "c3", nome: "Carlos Eduardo Mendes", idade: 29, telefone: "(11) 97654-3210",
     bairro: "Vila Mariana", cidade: "São Paulo", profissoes: ["Motorista", "Entregador"],
     resumo: "CNH B e D, 5 anos como motorista de aplicativo e 2 como entregador de farmácia.",
-    experiencias: ["Drogasil — Motoboy (2022–2024)", "Uber/99 — Motorista (2018–2022)"],
+    experiencias: ["Farmácia de bairro — Motoboy (2022–2024)", "Apps de mobilidade — Motorista (2018–2022)"],
     status: "pendente", cadastradoEm: "Ontem, 18:40",
   },
   {
@@ -176,7 +176,7 @@ export const CANDIDATOS: Candidato[] = [
     id: "c6", nome: "Patrícia Oliveira", idade: 33, telefone: "(11) 95555-4444",
     bairro: "Pinheiros", cidade: "São Paulo", profissoes: ["Caixa", "Vendedora"],
     resumo: "7 anos no varejo, passou por supermercado e farmácia. Conhece sistema de PDV.",
-    experiencias: ["Pague Menos — Caixa (2020–2024)", "Carrefour — Operadora (2017–2020)"],
+    experiencias: ["Rede de farmácias — Caixa (2020–2024)", "Supermercado regional — Operadora (2017–2020)"],
     status: "recusado", cadastradoEm: "3 dias atrás",
   },
 ];

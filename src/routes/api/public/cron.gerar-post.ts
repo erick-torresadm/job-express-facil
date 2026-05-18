@@ -9,7 +9,7 @@ const MODEL = "google/gemini-2.5-flash";
 const TOPICOS = [
   { titulo: "Como conseguir emprego de pedreiro em {cidade}", tags: ["pedreiro", "construção"] },
   { titulo: "Vagas de motorista de aplicativo em {cidade}: o que você precisa saber", tags: ["motorista", "aplicativo"] },
-  { titulo: "Como ser entregador de iFood, Rappi e 99 em {cidade}", tags: ["entregador", "delivery"] },
+  { titulo: "Como ser entregador de aplicativo em {cidade}: guia completo", tags: ["entregador", "delivery"] },
   { titulo: "Vagas de porteiro em {cidade}: salário, horários e como se candidatar", tags: ["porteiro", "segurança"] },
   { titulo: "Trabalho de auxiliar de cozinha em {cidade}: por onde começar", tags: ["cozinha", "restaurante"] },
   { titulo: "Como arrumar trabalho de babá em {cidade} com carteira assinada", tags: ["babá", "cuidados"] },
