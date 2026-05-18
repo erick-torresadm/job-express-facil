@@ -70,7 +70,7 @@ function fmtPhone(w: string | null) {
 }
 
 function CurriculoPage() {
-  const cv = Route.useLoaderData();
+  const cv = Route.useLoaderData() as Curriculo;
   const [copied, setCopied] = useState(false);
   const url = typeof window !== "undefined" ? window.location.href : "";
   const shareText = `Veja o currículo de ${cv.nome} (${cv.profissao}) no Vaga Já: ${url}`;
