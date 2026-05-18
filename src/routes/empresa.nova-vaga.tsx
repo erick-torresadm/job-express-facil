@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check, ArrowLeft, Zap } from "lucide-react";
+import { Check, ArrowLeft, Zap, Wand2, Loader2 } from "lucide-react";
 import { BAIRROS, PROFISSOES } from "@/lib/mock-data";
+import { gerarDescricaoVaga } from "@/lib/ai.functions";
 
 export const Route = createFileRoute("/empresa/nova-vaga")({
   head: () => ({
@@ -11,10 +12,24 @@ export const Route = createFileRoute("/empresa/nova-vaga")({
 });
 
 function NovaVaga() {
-  const [form, setForm] = useState({ titulo: "", salario: "", horario: "", bairro: BAIRROS[0], profissao: PROFISSOES[0].nome, urgente: false });
+  const [form, setForm] = useState({ titulo: "", salario: "", horario: "", bairro: BAIRROS[0], profissao: PROFISSOES[0].nome, urgente: false, descricao: "", requisitos: [] as string[] });
   const [saved, setSaved] = useState(false);
+  const [gerando, setGerando] = useState(false);
+  const [erroIA, setErroIA] = useState<string | null>(null);
 
   const upd = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }));
+
+  const sugerir = async () => {
+    setErroIA(null); setGerando(true);
+    try {
+      const r = await gerarDescricaoVaga({ data: { titulo: form.titulo || form.profissao, profissao: form.profissao, bairro: form.bairro, salario: form.salario || "A combinar", horario: form.horario || "Comercial" } });
+      setForm((f) => ({ ...f, descricao: r.descricao, requisitos: r.requisitos }));
+    } catch (e) {
+      setErroIA(e instanceof Error ? e.message : "Erro ao gerar texto");
+    } finally {
+      setGerando(false);
+    }
+  };
 
   if (saved) {
     return (
@@ -56,6 +71,25 @@ function NovaVaga() {
               {BAIRROS.map((b) => <option key={b}>{b}</option>)}
             </select>
           </Field>
+        </div>
+
+        <div className="rounded-xl border-2 border-dashed border-primary/40 bg-primary/5 p-4">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="text-sm font-bold">Texto da vaga</p>
+            <button type="button" onClick={sugerir} disabled={gerando}
+              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground disabled:opacity-60">
+              {gerando ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
+              {gerando ? "Gerando…" : "Sugerir texto"}
+            </button>
+          </div>
+          <textarea value={form.descricao} onChange={(e) => upd("descricao", e.target.value)} rows={4} placeholder="Descreva a vaga ou clique em Sugerir texto"
+            className="w-full rounded-lg border border-border bg-background p-3 text-sm outline-none focus:border-primary" />
+          {form.requisitos.length > 0 && (
+            <ul className="mt-3 space-y-1 text-sm">
+              {form.requisitos.map((r, i) => <li key={i}>• {r}</li>)}
+            </ul>
+          )}
+          {erroIA && <p className="mt-2 text-xs text-destructive">{erroIA}</p>}
         </div>
 
         <label className="flex cursor-pointer items-start gap-3 rounded-xl border-2 border-warning/40 bg-warning/5 p-4">
