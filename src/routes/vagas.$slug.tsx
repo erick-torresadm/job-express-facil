@@ -119,7 +119,7 @@ function VagasPage() {
           <h2 className="text-lg font-extrabold">Como funciona Vaga Já em {cidade}?</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             Vaga Já conecta {profissao.toLowerCase()}s de {cidade} com empresas que estão contratando agora.
-            Você grava um áudio de 1 minuto contando suas experiências, nossa IA monta seu currículo e empresas
+            Você grava um áudio de 1 minuto contando suas experiências, montamos seu currículo e empresas
             da região recebem seu perfil. Tudo grátis, direto do celular, sem precisar saber digitar.
           </p>
           <h3 className="mt-5 font-bold">Bairros com mais vagas em {cidade}</h3>

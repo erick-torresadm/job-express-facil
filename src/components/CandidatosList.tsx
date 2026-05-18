@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { CANDIDATOS, PROFISSOES, BAIRROS, type Candidato } from "@/lib/mock-data";
-import { MapPin, Phone, Check, X, Clock, Star, Search, Sparkles, Zap } from "lucide-react";
+import { MapPin, Phone, Check, X, Clock, Star, Search, Filter, Zap } from "lucide-react";
 
 export function CandidatosList() {
   const [bairro, setBairro] = useState<string>("todos");
@@ -27,10 +27,10 @@ export function CandidatosList() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold">Candidatos disponíveis</h1>
-          <p className="text-sm text-muted-foreground">{filtrados.length} perfis processados por IA</p>
+          <p className="text-sm text-muted-foreground">{filtrados.length} perfis disponíveis na sua região</p>
         </div>
-        <button className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-accent-foreground shadow-pop">
-          <Sparkles className="h-4 w-4" /> Match IA (10 melhores)
+        <button className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-soft">
+          <Filter className="h-4 w-4" /> Melhores match
         </button>
       </div>
 
