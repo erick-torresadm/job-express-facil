@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AnimatePresence, motion, useScroll, useTransform, type Variants } from "motion/react";
+import { AnimatePresence, animate, motion, useInView, useMotionValue, useScroll, useTransform, type Variants } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import {
   MapPin, Mic, Video, Zap, ShieldCheck, Clock, Building2, HardHat,
   ArrowRight, Star, Check, CheckCheck, Sparkles, MessageCircle, TrendingUp, Users,
+  Briefcase, Award, Rocket, Target,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -31,7 +32,9 @@ function Landing() {
       <Hero />
       <Marquee />
       <Como />
+      <Stats />
       <Profissoes />
+      <LiveActivity />
       <ParaQuem />
       <Depoimentos />
       <CTA />
@@ -437,6 +440,247 @@ function WhatsappFeed() {
   );
 }
 
+function Counter({ to, suffix = "", duration = 2 }: { to: number; suffix?: string; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const value = useMotionValue(0);
+  const [display, setDisplay] = useState("0");
+
+  useEffect(() => {
+    if (!inView) return;
+    const controls = animate(value, to, {
+      duration,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (v) => {
+        const n = Math.round(v);
+        setDisplay(n.toLocaleString("pt-BR"));
+      },
+    });
+    return () => controls.stop();
+  }, [inView, to, duration, value]);
+
+  return <span ref={ref}>{display}{suffix}</span>;
+}
+
+function Stats() {
+  const stats = [
+    { icon: <Users className="h-5 w-5" />, n: 340000, suffix: "+", l: "Profissionais ativos", s: "atualizado em tempo real" },
+    { icon: <Building2 className="h-5 w-5" />, n: 8200, suffix: "+", l: "Empresas contratando", s: "do varejo ao financeiro" },
+    { icon: <Briefcase className="h-5 w-5" />, n: 12847, suffix: "", l: "Vagas abertas agora", s: "CLT, PJ e estágio" },
+    { icon: <Rocket className="h-5 w-5" />, n: 94, suffix: "%", l: "Match assertivo", s: "IA proprietária treinada com 4M perfis" },
+  ];
+
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-b from-background via-secondary/30 to-background py-20 md:py-28">
+      <motion.div
+        aria-hidden
+        className="absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            "linear-gradient(oklch(0.2 0.05 260) 1px, transparent 1px), linear-gradient(90deg, oklch(0.2 0.05 260) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+        }}
+        animate={{ backgroundPosition: ["0px 0px", "48px 48px"] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      />
+
+      <div className="relative mx-auto max-w-6xl px-4">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-80px" }}
+          variants={fadeUp}
+          className="mx-auto max-w-2xl text-center"
+        >
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Os números</p>
+          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">
+            A maior rede de empregos <span className="text-muted-foreground">da nova economia.</span>
+          </h2>
+        </motion.div>
+
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-80px" }}
+          variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+          className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+        >
+          {stats.map((s) => (
+            <motion.div
+              key={s.l}
+              variants={fadeUp}
+              whileHover={{ y: -6, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+              className="group relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-soft"
+            >
+              <motion.div
+                aria-hidden
+                className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-gradient-to-br from-accent/20 to-primary/10 blur-2xl"
+                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <div className="relative mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-pop">
+                {s.icon}
+              </div>
+              <p className="relative text-4xl font-extrabold tracking-[-0.03em] md:text-5xl">
+                <Counter to={s.n} suffix={s.suffix} />
+              </p>
+              <p className="relative mt-2 text-sm font-bold">{s.l}</p>
+              <p className="relative mt-1 text-xs text-muted-foreground">{s.s}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+type Hire = { id: number; name: string; role: string; company: string; city: string; color: string };
+
+const HIRE_POOL: Omit<Hire, "id">[] = [
+  { name: "Camila R.", role: "Analista de Marketing", company: "Magazine Luiza", city: "São Paulo", color: "oklch(0.7 0.15 30)" },
+  { name: "Lucas M.", role: "Vendedor Sênior", company: "Renner", city: "Porto Alegre", color: "oklch(0.62 0.16 290)" },
+  { name: "Patricia S.", role: "Auxiliar Administrativo", company: "Itaú", city: "Rio de Janeiro", color: "oklch(0.6 0.18 60)" },
+  { name: "Diego A.", role: "Atendente SAC", company: "Bradesco", city: "Belo Horizonte", color: "oklch(0.5 0.2 15)" },
+  { name: "Júlia P.", role: "Estágio em Produto", company: "Nubank", city: "São Paulo", color: "oklch(0.55 0.2 320)" },
+  { name: "André C.", role: "Operador de Caixa", company: "Carrefour", city: "Campinas", color: "oklch(0.55 0.2 250)" },
+  { name: "Marcela O.", role: "Recepcionista", company: "Albert Einstein", city: "São Paulo", color: "oklch(0.65 0.13 200)" },
+  { name: "Bruno L.", role: "Auxiliar de Logística", company: "Ambev", city: "Jaguariúna", color: "oklch(0.5 0.18 30)" },
+  { name: "Letícia F.", role: "Consultora", company: "Natura", city: "Cajamar", color: "oklch(0.6 0.16 150)" },
+  { name: "Felipe T.", role: "Executivo Comercial", company: "Stone", city: "São Paulo", color: "oklch(0.6 0.18 145)" },
+];
+
+function LiveActivity() {
+  const [feed, setFeed] = useState<Hire[]>(() =>
+    HIRE_POOL.slice(0, 4).map((h, i) => ({ id: i + 1, ...h }))
+  );
+  const counter = useRef(5);
+  const idx = useRef(4);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const next = HIRE_POOL[idx.current % HIRE_POOL.length];
+      idx.current += 1;
+      setFeed((prev) => [{ id: counter.current++, ...next }, ...prev].slice(0, 5));
+    }, 2400);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <section className="bg-primary py-20 text-primary-foreground md:py-28">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.1fr]">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={{ show: { transition: { staggerChildren: 0.08 } } }}
+          >
+            <motion.span
+              variants={fadeUp}
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-semibold backdrop-blur-md"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[oklch(0.85_0.18_140)] opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[oklch(0.85_0.18_140)]" />
+              </span>
+              Ao vivo
+            </motion.span>
+            <motion.h2
+              variants={fadeUp}
+              className="mt-5 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl"
+            >
+              Pessoas sendo contratadas <br />
+              <span className="bg-gradient-to-r from-white to-[oklch(0.78_0.14_220)] bg-clip-text text-transparent">
+                neste exato momento.
+              </span>
+            </motion.h2>
+            <motion.p variants={fadeUp} className="mt-5 max-w-md text-base text-white/75">
+              Não é número de relatório. É gente real, fechando contrato agora, com empresas reais.
+              Você pode ser o próximo.
+            </motion.p>
+
+            <motion.div variants={fadeUp} className="mt-8 grid grid-cols-3 gap-3">
+              {[
+                { i: <Target className="h-4 w-4" />, n: "9 dias", l: "tempo médio até contratação" },
+                { i: <Award className="h-4 w-4" />, n: "4.9★", l: "avaliação dos profissionais" },
+                { i: <TrendingUp className="h-4 w-4" />, n: "+217%", l: "crescimento em 2025" },
+              ].map((k) => (
+                <div key={k.l} className="rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur">
+                  <div className="text-[oklch(0.85_0.18_140)]">{k.i}</div>
+                  <p className="mt-2 text-lg font-extrabold leading-none">{k.n}</p>
+                  <p className="mt-1 text-[10px] uppercase tracking-wide text-white/60">{k.l}</p>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="relative rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-pop backdrop-blur-xl"
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="grid h-8 w-8 place-items-center rounded-xl bg-[oklch(0.85_0.18_140)]/20 text-[oklch(0.85_0.18_140)]">
+                  <Sparkles className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold">Contratações de hoje</p>
+                  <p className="text-[10px] text-white/60">atualizando ao vivo</p>
+                </div>
+              </div>
+              <span className="rounded-full bg-[oklch(0.85_0.18_140)]/15 px-2.5 py-1 text-[10px] font-bold text-[oklch(0.85_0.18_140)]">
+                <Counter to={1247} duration={1.8} /> hoje
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <AnimatePresence initial={false} mode="popLayout">
+                {feed.map((h) => (
+                  <motion.div
+                    key={h.id}
+                    layout
+                    initial={{ opacity: 0, x: 30, scale: 0.95 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -30, scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 280, damping: 26 }}
+                    className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] p-3"
+                  >
+                    <div
+                      className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-xs font-bold text-white"
+                      style={{ background: h.color }}
+                    >
+                      {h.name.split(" ").map((n) => n[0]).join("")}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-bold">
+                        {h.name} <span className="font-normal text-white/60">foi contratado(a) como</span>
+                      </p>
+                      <p className="truncate text-xs text-white/80">
+                        {h.role} · <span className="text-[oklch(0.85_0.18_140)]">{h.company}</span>
+                      </p>
+                      <p className="text-[10px] text-white/50">{h.city}</p>
+                    </div>
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.15, type: "spring", stiffness: 400 }}
+                      className="grid h-7 w-7 place-items-center rounded-full bg-[oklch(0.85_0.18_140)]/20 text-[oklch(0.85_0.18_140)]"
+                    >
+                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                    </motion.div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 
 function Marquee() {
