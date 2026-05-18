@@ -1,13 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { Printer, Share2, MessageCircle, Mail, MapPin, Briefcase, Check, ArrowLeft, Copy } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Printer, Share2, MessageCircle, MapPin, Briefcase, Check, ArrowLeft, Copy, Lock } from "lucide-react";
+import { getCurriculoPublico } from "@/lib/curriculo.functions";
 
 type Curriculo = {
   slug: string;
   nome: string;
-  email: string | null;
-  whatsapp: string | null;
   profissao: string;
   bairro: string | null;
   cidade: string | null;
@@ -23,12 +21,7 @@ type Curriculo = {
 
 export const Route = createFileRoute("/cv/$slug")({
   loader: async ({ params }) => {
-    const { data, error } = await supabase
-      .from("curriculos")
-      .select("*")
-      .eq("slug", params.slug)
-      .maybeSingle();
-    if (error) throw new Error(error.message);
+    const data = await getCurriculoPublico({ data: { slug: params.slug } });
     if (!data) throw notFound();
     return data as Curriculo;
   },
