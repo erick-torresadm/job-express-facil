@@ -461,10 +461,10 @@ function Marquee() {
 
 function Como() {
   const steps = [
-    { icon: <HardHat className="h-6 w-6" />, t: "Diga sua profissão", d: "Toque na sua área: pedreiro, doméstica, motorista…" },
-    { icon: <MapPin className="h-6 w-6" />, t: "Onde você mora", d: "GPS ou CEP. Achamos vagas no seu bairro." },
-    { icon: <Mic className="h-6 w-6" />, t: "Conte sobre você", d: "Áudio ou vídeo de até 1 minuto. Sem digitar." },
-    { icon: <Zap className="h-6 w-6" />, t: "Empresa chama você", d: "Aprovação direto no seu WhatsApp." },
+    { icon: <HardHat className="h-6 w-6" />, t: "Conte sua trajetória", d: "Áudio, vídeo ou texto. Em 60 segundos sua história vira um perfil profissional." },
+    { icon: <Sparkles className="h-6 w-6" />, t: "IA monta seu currículo", d: "Estruturamos experiência, skills e palavras-chave que os recrutadores buscam." },
+    { icon: <MapPin className="h-6 w-6" />, t: "Match com vagas reais", d: "Cruzamos seu perfil com milhares de oportunidades CLT, PJ e estágio." },
+    { icon: <Zap className="h-6 w-6" />, t: "Recrutador te chama", d: "Convite de entrevista direto no WhatsApp. Sem espera, sem ansiedade." },
   ];
   return (
     <section className="mx-auto max-w-6xl px-4 py-20 md:py-28">
