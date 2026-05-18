@@ -54,7 +54,7 @@ export function SiteHeader() {
             <>
               <NotificationBell />
               <Link
-                to={role === "empresa" ? "/empresa" : "/cadastro"}
+                to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
                 className="ml-1 inline-flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-semibold"
               >
                 <UserIcon className="h-4 w-4" /> Minha conta
@@ -114,7 +114,7 @@ export function SiteHeader() {
             {user ? (
               <>
                 <Link
-                  to={role === "empresa" ? "/empresa" : "/cadastro"}
+                  to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
                   onClick={() => setOpen(false)}
                   className="flex items-center gap-2 rounded-xl px-3 py-3 text-base font-semibold text-foreground"
                 >

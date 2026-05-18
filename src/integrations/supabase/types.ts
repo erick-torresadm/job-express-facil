@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      alertas: {
+        Row: {
+          ativo: boolean
+          bairro: string | null
+          cidade: string | null
+          created_at: string
+          id: string
+          profissao: string | null
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          bairro?: string | null
+          cidade?: string | null
+          created_at?: string
+          id?: string
+          profissao?: string | null
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          bairro?: string | null
+          cidade?: string | null
+          created_at?: string
+          id?: string
+          profissao?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      candidaturas: {
+        Row: {
+          candidato_id: string
+          created_at: string
+          curriculo_id: string
+          empresa_id: string
+          id: string
+          respostas: Json
+          status: Database["public"]["Enums"]["candidatura_status"]
+          updated_at: string
+          vaga_id: string
+        }
+        Insert: {
+          candidato_id: string
+          created_at?: string
+          curriculo_id: string
+          empresa_id: string
+          id?: string
+          respostas?: Json
+          status?: Database["public"]["Enums"]["candidatura_status"]
+          updated_at?: string
+          vaga_id: string
+        }
+        Update: {
+          candidato_id?: string
+          created_at?: string
+          curriculo_id?: string
+          empresa_id?: string
+          id?: string
+          respostas?: Json
+          status?: Database["public"]["Enums"]["candidatura_status"]
+          updated_at?: string
+          vaga_id?: string
+        }
+        Relationships: []
+      }
       curriculos: {
         Row: {
           bairro: string | null
@@ -101,6 +167,27 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
           whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      favoritos: {
+        Row: {
+          created_at: string
+          id: string
+          user_id: string
+          vaga_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user_id: string
+          vaga_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user_id?: string
+          vaga_id?: string
         }
         Relationships: []
       }
@@ -192,6 +279,7 @@ export type Database = {
           slug_publico: string | null
           sobre: string | null
           updated_at: string
+          verificada: boolean
           whatsapp: string | null
         }
         Insert: {
@@ -206,6 +294,7 @@ export type Database = {
           slug_publico?: string | null
           sobre?: string | null
           updated_at?: string
+          verificada?: boolean
           whatsapp?: string | null
         }
         Update: {
@@ -220,6 +309,7 @@ export type Database = {
           slug_publico?: string | null
           sobre?: string | null
           updated_at?: string
+          verificada?: boolean
           whatsapp?: string | null
         }
         Relationships: []
@@ -365,6 +455,7 @@ export type Database = {
     }
     Enums: {
       app_role: "candidato" | "empresa"
+      candidatura_status: "enviado" | "visto" | "em_analise" | "finalizado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -493,6 +584,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["candidato", "empresa"],
+      candidatura_status: ["enviado", "visto", "em_analise", "finalizado"],
     },
   },
 } as const

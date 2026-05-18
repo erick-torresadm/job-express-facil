@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { getPaginaPublica, enviarCurriculoEmpresa } from "@/lib/empresa.functions";
 import { Building2, MapPin, Send } from "lucide-react";
 import { toast } from "sonner";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 type CampoExtra = { label: string; tipo: "texto" | "numero" | "sim_nao"; obrigatorio: boolean };
 type Pagina = Awaited<ReturnType<typeof getPaginaPublica>>;
@@ -81,7 +82,10 @@ function PaginaPublicaEmpresa() {
             </div>
           )}
           <div>
-            <h1 className="text-2xl font-extrabold leading-tight">{empresa.company_name}</h1>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-2xl font-extrabold leading-tight">{empresa.company_name}</h1>
+              {empresa.verificada && <VerifiedBadge size="md" />}
+            </div>
             <p className="text-sm opacity-80">Trabalhe com a gente • Envie seu currículo grátis</p>
           </div>
         </div>

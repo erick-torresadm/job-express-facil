@@ -5,6 +5,8 @@ import { PROFISSOES, CIDADES } from "@/lib/mock-data";
 import { listarVagasPublicas, type VagaPublica } from "@/lib/vagas.functions";
 import { calcularRotaCusto, calcularMatchScore } from "@/lib/intel.functions";
 import { DistanciaCustoCard, MatchScoreBadge, FraudBadge } from "@/components/VagaCards";
+import { VagaActions } from "@/components/VagaActions";
+import { CriarAlertaCard } from "@/components/CriarAlertaCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -97,6 +99,8 @@ function VagasPage() {
           🎤 Cadastrar meu currículo em 1 minuto
         </Link>
 
+        <CriarAlertaCard profissao={profissao} cidade={cidade} />
+
         {vagas.length > 0 && (
           <>
             <h2 className="mt-8 mb-3 text-lg font-bold">Vagas em destaque</h2>
@@ -124,6 +128,7 @@ function VagasPage() {
                     <p className="mt-2 text-xs text-muted-foreground">Faixa de mercado: {v.faixa_salarial_sugerida}</p>
                   )}
                   <VagaDistancia vaga={v} />
+                  <VagaActions vaga={v} />
                 </li>
               ))}
             </ul>
