@@ -71,5 +71,11 @@ function NavItem({ to, icon, label, exact, disabled }: { to: string; icon: React
   );
 }
 
+function EmpresaSaudacao() {
+  const { user } = useAuth();
+  const nome = user?.user_metadata?.company_name || user?.user_metadata?.full_name || user?.email || "sua conta";
+  return <p className="text-sm text-muted-foreground">Olá, <strong className="text-foreground">{nome}</strong></p>;
+}
+
 // inline import to avoid circular file
 import { CandidatosList } from "@/components/CandidatosList";
