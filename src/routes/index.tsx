@@ -577,16 +577,16 @@ function Stats() {
 type Hire = { id: number; name: string; role: string; company: string; city: string; color: string };
 
 const HIRE_POOL: Omit<Hire, "id">[] = [
-  { name: "Camila R.", role: "Analista de Marketing", company: "Magazine Luiza", city: "São Paulo", color: "oklch(0.7 0.15 30)" },
-  { name: "Lucas M.", role: "Vendedor Sênior", company: "Renner", city: "Porto Alegre", color: "oklch(0.62 0.16 290)" },
-  { name: "Patricia S.", role: "Auxiliar Administrativo", company: "Itaú", city: "Rio de Janeiro", color: "oklch(0.6 0.18 60)" },
-  { name: "Diego A.", role: "Atendente SAC", company: "Bradesco", city: "Belo Horizonte", color: "oklch(0.5 0.2 15)" },
-  { name: "Júlia P.", role: "Estágio em Produto", company: "Nubank", city: "São Paulo", color: "oklch(0.55 0.2 320)" },
-  { name: "André C.", role: "Operador de Caixa", company: "Carrefour", city: "Campinas", color: "oklch(0.55 0.2 250)" },
-  { name: "Marcela O.", role: "Recepcionista", company: "Albert Einstein", city: "São Paulo", color: "oklch(0.65 0.13 200)" },
-  { name: "Bruno L.", role: "Auxiliar de Logística", company: "Ambev", city: "Jaguariúna", color: "oklch(0.5 0.18 30)" },
-  { name: "Letícia F.", role: "Consultora", company: "Natura", city: "Cajamar", color: "oklch(0.6 0.16 150)" },
-  { name: "Felipe T.", role: "Executivo Comercial", company: "Stone", city: "São Paulo", color: "oklch(0.6 0.18 145)" },
+  { name: "Camila R.", role: "Analista de Marketing", company: "Rede Varejo Plus", city: "São Paulo", color: "oklch(0.7 0.15 30)" },
+  { name: "Lucas M.", role: "Vendedor Sênior", company: "Moda Urbana SA", city: "Porto Alegre", color: "oklch(0.62 0.16 290)" },
+  { name: "Patricia S.", role: "Auxiliar Administrativo", company: "Banco Cooperativo BR", city: "Rio de Janeiro", color: "oklch(0.6 0.18 60)" },
+  { name: "Diego A.", role: "Atendente SAC", company: "Seguros Confiança", city: "Belo Horizonte", color: "oklch(0.5 0.2 15)" },
+  { name: "Júlia P.", role: "Estágio em Produto", company: "Fintech Crescer", city: "São Paulo", color: "oklch(0.55 0.2 320)" },
+  { name: "André C.", role: "Operador de Caixa", company: "SuperMega Atacado", city: "Campinas", color: "oklch(0.55 0.2 250)" },
+  { name: "Marcela O.", role: "Recepcionista", company: "Hospital Vida Nova", city: "São Paulo", color: "oklch(0.65 0.13 200)" },
+  { name: "Bruno L.", role: "Auxiliar de Logística", company: "Indústria Boa Mesa", city: "Interior SP", color: "oklch(0.5 0.18 30)" },
+  { name: "Letícia F.", role: "Consultora", company: "Cosmética Verde", city: "Cajamar", color: "oklch(0.6 0.16 150)" },
+  { name: "Felipe T.", role: "Executivo Comercial", company: "PayTech Brasil", city: "São Paulo", color: "oklch(0.6 0.18 145)" },
 ];
 
 function LiveActivity() {
