@@ -12,10 +12,10 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/cadastro")({
   head: () => ({
     meta: [
-      { title: "Cadastro — VagasAgora" },
-      { name: "description", content: "Cadastre seu currículo em 1 minuto por áudio, vídeo ou foto e receba vagas perto de você. Grátis." },
-      { property: "og:title", content: "Cadastro — VagasAgora" },
-      { property: "og:description", content: "Gravou áudio ou vídeo, achou vaga." },
+      { title: "Cadastro grátis — VagasAgora" },
+      { name: "description", content: "Cadastre seu currículo em 1 minuto por áudio, vídeo ou foto e receba vagas perto de você. 100% grátis — candidato nunca paga nada pra se candidatar." },
+      { property: "og:title", content: "Cadastro grátis — VagasAgora" },
+      { property: "og:description", content: "Gravou áudio ou vídeo, achou vaga. Sempre grátis pra candidatos." },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "/cadastro" }],
@@ -57,6 +57,9 @@ function CandidatoFlow() {
         </div>
       </header>
       <main className="mx-auto max-w-md px-4 pb-24 pt-4 lg:max-w-5xl">
+        <div className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-accent/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-accent-foreground">
+          ✓ 100% grátis · candidato nunca paga nada
+        </div>
         <Progress step={step} />
         {step === "profissao" && (
           <StepProfissao onPick={(p) => { setProfissao(p); setStep("local"); }} />
