@@ -41,6 +41,7 @@ function CandidatoFlow() {
   const [profissao, setProfissao] = useState<string | null>(null);
   const [local, setLocal] = useState<{ bairro: string; cidade: string } | null>(null);
   const [midia, setMidia] = useState<Midia>(null);
+  const [texto, setTexto] = useState<string>("");
   const [contato, setContato] = useState<Contato | null>(null);
 
   return (
@@ -55,15 +56,16 @@ function CandidatoFlow() {
         )}
         {step === "curriculo" && (
           <StepCurriculo
+            textoInicial={texto}
             onBack={() => setStep("local")}
-            onDone={(m) => { setMidia(m); setStep("contato"); }}
+            onDone={(m, t) => { setMidia(m); setTexto(t); setStep("contato"); }}
           />
         )}
         {step === "contato" && (
           <StepContato onBack={() => setStep("curriculo")} onDone={(c) => { setContato(c); setStep("perfil"); }} />
         )}
         {step === "perfil" && profissao && local && contato && (
-          <StepPerfil profissao={profissao} local={local} midia={midia} contato={contato} />
+          <StepPerfil profissao={profissao} local={local} midia={midia} texto={texto} contato={contato} />
         )}
       </main>
     </div>
@@ -99,22 +101,51 @@ function Narrator({ text }: { text: string }) {
 }
 
 function StepProfissao({ onPick }: { onPick: (id: string) => void }) {
-  const instr = "Toque na profissão que você trabalha.";
+  const [custom, setCustom] = useState("");
+  const instr = "Digite sua profissão ou escolha uma das sugestões abaixo.";
+  const filtradas = custom.trim().length > 0
+    ? PROFISSOES.filter((p) => p.nome.toLowerCase().includes(custom.toLowerCase().trim()))
+    : PROFISSOES;
   return (
     <section>
       <div className="mb-1 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold">O que você faz?</h1>
         <Narrator text={instr} />
       </div>
-      <p className="mb-5 text-sm text-muted-foreground">Toque na sua área de trabalho.</p>
+      <p className="mb-5 text-sm text-muted-foreground">Digite a sua profissão ou use uma sugestão.</p>
+
+      <div className="mb-4">
+        <input
+          value={custom}
+          onChange={(e) => setCustom(e.target.value)}
+          maxLength={80}
+          placeholder="Ex: confeiteira, soldador, recepcionista…"
+          className="h-14 w-full rounded-2xl border-2 border-border bg-card px-4 text-lg outline-none focus:border-primary"
+        />
+        {custom.trim().length >= 2 && (
+          <button
+            onClick={() => onPick(custom.trim())}
+            className="btn-touch shadow-pop mt-3 flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground"
+          >
+            <Check className="h-5 w-5" /> Usar "{custom.trim()}"
+          </button>
+        )}
+      </div>
+
+      <p className="mb-2 text-xs font-bold uppercase text-muted-foreground">Sugestões populares</p>
       <div className="grid grid-cols-2 gap-3">
-        {PROFISSOES.map((p) => (
+        {filtradas.map((p) => (
           <button key={p.id} onClick={() => onPick(p.nome)}
             className="btn-touch flex flex-col items-center justify-center gap-2 border-2 border-border bg-card p-4 text-card-foreground hover:border-accent hover:bg-accent/5">
             <span className="text-4xl">{p.emoji}</span>
             <span className="text-center text-base leading-tight">{p.nome}</span>
           </button>
         ))}
+        {filtradas.length === 0 && (
+          <p className="col-span-2 text-center text-sm text-muted-foreground">
+            Nenhuma sugestão — use o botão acima com a sua profissão.
+          </p>
+        )}
       </div>
     </section>
   );
@@ -230,11 +261,29 @@ function StepLocal({ onBack, onDone }: { onBack: () => void; onDone: (l: { bairr
   );
 }
 
-function StepCurriculo({ onBack, onDone }: { onBack: () => void; onDone: (m: Midia) => void }) {
+function StepCurriculo({ textoInicial, onBack, onDone }: {
+  textoInicial: string;
+  onBack: () => void;
+  onDone: (m: Midia, texto: string) => void;
+}) {
   const [modo, setModo] = useState<"escolher" | "audio" | "video">("escolher");
+  const [texto, setTexto] = useState(textoInicial);
+  const [midiaTmp, setMidiaTmp] = useState<Midia>(null);
 
-  if (modo === "audio") return <GravadorAudio onBack={() => setModo("escolher")} onDone={(d, blob, mt) => onDone({ tipo: "audio", duracao: d, blob, mimeType: mt })} />;
-  if (modo === "video") return <GravadorVideo onBack={() => setModo("escolher")} onDone={(d, blob, mt) => onDone({ tipo: "video", duracao: d, blob, mimeType: mt })} />;
+  if (modo === "audio") return (
+    <GravadorAudio
+      onBack={() => setModo("escolher")}
+      onDone={(d, blob, mt) => { setMidiaTmp({ tipo: "audio", duracao: d, blob, mimeType: mt }); setModo("escolher"); }}
+    />
+  );
+  if (modo === "video") return (
+    <GravadorVideo
+      onBack={() => setModo("escolher")}
+      onDone={(d, blob, mt) => { setMidiaTmp({ tipo: "video", duracao: d, blob, mimeType: mt }); setModo("escolher"); }}
+    />
+  );
+
+  const podeSeguir = !!midiaTmp || texto.trim().length >= 10;
 
   return (
     <section>
@@ -243,23 +292,50 @@ function StepCurriculo({ onBack, onDone }: { onBack: () => void; onDone: (m: Mid
       </button>
       <div className="mb-1 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold">Conte sobre você</h1>
-        <Narrator text="Você pode gravar um áudio, um vídeo de até 1 minuto, ou pular esta etapa." />
+        <Narrator text="Você pode gravar um áudio, um vídeo de até 1 minuto, escrever um texto sobre você, ou tudo junto. A IA lê tudo." />
       </div>
-      <p className="mb-6 text-sm text-muted-foreground">Escolha como quer contar suas experiências. Tudo é opcional.</p>
+      <p className="mb-5 text-sm text-muted-foreground">
+        Quanto mais detalhes, melhor o seu currículo. Pode gravar, escrever, ou os dois — a IA usa tudo junto.
+      </p>
 
       <div className="space-y-3">
         <button onClick={() => setModo("audio")}
           className="btn-touch shadow-pop flex w-full items-center justify-center gap-3 bg-accent text-accent-foreground">
-          <Mic className="h-6 w-6" /> Gravar áudio
+          <Mic className="h-6 w-6" />
+          {midiaTmp?.tipo === "audio" ? `Áudio gravado (${midiaTmp.duracao}s) — regravar` : "Gravar áudio"}
         </button>
         <button onClick={() => setModo("video")}
           className="btn-touch shadow-pop flex w-full items-center justify-center gap-3 bg-primary text-primary-foreground">
-          <Video className="h-6 w-6" /> Gravar vídeo (até 1 min)
+          <Video className="h-6 w-6" />
+          {midiaTmp?.tipo === "video" ? `Vídeo gravado (${midiaTmp.duracao}s) — regravar` : "Gravar vídeo (até 1 min)"}
         </button>
-        <button className="btn-touch flex w-full items-center justify-center gap-3 border-2 border-border bg-card">
-          <Camera className="h-6 w-6" /> Tirar foto do meu currículo
+      </div>
+
+      <div className="mt-6">
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-bold uppercase text-muted-foreground">
+            Escreva sobre você (opcional, mas ajuda muito)
+          </span>
+          <textarea
+            value={texto}
+            onChange={(e) => setTexto(e.target.value.slice(0, 4000))}
+            rows={6}
+            placeholder="Ex: Trabalhei 5 anos como pedreiro na construtora X em São Paulo. Sei fazer alvenaria, reboco, assentar piso e azulejo. Tenho carteira de motorista B…"
+            className="w-full rounded-2xl border-2 border-border bg-card p-4 text-base outline-none focus:border-primary"
+          />
+          <span className="mt-1 block text-xs text-muted-foreground">{texto.length}/4000</span>
+        </label>
+      </div>
+
+      <div className="mt-6 space-y-3">
+        <button
+          onClick={() => onDone(midiaTmp, texto.trim())}
+          disabled={!podeSeguir}
+          className="btn-touch shadow-pop flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground disabled:opacity-50"
+        >
+          <Send className="h-5 w-5" /> Continuar
         </button>
-        <button onClick={() => onDone(null)}
+        <button onClick={() => onDone(null, "")}
           className="btn-touch flex w-full items-center justify-center gap-2 text-muted-foreground">
           <SkipForward className="h-5 w-5" /> Pular esta etapa
         </button>
@@ -590,14 +666,18 @@ function Campo({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function StepPerfil({ profissao, local, midia, contato }: {
+function StepPerfil({ profissao, local, midia, texto, contato }: {
   profissao: string;
   local: { bairro: string; cidade: string };
   midia: Midia;
+  texto: string;
   contato: Contato;
 }) {
   const [perfil, setPerfil] = useState<PerfilGerado | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<PerfilGerado | null>(null);
+  const [salvando, setSalvando] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -616,22 +696,42 @@ function StepPerfil({ profissao, local, midia, contato }: {
             temAudio: midia?.tipo === "audio",
             temVideo: midia?.tipo === "video",
             duracaoSegundos: midia?.duracao ?? 0,
+            texto: texto && texto.length > 0 ? texto : undefined,
             midiaBase64,
             midiaMimeType: midia?.mimeType,
           },
         });
-        // Vincula o currículo recém criado ao usuário logado (RLS permite via policy curriculos_claim_anon)
         const { data: userData } = await supabase.auth.getUser();
         if (userData.user) {
           await supabase.from("curriculos").update({ user_id: userData.user.id }).eq("slug", p.slug);
         }
-        if (!cancel) setPerfil(p);
+        if (!cancel) { setPerfil(p); setDraft(p); }
       } catch (e) {
         if (!cancel) setErro(e instanceof Error ? e.message : "Erro ao gerar perfil");
       }
     })();
     return () => { cancel = true; };
-  }, [contato, profissao, local, midia]);
+  }, [contato, profissao, local, midia, texto]);
+
+  const salvarEdicao = async () => {
+    if (!draft) return;
+    setSalvando(true);
+    const { error } = await supabase
+      .from("curriculos")
+      .update({
+        resumo: draft.resumo,
+        experiencias: draft.experiencias,
+        habilidades: draft.habilidades,
+      })
+      .eq("slug", draft.slug);
+    setSalvando(false);
+    if (error) {
+      setErro(error.message);
+      return;
+    }
+    setPerfil(draft);
+    setEditing(false);
+  };
 
   if (!perfil && !erro) {
     return (
@@ -657,6 +757,7 @@ function StepPerfil({ profissao, local, midia, contato }: {
   }
 
   const p = perfil!;
+  const d = draft ?? p;
   const dur = midia?.duracao ?? 0;
 
   return (
@@ -669,6 +770,27 @@ function StepPerfil({ profissao, local, midia, contato }: {
         <p className="text-sm opacity-90">{p.resumo}</p>
       </div>
 
+      <div className="mb-3 flex justify-end gap-2">
+        {!editing ? (
+          <button onClick={() => { setDraft(p); setEditing(true); }}
+            className="rounded-full border-2 border-border bg-card px-4 py-2 text-sm font-bold hover:bg-muted">
+            ✏️ Editar currículo
+          </button>
+        ) : (
+          <>
+            <button onClick={() => { setDraft(p); setEditing(false); }}
+              className="rounded-full border-2 border-border bg-card px-4 py-2 text-sm font-bold">
+              Cancelar
+            </button>
+            <button onClick={salvarEdicao} disabled={salvando}
+              className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-bold text-accent-foreground shadow-pop disabled:opacity-60">
+              {salvando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+              {salvando ? "Salvando…" : "Salvar"}
+            </button>
+          </>
+        )}
+      </div>
+
       <div className="space-y-3 rounded-3xl border-2 border-border bg-card p-5 shadow-soft">
         <Field label="Nome" value={contato.nome} />
         <Field label="WhatsApp" value={contato.whatsapp.replace(/(\d{2})(\d{4,5})(\d{4})/, "($1) $2-$3")} />
@@ -678,27 +800,98 @@ function StepPerfil({ profissao, local, midia, contato }: {
         {midia && (
           <Field label={midia.tipo === "video" ? "Vídeo gravado" : "Áudio gravado"} value={`${dur} segundos`} />
         )}
+
+        <div>
+          <p className="mb-1 text-xs font-bold uppercase text-muted-foreground">Resumo</p>
+          {editing ? (
+            <textarea
+              value={d.resumo}
+              onChange={(e) => setDraft({ ...d, resumo: e.target.value })}
+              rows={2}
+              maxLength={300}
+              className="w-full rounded-xl border-2 border-border bg-background p-2 text-sm outline-none focus:border-primary"
+            />
+          ) : (
+            <p className="text-sm">{p.resumo}</p>
+          )}
+        </div>
+
         <div>
           <p className="mb-1 text-xs font-bold uppercase text-muted-foreground">Experiências</p>
-          <ul className="space-y-1 text-sm">
-            {p.experiencias.map((e, i) => <li key={i}>• {e}</li>)}
-          </ul>
+          {editing ? (
+            <div className="space-y-2">
+              {d.experiencias.map((e, i) => (
+                <div key={i} className="flex gap-2">
+                  <input
+                    value={e}
+                    onChange={(ev) => {
+                      const arr = [...d.experiencias];
+                      arr[i] = ev.target.value;
+                      setDraft({ ...d, experiencias: arr });
+                    }}
+                    className="flex-1 rounded-xl border-2 border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                  <button
+                    onClick={() => setDraft({ ...d, experiencias: d.experiencias.filter((_, j) => j !== i) })}
+                    className="rounded-xl border-2 border-border bg-card px-3 text-sm font-bold text-destructive"
+                    aria-label="Remover"
+                  >✕</button>
+                </div>
+              ))}
+              <button
+                onClick={() => setDraft({ ...d, experiencias: [...d.experiencias, ""] })}
+                className="w-full rounded-xl border-2 border-dashed border-border bg-card py-2 text-sm font-bold text-muted-foreground hover:bg-muted"
+              >+ Adicionar experiência</button>
+            </div>
+          ) : (
+            <ul className="space-y-1 text-sm">
+              {p.experiencias.map((e, i) => <li key={i}>• {e}</li>)}
+            </ul>
+          )}
         </div>
+
         <div>
           <p className="mb-1 text-xs font-bold uppercase text-muted-foreground">Habilidades</p>
-          <div className="flex flex-wrap gap-1.5">
-            {p.habilidades.map((h, i) => (
-              <span key={i} className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">{h}</span>
-            ))}
-          </div>
+          {editing ? (
+            <div className="space-y-2">
+              <div className="flex flex-wrap gap-1.5">
+                {d.habilidades.map((h, i) => (
+                  <span key={i} className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+                    {h}
+                    <button onClick={() => setDraft({ ...d, habilidades: d.habilidades.filter((_, j) => j !== i) })} aria-label="Remover habilidade">✕</button>
+                  </span>
+                ))}
+              </div>
+              <input
+                placeholder="Adicionar habilidade e apertar Enter"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const v = (e.target as HTMLInputElement).value.trim();
+                    if (v) {
+                      setDraft({ ...d, habilidades: [...d.habilidades, v] });
+                      (e.target as HTMLInputElement).value = "";
+                    }
+                  }
+                }}
+                className="w-full rounded-xl border-2 border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+              />
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              {p.habilidades.map((h, i) => (
+                <span key={i} className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">{h}</span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {p.dicas.length > 0 && (
+      {p.dicas.length > 0 && !editing && (
         <div className="mt-4 rounded-2xl border border-border bg-muted/30 p-4">
           <p className="mb-2 text-xs font-bold uppercase text-muted-foreground">Dicas pra você</p>
           <ul className="space-y-1 text-sm">
-            {p.dicas.map((d, i) => <li key={i}>💡 {d}</li>)}
+            {p.dicas.map((di, i) => <li key={i}>💡 {di}</li>)}
           </ul>
         </div>
       )}
