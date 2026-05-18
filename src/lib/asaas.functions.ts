@@ -71,31 +71,45 @@ export const criarAssinaturaAsaas = createServerFn({ method: "POST" })
 
     let customerId = profile?.asaas_customer_id ?? null;
 
-    if (!customerId) {
+    const customerPayload = {
+      name: data.nome,
+      email: data.email,
+      cpfCnpj: cpfLimpo,
+      mobilePhone: data.telefone?.replace(/\D/g, ""),
+      externalReference: userId,
+      notificationDisabled: false,
+    };
+
+    let needsCreate = !customerId;
+
+    if (customerId) {
+      // Verifica se o customer existe e tem cpfCnpj preenchido
+      try {
+        const existing = await asaas<AsaasCustomer>(`/customers/${customerId}`, { method: "GET" });
+        // Sempre força update para garantir cpfCnpj atualizado
+        const updated = await asaas<AsaasCustomer>(`/customers/${customerId}`, {
+          method: "PUT",
+          body: JSON.stringify(customerPayload),
+        });
+        if (!updated.cpfCnpj || updated.cpfCnpj.replace(/\D/g, "") !== cpfLimpo) {
+          // Update não persistiu — recria
+          needsCreate = true;
+        }
+      } catch {
+        // Customer não existe mais no Asaas (ex.: trocou de ambiente)
+        needsCreate = true;
+      }
+    }
+
+    if (needsCreate) {
       const customer = await asaas<AsaasCustomer>("/customers", {
         method: "POST",
-        body: JSON.stringify({
-          name: data.nome,
-          email: data.email,
-          cpfCnpj: cpfLimpo,
-          mobilePhone: data.telefone?.replace(/\D/g, ""),
-          externalReference: userId,
-          notificationDisabled: false,
-        }),
+        body: JSON.stringify(customerPayload),
       });
       customerId = customer.id;
-    } else {
-      // Atualiza customer existente garantindo que cpfCnpj esteja preenchido
-      // (Asaas rejeita cartão de crédito sem CPF/CNPJ no cadastro do cliente)
-      await asaas<AsaasCustomer>(`/customers/${customerId}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          name: data.nome,
-          email: data.email,
-          cpfCnpj: cpfLimpo,
-          mobilePhone: data.telefone?.replace(/\D/g, ""),
-        }),
-      });
+      if (!customer.cpfCnpj) {
+        throw new Error("Asaas não aceitou o CPF/CNPJ informado. Confira os dados e tente novamente.");
+      }
     }
 
     await supabaseAdmin
