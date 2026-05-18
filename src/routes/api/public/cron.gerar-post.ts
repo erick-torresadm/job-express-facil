@@ -104,12 +104,23 @@ export const Route = createFileRoute("/api/public/cron/gerar-post")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        // Autenticação simples via apikey (anon key) — padrão para /api/public/* chamado pelo pg_cron
-        const apikey = request.headers.get("apikey") ?? new URL(request.url).searchParams.get("apikey");
-        const expected = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_ANON_KEY;
-        if (expected && apikey !== expected) {
+        // ⚠️ Autenticação via CRON_SECRET dedicado (NÃO usar anon/publishable
+        // key — vai no bundle do cliente). Header `x-cron-secret` ou query `?secret=`.
+        const expected = process.env.CRON_SECRET;
+        if (!expected) {
+          console.error("[cron.gerar-post] CRON_SECRET não configurado.");
+          return new Response("misconfigured", { status: 503 });
+        }
+        const sent =
+          request.headers.get("x-cron-secret") ??
+          new URL(request.url).searchParams.get("secret") ??
+          "";
+        const a = Buffer.from(sent);
+        const b = Buffer.from(expected);
+        if (a.length !== b.length || !timingSafeEqual(a, b)) {
           return new Response("Unauthorized", { status: 401 });
         }
+
 
         try {
           const { data: existentes } = await supabaseAdmin
