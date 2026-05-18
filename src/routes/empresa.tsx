@@ -50,8 +50,10 @@ function EmpresaLayout() {
           <NotificationBell />
         </header>
         <main className="p-4 lg:p-8">
+          {isRoot && <DashboardKPIs />}
           {isRoot ? <CandidatosList /> : <Outlet />}
         </main>
+
       </div>
     </div>
   );
