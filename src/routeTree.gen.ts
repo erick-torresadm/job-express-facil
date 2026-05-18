@@ -19,6 +19,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
 import { Route as EmpresaNovaVagaRouteImport } from './routes/empresa.nova-vaga'
+import { Route as CvSlugRouteImport } from './routes/cv.$slug'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -70,6 +71,11 @@ const EmpresaNovaVagaRoute = EmpresaNovaVagaRouteImport.update({
   path: '/nova-vaga',
   getParentRoute: () => EmpresaRoute,
 } as any)
+const CvSlugRoute = CvSlugRouteImport.update({
+  id: '/cv/$slug',
+  path: '/cv/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/empresa': typeof EmpresaRouteWithChildren
   '/para-empresas': typeof ParaEmpresasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/cv/$slug': typeof CvSlugRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/vagas/$slug': typeof VagasSlugRoute
 }
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/empresa': typeof EmpresaRouteWithChildren
   '/para-empresas': typeof ParaEmpresasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/cv/$slug': typeof CvSlugRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/vagas/$slug': typeof VagasSlugRoute
 }
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/empresa': typeof EmpresaRouteWithChildren
   '/para-empresas': typeof ParaEmpresasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/cv/$slug': typeof CvSlugRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/vagas/$slug': typeof VagasSlugRoute
 }
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
     | '/empresa'
     | '/para-empresas'
     | '/sitemap.xml'
+    | '/cv/$slug'
     | '/empresa/nova-vaga'
     | '/vagas/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/empresa'
     | '/para-empresas'
     | '/sitemap.xml'
+    | '/cv/$slug'
     | '/empresa/nova-vaga'
     | '/vagas/$slug'
   id:
@@ -143,6 +154,7 @@ export interface FileRouteTypes {
     | '/empresa'
     | '/para-empresas'
     | '/sitemap.xml'
+    | '/cv/$slug'
     | '/empresa/nova-vaga'
     | '/vagas/$slug'
   fileRoutesById: FileRoutesById
@@ -156,6 +168,7 @@ export interface RootRouteChildren {
   EmpresaRoute: typeof EmpresaRouteWithChildren
   ParaEmpresasRoute: typeof ParaEmpresasRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  CvSlugRoute: typeof CvSlugRoute
   VagasSlugRoute: typeof VagasSlugRoute
 }
 
@@ -231,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmpresaNovaVagaRouteImport
       parentRoute: typeof EmpresaRoute
     }
+    '/cv/$slug': {
+      id: '/cv/$slug'
+      path: '/cv/$slug'
+      fullPath: '/cv/$slug'
+      preLoaderRoute: typeof CvSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -254,8 +274,19 @@ const rootRouteChildren: RootRouteChildren = {
   EmpresaRoute: EmpresaRouteWithChildren,
   ParaEmpresasRoute: ParaEmpresasRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  CvSlugRoute: CvSlugRoute,
   VagasSlugRoute: VagasSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
