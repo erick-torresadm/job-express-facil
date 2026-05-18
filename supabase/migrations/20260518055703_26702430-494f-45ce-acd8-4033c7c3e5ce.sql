@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "profiles_public_branding_select" ON public.profiles;

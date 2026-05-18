@@ -1,7 +1,10 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
-import { Building2, Users, PlusSquare, BarChart3, Briefcase } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Building2, Users, PlusSquare, BarChart3, Briefcase, Globe } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/use-auth";
+import { getRevelacoesInfo } from "@/lib/empresa.functions";
 
 export const Route = createFileRoute("/empresa")({
   head: () => ({
@@ -33,12 +36,10 @@ function EmpresaLayout() {
           <NavItem to="/empresa" icon={<Users className="h-4 w-4" />} label="Candidatos" exact />
           <NavItem to="/empresa/nova-vaga" icon={<PlusSquare className="h-4 w-4" />} label="Nova vaga" />
           <NavItem to="/empresa/minhas-vagas" icon={<Briefcase className="h-4 w-4" />} label="Minhas vagas" />
+          <NavItem to="/empresa/pagina" icon={<Globe className="h-4 w-4" />} label="Minha página" />
           <NavItem to="/empresa" icon={<BarChart3 className="h-4 w-4" />} label="Métricas" disabled />
         </nav>
-        <div className="m-3 rounded-2xl bg-accent/15 p-4 text-xs">
-          <p className="font-bold">Construtora Vega</p>
-          <p className="opacity-70">Plano Pro · 47 desbloqueios</p>
-        </div>
+        <CreditoCard />
       </aside>
 
       <div className="lg:pl-64">
@@ -75,6 +76,25 @@ function EmpresaSaudacao() {
   const { user } = useAuth();
   const nome = user?.user_metadata?.company_name || user?.user_metadata?.full_name || user?.email || "sua conta";
   return <p className="text-sm text-muted-foreground">Olá, <strong className="text-foreground">{nome}</strong></p>;
+}
+
+function CreditoCard() {
+  const { user } = useAuth();
+  const fetchInfo = useServerFn(getRevelacoesInfo);
+  const [info, setInfo] = useState<{ usadas: number; limite: number; restantes: number } | null>(null);
+  useEffect(() => {
+    if (!user) return;
+    fetchInfo().then(setInfo).catch(() => setInfo(null));
+  }, [user, fetchInfo]);
+  if (!info) return null;
+  const acabou = info.restantes === 0;
+  return (
+    <Link to="/planos" className="m-3 block rounded-2xl bg-accent/15 p-4 text-xs hover:bg-accent/25">
+      <p className="font-bold">{acabou ? "Contatos esgotados" : "Contatos grátis"}</p>
+      <p className="opacity-70">{info.restantes} de {info.limite} restantes</p>
+      <p className="mt-2 font-extrabold text-accent">{acabou ? "Ver planos →" : "Upgrade para mais"}</p>
+    </Link>
+  );
 }
 
 // inline import to avoid circular file

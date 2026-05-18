@@ -24,6 +24,7 @@ export type Database = {
           disponibilidade: string | null
           duracao_segundos: number
           email: string | null
+          empresa_origem_id: string | null
           endereco: string | null
           experiencias: Json
           habilidades: Json
@@ -52,6 +53,7 @@ export type Database = {
           disponibilidade?: string | null
           duracao_segundos?: number
           email?: string | null
+          empresa_origem_id?: string | null
           endereco?: string | null
           experiencias?: Json
           habilidades?: Json
@@ -80,6 +82,7 @@ export type Database = {
           disponibilidade?: string | null
           duracao_segundos?: number
           email?: string | null
+          empresa_origem_id?: string | null
           endereco?: string | null
           experiencias?: Json
           habilidades?: Json
@@ -179,30 +182,66 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          campos_extras: Json
           company_name: string | null
+          cor_primaria: string | null
           created_at: string
           full_name: string | null
           id: string
+          logo_url: string | null
+          slug_publico: string | null
+          sobre: string | null
           updated_at: string
           whatsapp: string | null
         }
         Insert: {
           avatar_url?: string | null
+          campos_extras?: Json
           company_name?: string | null
+          cor_primaria?: string | null
           created_at?: string
           full_name?: string | null
           id: string
+          logo_url?: string | null
+          slug_publico?: string | null
+          sobre?: string | null
           updated_at?: string
           whatsapp?: string | null
         }
         Update: {
           avatar_url?: string | null
+          campos_extras?: Json
           company_name?: string | null
+          cor_primaria?: string | null
           created_at?: string
           full_name?: string | null
           id?: string
+          logo_url?: string | null
+          slug_publico?: string | null
+          sobre?: string | null
           updated_at?: string
           whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      revelacoes: {
+        Row: {
+          created_at: string
+          curriculo_id: string
+          empresa_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          curriculo_id: string
+          empresa_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          curriculo_id?: string
+          empresa_id?: string
+          id?: string
         }
         Relationships: []
       }
