@@ -73,6 +73,25 @@ function NovaVaga() {
           </Field>
         </div>
 
+        <div className="rounded-xl border-2 border-dashed border-primary/40 bg-primary/5 p-4">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="text-sm font-bold">Texto da vaga</p>
+            <button type="button" onClick={sugerir} disabled={gerando}
+              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground disabled:opacity-60">
+              {gerando ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
+              {gerando ? "Gerando…" : "Sugerir texto"}
+            </button>
+          </div>
+          <textarea value={form.descricao} onChange={(e) => upd("descricao", e.target.value)} rows={4} placeholder="Descreva a vaga ou clique em Sugerir texto"
+            className="w-full rounded-lg border border-border bg-background p-3 text-sm outline-none focus:border-primary" />
+          {form.requisitos.length > 0 && (
+            <ul className="mt-3 space-y-1 text-sm">
+              {form.requisitos.map((r, i) => <li key={i}>• {r}</li>)}
+            </ul>
+          )}
+          {erroIA && <p className="mt-2 text-xs text-destructive">{erroIA}</p>}
+        </div>
+
         <label className="flex cursor-pointer items-start gap-3 rounded-xl border-2 border-warning/40 bg-warning/5 p-4">
           <input type="checkbox" checked={form.urgente} onChange={(e) => upd("urgente", e.target.checked)} className="mt-1 h-5 w-5 accent-warning" />
           <div>
