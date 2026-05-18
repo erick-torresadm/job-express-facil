@@ -57,10 +57,6 @@ export const Route = createFileRoute("/cv/$slug")({
   ),
 });
 
-function fmtPhone(w: string | null) {
-  if (!w) return "";
-  return w.replace(/\D/g, "").replace(/(\d{2})(\d{4,5})(\d{4})/, "($1) $2-$3");
-}
 
 function CurriculoPage() {
   const cv = Route.useLoaderData() as Curriculo;
