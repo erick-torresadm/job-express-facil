@@ -42,9 +42,16 @@ export const criarAssinaturaAsaas = createServerFn({ method: "POST" })
       plano: z.enum(["basico", "full"]),
       ciclo: z.enum(["mensal", "anual"]),
       nome: z.string().trim().min(2).max(120),
-      email: z.string().email(),
+      email: z.string().trim().email(),
       cpfCnpj: z.string().trim().min(11).max(20),
-      telefone: z.string().trim().min(8).max(20).optional(),
+      telefone: z.preprocess(
+        (v) => {
+          if (typeof v !== "string") return undefined;
+          const t = v.trim();
+          return t.length === 0 ? undefined : t;
+        },
+        z.string().min(8).max(20).optional(),
+      ),
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
