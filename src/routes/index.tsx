@@ -359,7 +359,7 @@ function WhatsappFeed() {
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-1.5">
           <MessageCircle className="h-3 w-3 text-[oklch(0.55_0.15_150)]" />
-          <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Empresas chamando</span>
+          <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Recrutadores online</span>
         </div>
         <span className="relative flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[oklch(0.65_0.18_145)] opacity-75" />
