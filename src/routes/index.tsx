@@ -440,7 +440,7 @@ function WhatsappFeed() {
 
 
 function Marquee() {
-  const items = ["Pedreiro", "Doméstica", "Motorista", "Porteiro", "Ajudante", "Cozinheiro", "Entregador", "Jardineiro", "Babá", "Garçom", "Vendedor", "Operador"];
+  const items = ["Magazine Luiza", "Itaú", "iFood", "Ambev", "Natura", "Renner", "Bradesco", "Localiza", "Stone", "Mercado Livre", "Nubank", "Vivo", "Carrefour", "Boticário"];
   return (
     <section className="relative overflow-hidden border-y border-border bg-card py-5">
       <motion.div
