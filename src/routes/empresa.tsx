@@ -1,5 +1,7 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
-import { Building2, Users, PlusSquare, BarChart3, Bell } from "lucide-react";
+import { Building2, Users, PlusSquare, BarChart3, Briefcase } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/empresa")({
   head: () => ({
@@ -30,6 +32,7 @@ function EmpresaLayout() {
         <nav className="flex-1 space-y-1 px-3">
           <NavItem to="/empresa" icon={<Users className="h-4 w-4" />} label="Candidatos" exact />
           <NavItem to="/empresa/nova-vaga" icon={<PlusSquare className="h-4 w-4" />} label="Nova vaga" />
+          <NavItem to="/empresa/minhas-vagas" icon={<Briefcase className="h-4 w-4" />} label="Minhas vagas" />
           <NavItem to="/empresa" icon={<BarChart3 className="h-4 w-4" />} label="Métricas" disabled />
         </nav>
         <div className="m-3 rounded-2xl bg-accent/15 p-4 text-xs">
