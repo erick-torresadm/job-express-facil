@@ -117,8 +117,6 @@ function VagasPage() {
             </ul>
           </>
         )}
-        </ul>
-
         <section className="mt-10 rounded-3xl bg-secondary p-6">
           <h2 className="text-lg font-extrabold">Como funciona Vaga Já em {cidade}?</h2>
           <p className="mt-2 text-sm text-muted-foreground">
