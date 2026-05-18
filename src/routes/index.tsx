@@ -533,8 +533,8 @@ function Profissoes() {
           className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end"
         >
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Vagas perto de você</p>
-            <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">Pra quem faz o Brasil girar.</h2>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Áreas em alta</p>
+            <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">Empresas contratando agora.</h2>
           </div>
           <Link to="/cadastro" className="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:text-accent">
             Ver todas as vagas <ArrowRight className="h-4 w-4" />
