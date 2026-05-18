@@ -105,11 +105,14 @@ function VagasPage() {
                 <li key={v.id} className="rounded-2xl border-2 border-border bg-card p-4 shadow-soft">
                   <div className="mb-1 flex items-start justify-between gap-2">
                     <h3 className="font-extrabold leading-tight">{v.titulo}</h3>
-                    {v.urgente && (
-                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-destructive px-2 py-1 text-[10px] font-extrabold uppercase text-destructive-foreground">
-                        <Flame className="h-3 w-3" /> Urgente
-                      </span>
-                    )}
+                    <div className="flex shrink-0 gap-1.5">
+                      <FraudBadge risco={v.risco_fraude} />
+                      {v.urgente && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-destructive px-2 py-1 text-[10px] font-extrabold uppercase text-destructive-foreground">
+                          <Flame className="h-3 w-3" /> Urgente
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <p className="text-sm text-muted-foreground">{v.empresa_nome}</p>
                   <div className="mt-3 grid grid-cols-1 gap-1.5 text-sm sm:grid-cols-3">
@@ -117,6 +120,10 @@ function VagasPage() {
                     <span className="inline-flex items-center gap-1.5"><Clock className="h-4 w-4 text-primary" /> {v.horario}</span>
                     <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4 text-primary" /> {v.bairro}</span>
                   </div>
+                  {v.faixa_salarial_sugerida && (
+                    <p className="mt-2 text-xs text-muted-foreground">Faixa de mercado: {v.faixa_salarial_sugerida}</p>
+                  )}
+                  <VagaDistancia vaga={v} />
                 </li>
               ))}
             </ul>
