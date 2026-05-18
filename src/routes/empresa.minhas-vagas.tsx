@@ -113,6 +113,7 @@ function MinhasVagas() {
                   </button>
                 </div>
               </div>
+              {user && <CandidaturasVaga vagaId={v.id} empresaId={user.id} />}
             </li>
           ))}
         </ul>
