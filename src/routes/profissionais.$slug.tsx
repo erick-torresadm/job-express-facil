@@ -70,7 +70,7 @@ export const Route = createFileRoute("/profissionais/$slug")({
             "@type": "ItemList",
             name: `${profissao} disponíveis em ${cidade}`,
             numberOfItems: count,
-            itemListElement: profissionais.slice(0, 10).map((p, i) => ({
+            itemListElement: profissionais.slice(0, 10).map((p: { profissao: string; bairro: string | null; cidade: string | null; resumo: string }, i: number) => ({
               "@type": "ListItem",
               position: i + 1,
               item: {
