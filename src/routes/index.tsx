@@ -9,10 +9,10 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "VagasAgora — Emprego perto de você, em 3 toques" },
-      { name: "description", content: "Cadastre-se em 1 minuto por áudio ou vídeo. Vagas para pedreiro, doméstica, motorista, porteiro e mais — perto da sua casa." },
-      { property: "og:title", content: "VagasAgora — Emprego perto de você" },
-      { property: "og:description", content: "Cadastro em 1 minuto. Achou vaga no bairro." },
+      { title: "VagasAgora — Vagas CLT em empresas que estão contratando hoje" },
+      { name: "description", content: "A nova forma de encontrar emprego no Brasil. Crie seu perfil em 1 minuto e seja chamado por empresas para vagas CLT, PJ e estágio na sua região." },
+      { property: "og:title", content: "VagasAgora — Sua próxima vaga começa aqui" },
+      { property: "og:description", content: "Milhares de empresas contratando em todo o Brasil. Perfil em 1 minuto, entrevistas no WhatsApp." },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "/" }],
