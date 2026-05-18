@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { PROFISSOES } from "@/lib/mock-data";
 import { analisarCandidato, type PerfilGerado } from "@/lib/ai.functions";
+import { claimCurriculo } from "@/lib/curriculo.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/cadastro")({
