@@ -22,8 +22,18 @@ export const Route = createFileRoute("/cadastro")({
 });
 
 type Step = "profissao" | "local" | "curriculo" | "contato" | "perfil";
-type Midia = { tipo: "audio" | "video"; duracao: number } | null;
+type Midia = { tipo: "audio" | "video"; duracao: number; blob: Blob; mimeType: string } | null;
 type Contato = { nome: string; email: string; whatsapp: string };
+
+async function blobToBase64(blob: Blob): Promise<string> {
+  const buf = new Uint8Array(await blob.arrayBuffer());
+  let bin = "";
+  const CHUNK = 8192;
+  for (let i = 0; i < buf.length; i += CHUNK) {
+    bin += String.fromCharCode.apply(null, Array.from(buf.subarray(i, Math.min(i + CHUNK, buf.length))));
+  }
+  return btoa(bin);
+}
 
 function CandidatoFlow() {
   const [step, setStep] = useState<Step>("profissao");
