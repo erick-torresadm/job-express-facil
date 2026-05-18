@@ -166,7 +166,17 @@ function NovaVaga() {
           <input required value={form.titulo} onChange={(e) => upd("titulo", e.target.value)} placeholder="Ex: Pedreiro de acabamento" className="input-base" />
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Salário"><input required value={form.salario} onChange={(e) => upd("salario", e.target.value)} placeholder="R$ 2.500 + benefícios" className="input-base" /></Field>
+          <Field label="Salário">
+            <input required value={form.salario} onChange={(e) => upd("salario", e.target.value)} placeholder="R$ 2.500 + benefícios" className="input-base" />
+            <button type="button" onClick={consultarSalario} className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
+              <TrendingUp className="h-3 w-3" /> Ver faixa de mercado
+            </button>
+            {faixaSugerida && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Mercado: <strong>R$ {faixaSugerida.min}–{faixaSugerida.max}</strong> (médio R$ {faixaSugerida.medio})
+              </p>
+            )}
+          </Field>
           <Field label="Horário"><input required value={form.horario} onChange={(e) => upd("horario", e.target.value)} placeholder="Seg–Sex, 7h às 17h" className="input-base" /></Field>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
@@ -183,6 +193,13 @@ function NovaVaga() {
           <Field label="Cidade">
             <input value={form.cidade} onChange={(e) => upd("cidade", e.target.value)} className="input-base" />
           </Field>
+        </div>
+        <Field label="Endereço completo (opcional, melhora cálculo de distância)">
+          <input value={form.endereco} onChange={(e) => upd("endereco", e.target.value)} placeholder="Rua, número — bairro" className="input-base" />
+        </Field>
+        <div className="flex items-start gap-2 rounded-xl border border-primary/30 bg-primary/5 p-3 text-xs text-muted-foreground">
+          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <span>Ao publicar, a IA gera 3 perguntas de pré-triagem, calcula custo de transporte/alimentação pros candidatos e verifica risco de golpe automaticamente.</span>
         </div>
 
         <div className="rounded-xl border-2 border-dashed border-primary/40 bg-primary/5 p-4">
