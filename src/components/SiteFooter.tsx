@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, MessageCircle, Mail } from "lucide-react";
-import logoUrl from "@/assets/logo-vagasagora.png";
+
 
 const profissoes = [
   { slug: "pedreiro-em-sao-paulo", label: "Pedreiro em São Paulo" },
