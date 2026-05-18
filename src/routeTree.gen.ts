@@ -23,6 +23,7 @@ import { Route as EmpresaPaginaRouteImport } from './routes/empresa.pagina'
 import { Route as EmpresaNovaVagaRouteImport } from './routes/empresa.nova-vaga'
 import { Route as EmpresaMinhasVagasRouteImport } from './routes/empresa.minhas-vagas'
 import { Route as CvSlugRouteImport } from './routes/cv.$slug'
+import { Route as CSlugRouteImport } from './routes/c.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiPublicCronGerarPostRouteImport } from './routes/api/public/cron.gerar-post'
 
@@ -96,6 +97,11 @@ const CvSlugRoute = CvSlugRouteImport.update({
   path: '/cv/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CSlugRoute = CSlugRouteImport.update({
+  id: '/c/$slug',
+  path: '/c/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/para-empresas': typeof ParaEmpresasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/c/$slug': typeof CSlugRoute
   '/cv/$slug': typeof CvSlugRoute
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/para-empresas': typeof ParaEmpresasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/c/$slug': typeof CSlugRoute
   '/cv/$slug': typeof CvSlugRoute
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
@@ -155,6 +163,7 @@ export interface FileRoutesById {
   '/para-empresas': typeof ParaEmpresasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/c/$slug': typeof CSlugRoute
   '/cv/$slug': typeof CvSlugRoute
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
@@ -175,6 +184,7 @@ export interface FileRouteTypes {
     | '/para-empresas'
     | '/sitemap.xml'
     | '/blog/$slug'
+    | '/c/$slug'
     | '/cv/$slug'
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/para-empresas'
     | '/sitemap.xml'
     | '/blog/$slug'
+    | '/c/$slug'
     | '/cv/$slug'
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/para-empresas'
     | '/sitemap.xml'
     | '/blog/$slug'
+    | '/c/$slug'
     | '/cv/$slug'
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
@@ -229,6 +241,7 @@ export interface RootRouteChildren {
   EmpresaRoute: typeof EmpresaRouteWithChildren
   ParaEmpresasRoute: typeof ParaEmpresasRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  CSlugRoute: typeof CSlugRoute
   CvSlugRoute: typeof CvSlugRoute
   VagasSlugRoute: typeof VagasSlugRoute
   ApiPublicCronGerarPostRoute: typeof ApiPublicCronGerarPostRoute
@@ -334,6 +347,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CvSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/c/$slug': {
+      id: '/c/$slug'
+      path: '/c/$slug'
+      fullPath: '/c/$slug'
+      preLoaderRoute: typeof CSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/$slug': {
       id: '/blog/$slug'
       path: '/$slug'
@@ -386,6 +406,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmpresaRoute: EmpresaRouteWithChildren,
   ParaEmpresasRoute: ParaEmpresasRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  CSlugRoute: CSlugRoute,
   CvSlugRoute: CvSlugRoute,
   VagasSlugRoute: VagasSlugRoute,
   ApiPublicCronGerarPostRoute: ApiPublicCronGerarPostRoute,
