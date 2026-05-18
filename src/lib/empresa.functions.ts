@@ -15,8 +15,8 @@ function slugify(s: string) {
 export const getEmpresaPagina = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase, userId } = context;
-    const { data } = await supabase
+    const { userId } = context;
+    const { data } = await supabaseAdmin
       .from("profiles")
       .select("company_name, full_name, logo_url, cor_primaria, sobre, slug_publico, campos_extras")
       .eq("id", userId)
