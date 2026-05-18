@@ -11,7 +11,7 @@ export const Route = createFileRoute("/planos")({
   head: () => ({
     meta: [
       { title: "Planos para empresas — VagasAgora" },
-      { name: "description", content: "A partir de R$ 44,90/mês. Até 25% mais barato que Catho, Infojobs e Vagas.com. 10 contatos grátis para começar." },
+      { name: "description", content: "A partir de R$ 44,90/mês. Até 25% mais barato que os principais portais de emprego. 15 contatos grátis para começar." },
       { property: "og:title", content: "Planos para empresas — VagasAgora" },
       { property: "og:description", content: "R$ 44,90/mês no Básico ou R$ 82,40/mês no Full. Mais barato que a concorrência." },
     ],
@@ -75,7 +75,7 @@ function PlanosPage() {
 
       <section className="mx-auto max-w-6xl px-4 py-12 text-center">
         <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 px-3 py-1 text-xs font-bold text-accent-foreground">
-          <Sparkles className="h-3 w-3" /> Até 25% mais barato que Catho, Infojobs e Vagas.com
+          <Sparkles className="h-3 w-3" /> Até 25% mais barato que os principais portais de emprego do Brasil
         </span>
         <h1 className="mt-4 text-4xl font-extrabold lg:text-5xl">Contrate sem perder tempo</h1>
         <p className="mt-3 text-muted-foreground">Comece com 15 contatos grátis. Sem fidelidade — cancele quando quiser.</p>
