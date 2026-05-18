@@ -894,9 +894,9 @@ function ParaQuem() {
             <HardHat className="h-7 w-7" />
           </div>
           <h3 className="relative text-3xl font-extrabold tracking-[-0.02em]">Para profissionais</h3>
-          <p className="relative mt-3 text-muted-foreground">Acelere sua carreira. Apareça para os recrutadores das maiores empresas do país e receba convites diretos no WhatsApp.</p>
+          <p className="relative mt-3 text-muted-foreground">Acelere sua carreira. Apareça para os recrutadores das maiores empresas do país e receba convites diretos no WhatsApp. <strong className="text-foreground">Você nunca paga nada pra se candidatar.</strong></p>
           <ul className="relative mt-6 space-y-2.5 text-sm">
-            {["Perfil inteligente em 60 segundos", "Match com vagas CLT, PJ e estágio", "Acompanhamento de cada candidatura", "Cadastro 100% gratuito"].map((t) => (
+            {["Perfil inteligente em 60 segundos", "Match com vagas CLT, PJ e estágio", "Acompanhamento de cada candidatura", "Sempre grátis — candidato não paga nada"].map((t) => (
               <li key={t} className="flex items-center gap-2.5">
                 <span className="grid h-5 w-5 place-items-center rounded-full bg-accent/15 text-accent">
                   <Check className="h-3 w-3" strokeWidth={3} />
