@@ -620,6 +620,11 @@ function StepPerfil({ profissao, local, midia, contato }: {
             midiaMimeType: midia?.mimeType,
           },
         });
+        // Vincula o currículo recém criado ao usuário logado (RLS permite via policy curriculos_claim_anon)
+        const { data: userData } = await supabase.auth.getUser();
+        if (userData.user) {
+          await supabase.from("curriculos").update({ user_id: userData.user.id }).eq("slug", p.slug);
+        }
         if (!cancel) setPerfil(p);
       } catch (e) {
         if (!cancel) setErro(e instanceof Error ? e.message : "Erro ao gerar perfil");
