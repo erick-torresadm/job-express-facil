@@ -1,10 +1,11 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Building2, Users, PlusSquare, BarChart3, Briefcase, Globe, ShieldCheck } from "lucide-react";
+import { Building2, Users, PlusSquare, BarChart3, Briefcase, Globe, ShieldCheck, TrendingUp, ShieldAlert, Link2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/use-auth";
-import { getRevelacoesInfo } from "@/lib/empresa.functions";
+import { getRevelacoesInfo, getEmpresaDashboard } from "@/lib/empresa.functions";
+
 
 export const Route = createFileRoute("/empresa")({
   head: () => ({
