@@ -101,6 +101,25 @@ function ApplyModal({ vaga, empresaId, userId, onClose, onDone }: {
       const { data: cv } = await supabase.from("curriculos").select("id").eq("user_id", userId).maybeSingle();
       if (!cv) { setSemCV(true); setLoading(false); return; }
 
+      // Limite diário anti-spam: 20/dia grátis, 35/dia se verificado
+      const { data: prof } = await supabase.from("profiles").select("verificada").eq("id", userId).maybeSingle();
+      const limite = prof?.verificada ? 35 : 20;
+      const inicioDia = new Date(); inicioDia.setHours(0, 0, 0, 0);
+      const { count: usadasHoje } = await supabase
+        .from("candidaturas")
+        .select("id", { count: "exact", head: true })
+        .eq("candidato_id", userId)
+        .gte("created_at", inicioDia.toISOString());
+      if ((usadasHoje ?? 0) >= limite) {
+        toast.error(
+          prof?.verificada
+            ? `Você atingiu o limite de ${limite} candidaturas hoje. Tente amanhã!`
+            : `Você atingiu o limite de ${limite} candidaturas hoje. Verifique sua conta pra liberar 35/dia.`
+        );
+        setLoading(false);
+        return;
+      }
+
       // pega empresa_id da vaga
       let empId = empresaId;
       if (!empId) {
@@ -114,6 +133,7 @@ function ApplyModal({ vaga, empresaId, userId, onClose, onDone }: {
         vaga_id: vaga.id, candidato_id: userId, curriculo_id: cv.id, empresa_id: empId, respostas: payload,
       });
       if (error) throw error;
+      toast.success(`Candidatura enviada! (${(usadasHoje ?? 0) + 1}/${limite} hoje)`);
       toast.success("Candidatura enviada!");
       onDone();
     } catch (e) {
