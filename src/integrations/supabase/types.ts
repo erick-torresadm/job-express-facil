@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      curriculos: {
+        Row: {
+          bairro: string | null
+          cidade: string | null
+          created_at: string
+          dicas: Json
+          duracao_segundos: number
+          email: string | null
+          experiencias: Json
+          habilidades: Json
+          id: string
+          nome: string
+          profissao: string
+          resumo: string
+          slug: string
+          tem_audio: boolean
+          tem_video: boolean
+          updated_at: string
+          user_id: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          bairro?: string | null
+          cidade?: string | null
+          created_at?: string
+          dicas?: Json
+          duracao_segundos?: number
+          email?: string | null
+          experiencias?: Json
+          habilidades?: Json
+          id?: string
+          nome: string
+          profissao: string
+          resumo: string
+          slug: string
+          tem_audio?: boolean
+          tem_video?: boolean
+          updated_at?: string
+          user_id?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          bairro?: string | null
+          cidade?: string | null
+          created_at?: string
+          dicas?: Json
+          duracao_segundos?: number
+          email?: string | null
+          experiencias?: Json
+          habilidades?: Json
+          id?: string
+          nome?: string
+          profissao?: string
+          resumo?: string
+          slug?: string
+          tem_audio?: boolean
+          tem_video?: boolean
+          updated_at?: string
+          user_id?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

@@ -1,5 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+
+function slugify(s: string) {
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
+}
 
 const GEMINI_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
@@ -54,6 +60,7 @@ export type PerfilGerado = {
   experiencias: string[];
   habilidades: string[];
   dicas: string[];
+  slug: string;
 };
 
 export const analisarCandidato = createServerFn({ method: "POST" })
@@ -84,7 +91,28 @@ Responda em JSON com este formato exato:
 }`;
 
     const text = await callGemini(sys, user);
-    return extractJson<PerfilGerado>(text);
+    const perfil = extractJson<Omit<PerfilGerado, "slug">>(text);
+
+    const slug = `${slugify(data.nome)}-${Math.random().toString(36).slice(2, 8)}`;
+    const { error } = await supabaseAdmin.from("curriculos").insert({
+      slug,
+      nome: data.nome,
+      email: data.email,
+      whatsapp: data.whatsapp,
+      profissao: data.profissao,
+      bairro: data.bairro,
+      cidade: data.cidade,
+      resumo: perfil.resumo,
+      experiencias: perfil.experiencias,
+      habilidades: perfil.habilidades,
+      dicas: perfil.dicas,
+      tem_audio: data.temAudio,
+      tem_video: data.temVideo,
+      duracao_segundos: data.duracaoSegundos,
+    });
+    if (error) throw new Error(`Erro ao salvar currículo: ${error.message}`);
+
+    return { ...perfil, slug };
   });
 
 // ===== Empresa =====

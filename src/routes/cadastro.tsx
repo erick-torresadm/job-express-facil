@@ -541,17 +541,16 @@ function StepPerfil({ profissao, local, midia, contato }: {
         </div>
       )}
 
+      <h2 className="mt-8 mb-3 text-lg font-extrabold">Compartilhe e baixe</h2>
+
+      <Link to="/cv/$slug" params={{ slug: p.slug }}
+        className="btn-touch shadow-pop mb-3 flex w-full items-center justify-center gap-2 bg-primary text-primary-foreground">
+        <FileDown className="h-5 w-5" /> Ver, baixar PDF e compartilhar
+      </Link>
+
       <h2 className="mt-8 mb-3 text-lg font-extrabold">Turbine seu perfil 🚀</h2>
 
       <div className="space-y-3">
-        <Upsell
-          icon={<FileDown className="h-7 w-7" />}
-          title="Currículo profissional em PDF"
-          desc="Baixe e mande no WhatsApp ou imprima pra entregar de porta em porta."
-          price="R$ 9,90"
-          cta="Gerar PDF no Pix"
-          variant="primary"
-        />
         <Upsell
           icon={<Zap className="h-7 w-7" />}
           title="Furar fila"
