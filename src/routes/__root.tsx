@@ -100,7 +100,42 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Figtree:wght@400;500;600;700;800&display=swap",
       },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "VagasAgora",
+          url: "https://vagasagora.com.br",
+          logo: "https://vagasagora.com.br/favicon.ico",
+          sameAs: [],
+          contactPoint: {
+            "@type": "ContactPoint",
+            email: "oi@vagasagora.com.br",
+            contactType: "customer service",
+            areaServed: "BR",
+            availableLanguage: ["pt-BR"],
+          },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "VagasAgora",
+          url: "https://vagasagora.com.br",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: "https://vagasagora.com.br/vagas/{search_term_string}",
+            "query-input": "required name=search_term_string",
+          },
+        }),
+      },
+    ],
   }),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
