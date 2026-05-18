@@ -9,10 +9,10 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "VagasAgora — Emprego perto de você, em 3 toques" },
-      { name: "description", content: "Cadastre-se em 1 minuto por áudio ou vídeo. Vagas para pedreiro, doméstica, motorista, porteiro e mais — perto da sua casa." },
-      { property: "og:title", content: "VagasAgora — Emprego perto de você" },
-      { property: "og:description", content: "Cadastro em 1 minuto. Achou vaga no bairro." },
+      { title: "VagasAgora — Vagas CLT em empresas que estão contratando hoje" },
+      { name: "description", content: "A nova forma de encontrar emprego no Brasil. Crie seu perfil em 1 minuto e seja chamado por empresas para vagas CLT, PJ e estágio na sua região." },
+      { property: "og:title", content: "VagasAgora — Sua próxima vaga começa aqui" },
+      { property: "og:description", content: "Milhares de empresas contratando em todo o Brasil. Perfil em 1 minuto, entrevistas no WhatsApp." },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "/" }],
@@ -93,17 +93,17 @@ function Hero() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[oklch(0.85_0.18_140)] opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[oklch(0.85_0.18_140)]" />
               </span>
-              847 vagas abertas agora · São Paulo
+              12.847 vagas ativas · atualizado agora
             </motion.span>
 
             <motion.h1
               variants={fadeUp}
               className="mt-5 text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.03em] sm:text-6xl md:text-[4.5rem]"
             >
-              O emprego que cabe na{" "}
+              Sua próxima vaga{" "}
               <span className="relative inline-block">
                 <span className="relative z-10 bg-gradient-to-r from-white via-white to-[oklch(0.78_0.14_220)] bg-clip-text text-transparent">
-                  sua rua.
+                  começa aqui.
                 </span>
                 <motion.svg
                   className="absolute -bottom-2 left-0 w-full"
@@ -127,9 +127,9 @@ function Hero() {
             </motion.h1>
 
             <motion.p variants={fadeUp} className="mt-6 max-w-xl text-base leading-relaxed text-white/75 md:text-lg">
-              Grava 1 minuto de áudio ou vídeo, nossa IA monta seu currículo,
-              e as empresas chamam você no <strong className="font-bold text-white">WhatsApp</strong>.
-              Sem PDF, sem fila, sem letra miúda.
+              Conectamos profissionais a vagas <strong className="font-bold text-white">CLT, PJ e estágio</strong> em
+              milhares de empresas. Crie seu perfil em 1 minuto e seja chamado direto no WhatsApp —
+              sem PDF, sem fila, sem burocracia.
             </motion.p>
 
             <motion.div variants={fadeUp} className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -138,14 +138,14 @@ function Hero() {
                 className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-white px-7 py-4 text-base font-bold text-primary shadow-pop transition active:scale-[0.98]"
               >
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-                <span className="relative">Quero uma vaga</span>
+                <span className="relative">Encontrar vagas</span>
                 <ArrowRight className="relative h-5 w-5 transition group-hover:translate-x-1" />
               </Link>
               <Link
                 to="/auth"
                 className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/25 bg-white/5 px-7 py-4 text-base font-bold text-white backdrop-blur-md transition hover:bg-white/10 active:scale-[0.98]"
               >
-                <Building2 className="h-5 w-5" /> Sou empresa
+                <Building2 className="h-5 w-5" /> Contratar talentos
               </Link>
             </motion.div>
 
@@ -169,7 +169,7 @@ function Hero() {
                   ))}
                   <span className="ml-1 font-bold">4.9</span>
                 </div>
-                <p>+12 mil trabalhadores cadastrados</p>
+                <p>+340 mil profissionais e 8.200 empresas</p>
               </div>
             </motion.div>
           </motion.div>
@@ -204,8 +204,8 @@ function PhoneMockup() {
             <MessageCircle className="h-4 w-4" />
           </div>
           <div>
-            <p className="text-[10px] font-bold uppercase text-muted-foreground">WhatsApp</p>
-            <p className="text-xs font-bold">Construtora Vale chamou!</p>
+            <p className="text-[10px] font-bold uppercase text-muted-foreground">Entrevista</p>
+            <p className="text-xs font-bold">Magazine Luiza convidou</p>
           </div>
         </div>
       </motion.div>
@@ -222,7 +222,7 @@ function PhoneMockup() {
           </div>
           <div>
             <p className="text-[10px] font-bold uppercase text-muted-foreground">Match</p>
-            <p className="text-xs font-bold">3 vagas a 1,2 km</p>
+            <p className="text-xs font-bold">94% fit · CLT</p>
           </div>
         </div>
       </motion.div>
@@ -290,31 +290,31 @@ type WhatsMsg = {
 };
 
 const WHATS_POOL: Omit<WhatsMsg, "id" | "time">[] = [
-  { company: "Construtora Vila Nova", role: "Pedreiro", msg: "Oi José! Tem disponibilidade pra começar segunda? R$ 180/dia 🧱", initials: "CV", color: "oklch(0.65 0.18 145)" },
-  { company: "Padaria Bom Sabor", role: "Ajudante de cozinha", msg: "Boa tarde! Contratando ajudante aqui na Mooca. Bora conversar?", initials: "PB", color: "oklch(0.7 0.16 60)" },
-  { company: "Transportes Águia", role: "Motorista", msg: "Tem CNH D? Rota fixa no Tatuapé, salário + benefícios 🚚", initials: "TA", color: "oklch(0.6 0.18 250)" },
-  { company: "Condomínio Jardins", role: "Porteiro", msg: "Vaga 12x36 noturno. Quando pode fazer entrevista? 🏢", initials: "CJ", color: "oklch(0.62 0.16 290)" },
-  { company: "Limpa Tudo SP", role: "Diarista", msg: "Olá! Precisamos de diarista 3x por semana, perto de você ✨", initials: "LT", color: "oklch(0.7 0.17 30)" },
-  { company: "Pizzaria Forno a Lenha", role: "Entregador", msg: "Tem moto? Fixo + por entrega. Começa hoje? 🛵🍕", initials: "PF", color: "oklch(0.6 0.2 15)" },
-  { company: "Mercado São Jorge", role: "Repositor", msg: "Oi! Vaga de repositor noturno, vale-transporte + refeição 🛒", initials: "MS", color: "oklch(0.58 0.17 200)" },
-  { company: "Hotel Aurora", role: "Camareira", msg: "Bom dia! Procuramos camareira CLT, escala 6x1 🏨", initials: "HA", color: "oklch(0.7 0.14 320)" },
-  { company: "Auto Posto Real", role: "Frentista", msg: "Vaga de frentista, turno tarde. Aceita? ⛽", initials: "AP", color: "oklch(0.55 0.2 25)" },
-  { company: "Escola Infantil Saber", role: "Auxiliar", msg: "Olá! Auxiliar de classe, manhã. Vamos conversar? 📚", initials: "ES", color: "oklch(0.7 0.15 100)" },
-  { company: "Marmoraria Granito Sul", role: "Ajudante", msg: "Precisamos de ajudante forte, paga semanal 💪", initials: "MG", color: "oklch(0.5 0.05 260)" },
-  { company: "Salão Beleza Pura", role: "Recepcionista", msg: "Oi! Recepção de salão, segunda a sábado ✂️💅", initials: "BP", color: "oklch(0.72 0.18 350)" },
-  { company: "Padaria Pão Quente", role: "Padeiro", msg: "Padeiro madrugada, R$ 2.400 + cesta 🥖", initials: "PQ", color: "oklch(0.72 0.16 75)" },
-  { company: "Lava Rápido Brilho", role: "Lavador", msg: "Vaga lavador de carros, gorjeta + fixo 🚗", initials: "LB", color: "oklch(0.6 0.18 220)" },
-  { company: "Restaurante Sabor & Cia", role: "Garçom", msg: "Garçom para almoço, gorjeta boa. Topa? 🍽️", initials: "SC", color: "oklch(0.55 0.18 30)" },
-  { company: "Clínica Vida Plena", role: "Recepcionista", msg: "Recepção clínica, escala 5x2, CLT 🩺", initials: "CV", color: "oklch(0.65 0.13 180)" },
-  { company: "Oficina Mecânica Forte", role: "Auxiliar", msg: "Auxiliar mecânico, aprende na prática 🔧", initials: "OM", color: "oklch(0.5 0.1 50)" },
-  { company: "Atacado Compre Mais", role: "Empacotador", msg: "Empacotador fim de semana, paga semanal 📦", initials: "AC", color: "oklch(0.6 0.18 140)" },
-  { company: "Açougue Bom Corte", role: "Açougueiro", msg: "Tem experiência? Vaga aberta hoje 🥩", initials: "BC", color: "oklch(0.5 0.2 20)" },
-  { company: "Lanchonete Subway Tatuapé", role: "Atendente", msg: "Atendente balcão, 6h/dia, refeição inclusa 🥪", initials: "SU", color: "oklch(0.62 0.18 145)" },
-  { company: "Borracharia 24h", role: "Borracheiro", msg: "Plantão noturno, comissão por serviço 🛞", initials: "B2", color: "oklch(0.35 0.05 260)" },
-  { company: "Pet Shop Patinhas", role: "Banhista", msg: "Banho e tosa, gosta de cachorros? 🐶✨", initials: "PP", color: "oklch(0.75 0.14 50)" },
-  { company: "Estética Glow", role: "Manicure", msg: "Cabine livre, comissão 60%, agenda cheia 💅", initials: "EG", color: "oklch(0.72 0.16 340)" },
-  { company: "Construtora Horizonte", role: "Servente", msg: "Obra grande perto da Penha, começa amanhã 🏗️", initials: "CH", color: "oklch(0.58 0.16 60)" },
-  { company: "Sushi Express Mooca", role: "Auxiliar cozinha", msg: "Aux de cozinha japonesa, treina no local 🍣", initials: "SE", color: "oklch(0.5 0.18 25)" },
+  { company: "Magazine Luiza", role: "Vendedor CLT", msg: "Olá Ana! Seu perfil bateu com nossa vaga. Topa uma entrevista amanhã? 🛍️", initials: "ML", color: "oklch(0.6 0.2 25)" },
+  { company: "Itaú Unibanco", role: "Assistente Administrativo", msg: "Boa tarde! Vimos seu currículo. Vaga CLT + benefícios completos 🏦", initials: "IU", color: "oklch(0.6 0.18 60)" },
+  { company: "Localiza", role: "Atendente de Loja", msg: "Tem disponibilidade pra entrevista terça? Plano de carreira estruturado 🚗", initials: "LZ", color: "oklch(0.62 0.18 145)" },
+  { company: "iFood", role: "Analista de Operações Jr", msg: "Oi! Adoramos seu perfil. Home office + auxílio. Bora conversar? 💚", initials: "iF", color: "oklch(0.6 0.2 15)" },
+  { company: "Ambev", role: "Auxiliar de Logística", msg: "Vaga efetiva na unidade Jaguariúna. PLR + vale-alimentação 🍺", initials: "AB", color: "oklch(0.5 0.18 30)" },
+  { company: "Natura", role: "Consultora de Vendas", msg: "Olá! Seleção aberta na sua região. Carreira sólida + comissão 🌿", initials: "NT", color: "oklch(0.6 0.16 150)" },
+  { company: "Renner", role: "Operador de Caixa", msg: "Boa tarde! Vaga CLT, escala 6x1, treinamento pago 👕", initials: "RN", color: "oklch(0.62 0.16 290)" },
+  { company: "Hospital Albert Einstein", role: "Recepcionista", msg: "Vaga noturna, CLT + plano de saúde Bradesco Top 🏥", initials: "AE", color: "oklch(0.65 0.13 200)" },
+  { company: "Petrobras", role: "Auxiliar Administrativo", msg: "Processo seletivo aberto. Estabilidade + benefícios completos ⛽", initials: "PB", color: "oklch(0.55 0.18 145)" },
+  { company: "Bradesco Seguros", role: "Atendente SAC", msg: "Oi! Vaga híbrida em Osasco, CLT + bônus por performance 📞", initials: "BS", color: "oklch(0.5 0.2 15)" },
+  { company: "Carrefour", role: "Repositor", msg: "Vaga efetiva 44h, vale-refeição + cesta básica 🛒", initials: "CR", color: "oklch(0.55 0.2 250)" },
+  { company: "Drogasil", role: "Atendente de Farmácia", msg: "Boa tarde! CLT, escala fixa, plano de saúde 💊", initials: "DR", color: "oklch(0.62 0.18 145)" },
+  { company: "Banco Inter", role: "Estágio em Produto", msg: "Olá! Estágio remoto, R$ 2.500 + VR + VA 💜", initials: "BI", color: "oklch(0.55 0.2 320)" },
+  { company: "Mercado Livre", role: "Analista de Customer Exp", msg: "Vaga efetiva, modelo híbrido, stock options 📦", initials: "ML", color: "oklch(0.7 0.16 75)" },
+  { company: "Stone", role: "Executivo Comercial", msg: "Olá! Carteira pronta, comissão sem teto + carro 💚", initials: "SN", color: "oklch(0.6 0.18 145)" },
+  { company: "BTG Pactual", role: "Analista Jr", msg: "Processo aberto. Faria Lima, plano de carreira agressivo 📈", initials: "BT", color: "oklch(0.4 0.05 260)" },
+  { company: "Vivo", role: "Consultor de Vendas", msg: "Boa tarde! CLT + comissão média R$ 4.200 📱", initials: "VV", color: "oklch(0.55 0.2 320)" },
+  { company: "Boticário", role: "Vendedor de Cosméticos", msg: "Vaga em shopping perto de você, CLT + bonificação 💄", initials: "BT", color: "oklch(0.65 0.18 350)" },
+  { company: "Latam Airlines", role: "Agente de Aeroporto", msg: "Vaga em Guarulhos, CLT, passagens com desconto ✈️", initials: "LA", color: "oklch(0.5 0.18 15)" },
+  { company: "JBS", role: "Auxiliar de Produção", msg: "Vaga efetiva, transporte fretado + refeição no local 🥩", initials: "JB", color: "oklch(0.55 0.2 25)" },
+  { company: "Sicredi", role: "Caixa Bancário", msg: "Olá! Vaga CLT cooperativa, PLR + previdência 🏦", initials: "SC", color: "oklch(0.55 0.18 145)" },
+  { company: "Atento", role: "Operador de Telemarketing", msg: "Home office, 6h/dia, comissão + bonificação 🎧", initials: "AT", color: "oklch(0.55 0.2 290)" },
+  { company: "Suzano", role: "Técnico em Segurança", msg: "Vaga industrial, regime 12x36, alojamento incluso 🌲", initials: "SZ", color: "oklch(0.55 0.16 150)" },
+  { company: "C&A", role: "Assistente de Loja", msg: "Boa tarde! Vaga CLT + plano de carreira no varejo 👗", initials: "CA", color: "oklch(0.55 0.2 15)" },
+  { company: "Nubank", role: "Especialista de Atendimento", msg: "Olá! Vaga 100% remota, CLT + RSU + benefícios 💜", initials: "NU", color: "oklch(0.55 0.2 320)" },
 ];
 
 function WhatsappFeed() {
@@ -359,7 +359,7 @@ function WhatsappFeed() {
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-1.5">
           <MessageCircle className="h-3 w-3 text-[oklch(0.55_0.15_150)]" />
-          <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Empresas chamando</span>
+          <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Recrutadores online</span>
         </div>
         <span className="relative flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[oklch(0.65_0.18_145)] opacity-75" />
@@ -431,7 +431,7 @@ function WhatsappFeed() {
         transition={{ duration: 1.8, repeat: Infinity }}
       >
         <Check className="h-3.5 w-3.5 text-[oklch(0.4_0.15_140)]" />
-        <p className="text-[11px] font-bold text-[oklch(0.4_0.15_140)]">{totalChamadas.current} empresas chamaram hoje</p>
+        <p className="text-[11px] font-bold text-[oklch(0.4_0.15_140)]">{totalChamadas.current} recrutadores te chamaram hoje</p>
       </motion.div>
     </div>
   );
@@ -440,7 +440,7 @@ function WhatsappFeed() {
 
 
 function Marquee() {
-  const items = ["Pedreiro", "Doméstica", "Motorista", "Porteiro", "Ajudante", "Cozinheiro", "Entregador", "Jardineiro", "Babá", "Garçom", "Vendedor", "Operador"];
+  const items = ["Magazine Luiza", "Itaú", "iFood", "Ambev", "Natura", "Renner", "Bradesco", "Localiza", "Stone", "Mercado Livre", "Nubank", "Vivo", "Carrefour", "Boticário"];
   return (
     <section className="relative overflow-hidden border-y border-border bg-card py-5">
       <motion.div
@@ -461,10 +461,10 @@ function Marquee() {
 
 function Como() {
   const steps = [
-    { icon: <HardHat className="h-6 w-6" />, t: "Diga sua profissão", d: "Toque na sua área: pedreiro, doméstica, motorista…" },
-    { icon: <MapPin className="h-6 w-6" />, t: "Onde você mora", d: "GPS ou CEP. Achamos vagas no seu bairro." },
-    { icon: <Mic className="h-6 w-6" />, t: "Conte sobre você", d: "Áudio ou vídeo de até 1 minuto. Sem digitar." },
-    { icon: <Zap className="h-6 w-6" />, t: "Empresa chama você", d: "Aprovação direto no seu WhatsApp." },
+    { icon: <HardHat className="h-6 w-6" />, t: "Conte sua trajetória", d: "Áudio, vídeo ou texto. Em 60 segundos sua história vira um perfil profissional." },
+    { icon: <Sparkles className="h-6 w-6" />, t: "IA monta seu currículo", d: "Estruturamos experiência, skills e palavras-chave que os recrutadores buscam." },
+    { icon: <MapPin className="h-6 w-6" />, t: "Match com vagas reais", d: "Cruzamos seu perfil com milhares de oportunidades CLT, PJ e estágio." },
+    { icon: <Zap className="h-6 w-6" />, t: "Recrutador te chama", d: "Convite de entrevista direto no WhatsApp. Sem espera, sem ansiedade." },
   ];
   return (
     <section className="mx-auto max-w-6xl px-4 py-20 md:py-28">
@@ -477,9 +477,9 @@ function Como() {
       >
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Como funciona</p>
         <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">
-          Três toques. <span className="text-muted-foreground">A vaga chegou.</span>
+          Do perfil à entrevista <span className="text-muted-foreground">em 48 horas.</span>
         </h2>
-        <p className="mt-4 text-muted-foreground">Sem currículo em Word. Sem upload de PDF. Sem complicação.</p>
+        <p className="mt-4 text-muted-foreground">Esqueça PDFs, anexos e cartas de apresentação. A gente cuida do processo, você foca na vaga.</p>
       </motion.div>
 
       <motion.div
@@ -513,14 +513,14 @@ function Como() {
 
 function Profissoes() {
   const list = [
-    { e: "🧱", n: "Pedreiro", v: "248 vagas" },
-    { e: "🧹", n: "Doméstica", v: "192 vagas" },
-    { e: "🚗", n: "Motorista", v: "156 vagas" },
-    { e: "🛡️", n: "Porteiro", v: "98 vagas" },
-    { e: "🔧", n: "Ajudante", v: "311 vagas" },
-    { e: "🍳", n: "Cozinheiro", v: "87 vagas" },
-    { e: "📦", n: "Entregador", v: "204 vagas" },
-    { e: "🌿", n: "Jardineiro", v: "64 vagas" },
+    { e: "💼", n: "Administrativo", v: "1.842 vagas" },
+    { e: "🛍️", n: "Vendas & Varejo", v: "2.310 vagas" },
+    { e: "🎧", n: "Atendimento", v: "1.207 vagas" },
+    { e: "📊", n: "Financeiro", v: "684 vagas" },
+    { e: "📦", n: "Logística", v: "1.495 vagas" },
+    { e: "💻", n: "Tecnologia", v: "923 vagas" },
+    { e: "🏥", n: "Saúde", v: "812 vagas" },
+    { e: "🎓", n: "Estágio & Trainee", v: "476 vagas" },
   ];
   return (
     <section className="bg-secondary/40 py-20 md:py-28">
@@ -533,8 +533,8 @@ function Profissoes() {
           className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end"
         >
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Vagas perto de você</p>
-            <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">Pra quem faz o Brasil girar.</h2>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Áreas em alta</p>
+            <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">Empresas contratando agora.</h2>
           </div>
           <Link to="/cadastro" className="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:text-accent">
             Ver todas as vagas <ArrowRight className="h-4 w-4" />
@@ -588,10 +588,10 @@ function ParaQuem() {
           <div className="relative mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-accent-foreground shadow-pop">
             <HardHat className="h-7 w-7" />
           </div>
-          <h3 className="relative text-3xl font-extrabold tracking-[-0.02em]">Sou trabalhador</h3>
-          <p className="relative mt-3 text-muted-foreground">Cadastro grátis, sem precisar saber escrever bem. Vagas no seu bairro caem no seu WhatsApp.</p>
+          <h3 className="relative text-3xl font-extrabold tracking-[-0.02em]">Para profissionais</h3>
+          <p className="relative mt-3 text-muted-foreground">Acelere sua carreira. Apareça para os recrutadores das maiores empresas do país e receba convites diretos no WhatsApp.</p>
           <ul className="relative mt-6 space-y-2.5 text-sm">
-            {["Cadastro por áudio ou vídeo", "Sem ficar na fila", "Empresa chama direto", "100% grátis pra começar"].map((t) => (
+            {["Perfil inteligente em 60 segundos", "Match com vagas CLT, PJ e estágio", "Acompanhamento de cada candidatura", "Cadastro 100% gratuito"].map((t) => (
               <li key={t} className="flex items-center gap-2.5">
                 <span className="grid h-5 w-5 place-items-center rounded-full bg-accent/15 text-accent">
                   <Check className="h-3 w-3" strokeWidth={3} />
@@ -620,10 +620,10 @@ function ParaQuem() {
           <div className="relative mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/20 backdrop-blur">
             <Building2 className="h-7 w-7" />
           </div>
-          <h3 className="relative text-3xl font-extrabold tracking-[-0.02em]">Sou empresa</h3>
-          <p className="relative mt-3 text-white/80">Encontre pedreiro, ajudante, doméstica, motorista no seu raio. Filtros por bairro, experiência e disponibilidade.</p>
+          <h3 className="relative text-3xl font-extrabold tracking-[-0.02em]">Para empresas</h3>
+          <p className="relative mt-3 text-white/80">Reduza o tempo de contratação em até 70%. Triagem com IA, candidatos qualificados e integração com seu ATS.</p>
           <ul className="relative mt-6 space-y-2.5 text-sm">
-            {["Publique vaga em 30 segundos", "Receba candidatos qualificados", "Áudio e vídeo do candidato", "Cobramos só quando contrata"].map((t) => (
+            {["Publicação em 30 segundos", "Triagem inteligente por IA", "Vídeo-apresentação do candidato", "Modelo CPC: pague só por contratação"].map((t) => (
               <li key={t} className="flex items-center gap-2.5">
                 <span className="grid h-5 w-5 place-items-center rounded-full bg-[oklch(0.85_0.18_140)]/20 text-[oklch(0.85_0.18_140)]">
                   <Check className="h-3 w-3" strokeWidth={3} />
@@ -633,7 +633,7 @@ function ParaQuem() {
             ))}
           </ul>
           <Link to="/auth" className="btn-touch mt-7 inline-flex w-full items-center justify-center gap-2 bg-white text-primary shadow-pop">
-            Publicar vaga <ArrowRight className="h-4 w-4" />
+            Falar com o time comercial <ArrowRight className="h-4 w-4" />
           </Link>
         </motion.div>
       </motion.div>
@@ -643,9 +643,9 @@ function ParaQuem() {
 
 function Depoimentos() {
   const dep = [
-    { n: "José Almeida", p: "Pedreiro · São Paulo", t: "Cadastrei pelo áudio porque escrevo pouco. Em 2 dias me chamaram pra obra perto de casa.", c: "oklch(0.7 0.15 30)" },
-    { n: "Maria Ribeiro", p: "Doméstica · Rio", t: "Achei dois trabalhos no meu bairro. Não precisei pegar ônibus pra entrevista.", c: "oklch(0.7 0.15 320)" },
-    { n: "Construtora Vale", p: "RH · Belo Horizonte", t: "Em uma semana contratamos 4 ajudantes. Muito melhor que jornal e Facebook.", c: "oklch(0.7 0.15 200)" },
+    { n: "Ana Carolina Souza", p: "Analista Administrativo · São Paulo", t: "Em uma semana fui chamada por 4 empresas. Hoje sou CLT no Itaú — nunca imaginei que seria tão rápido.", c: "oklch(0.7 0.15 30)" },
+    { n: "Rafael Mendes", p: "Vendedor · Belo Horizonte", t: "O perfil em vídeo mudou o jogo. Os recrutadores já chegavam na conversa sabendo quem eu era.", c: "oklch(0.7 0.15 320)" },
+    { n: "Beatriz Oliveira", p: "Head de RH · Magazine Luiza", t: "Reduzimos o tempo médio de contratação de 32 para 9 dias. A qualidade dos candidatos é absurda.", c: "oklch(0.7 0.15 200)" },
   ];
   return (
     <section className="bg-primary py-20 text-primary-foreground md:py-28">
@@ -657,8 +657,8 @@ function Depoimentos() {
           variants={fadeUp}
           className="mx-auto max-w-2xl text-center"
         >
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[oklch(0.78_0.14_220)]">Histórias reais</p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">Gente que já achou.</h2>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[oklch(0.78_0.14_220)]">Quem já está dentro</p>
+          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">Carreiras que decolaram aqui.</h2>
         </motion.div>
 
         <motion.div
@@ -724,32 +724,32 @@ function CTA() {
 
         <div className="relative">
           <div className="mx-auto inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold">
-            <ShieldCheck className="h-3.5 w-3.5 text-accent" /> Sem letra miúda
+            <ShieldCheck className="h-3.5 w-3.5 text-accent" /> Cadastro verificado · LGPD
           </div>
           <h2 className="mx-auto mt-5 max-w-2xl text-4xl font-extrabold tracking-[-0.02em] md:text-6xl">
-            Cadastra em 1 minuto.<br />
-            <span className="text-accent">Pode ser hoje.</span>
+            Sua próxima oportunidade<br />
+            <span className="text-accent">já está aberta.</span>
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-            Trabalhador ou empresa, é só escolher abaixo.
+            Junte-se a 340 mil profissionais que estão a um WhatsApp da próxima vaga.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               to="/cadastro"
               className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-8 py-4 text-base font-bold text-primary-foreground shadow-pop transition active:scale-[0.98]"
             >
-              <HardHat className="h-5 w-5" /> Sou trabalhador
+              <HardHat className="h-5 w-5" /> Quero ser contratado
               <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
             </Link>
             <Link
               to="/auth"
               className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-border bg-background px-8 py-4 text-base font-bold text-foreground transition hover:border-accent active:scale-[0.98]"
             >
-              <Building2 className="h-5 w-5" /> Sou empresa
+              <Building2 className="h-5 w-5" /> Quero contratar
             </Link>
           </div>
           <p className="mt-6 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Clock className="h-3.5 w-3.5" /> Leva menos de 60 segundos
+            <Clock className="h-3.5 w-3.5" /> Perfil completo em menos de 60 segundos
           </p>
         </div>
       </motion.div>
