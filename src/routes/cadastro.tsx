@@ -12,10 +12,10 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/cadastro")({
   head: () => ({
     meta: [
-      { title: "Cadastro — VagasAgora" },
-      { name: "description", content: "Cadastre seu currículo em 1 minuto por áudio, vídeo ou foto e receba vagas perto de você. Grátis." },
-      { property: "og:title", content: "Cadastro — VagasAgora" },
-      { property: "og:description", content: "Gravou áudio ou vídeo, achou vaga." },
+      { title: "Cadastro grátis — VagasAgora" },
+      { name: "description", content: "Cadastre seu currículo em 1 minuto por áudio, vídeo ou foto e receba vagas perto de você. 100% grátis — candidato nunca paga nada pra se candidatar." },
+      { property: "og:title", content: "Cadastro grátis — VagasAgora" },
+      { property: "og:description", content: "Gravou áudio ou vídeo, achou vaga. Sempre grátis pra candidatos." },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "/cadastro" }],
