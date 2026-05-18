@@ -30,7 +30,7 @@ export const Route = createFileRoute("/vagas/$slug")({
   head: ({ loaderData }) => {
     const d = loaderData ?? { profissao: "Vagas", cidade: "Brasil", count: 0, vagas: [] as VagaPublica[] };
     const { profissao, cidade, count } = d;
-    const title = count > 0 ? `${count} vagas de ${profissao} em ${cidade} — Vaga Já` : `Vagas de ${profissao} em ${cidade} — Vaga Já`;
+    const title = count > 0 ? `${count} vagas de ${profissao} em ${cidade} — VagasAgora` : `Vagas de ${profissao} em ${cidade} — VagasAgora`;
     const description = count > 0 ? `${count} vagas de ${profissao} abertas em ${cidade} hoje. Cadastre seu currículo grátis em 1 minuto por áudio e candidate-se direto pelo celular.` : `Vagas de ${profissao} abertas em ${cidade}. Cadastre seu currículo grátis em 1 minuto por áudio.`;
     return {
       meta: [
@@ -75,7 +75,7 @@ function VagasPage() {
           <Link to="/" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground">
             <ArrowLeft className="h-4 w-4" /> Voltar
           </Link>
-          <p className="text-sm font-bold">Vaga Já</p>
+          <p className="text-sm font-bold">VagasAgora</p>
         </div>
       </header>
 
@@ -118,9 +118,9 @@ function VagasPage() {
           </>
         )}
         <section className="mt-10 rounded-3xl bg-secondary p-6">
-          <h2 className="text-lg font-extrabold">Como funciona Vaga Já em {cidade}?</h2>
+          <h2 className="text-lg font-extrabold">Como funciona VagasAgora em {cidade}?</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Vaga Já conecta {profissao.toLowerCase()}s de {cidade} com empresas que estão contratando agora.
+            VagasAgora conecta {profissao.toLowerCase()}s de {cidade} com empresas que estão contratando agora.
             Você grava um áudio de 1 minuto contando suas experiências, montamos seu currículo e empresas
             da região recebem seu perfil. Tudo grátis, direto do celular, sem precisar saber digitar.
           </p>

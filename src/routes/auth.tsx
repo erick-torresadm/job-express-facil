@@ -9,8 +9,8 @@ import type { Role } from "@/hooks/use-auth";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Entrar ou criar conta — Vaga Já" },
-      { name: "description", content: "Crie sua conta de candidato ou empresa na Vaga Já em segundos." },
+      { title: "Entrar ou criar conta — VagasAgora" },
+      { name: "description", content: "Crie sua conta de candidato ou empresa na VagasAgora em segundos." },
     ],
   }),
   component: AuthPage,
@@ -90,7 +90,7 @@ function AuthPage() {
           <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-foreground shadow-pop">
             <Briefcase className="h-5 w-5" />
           </div>
-          <span className="text-xl font-bold tracking-tight">Vaga Já</span>
+          <span className="text-xl font-bold tracking-tight">VagasAgora</span>
         </Link>
 
         <div className="rounded-3xl border-2 border-border bg-card p-6 shadow-soft">

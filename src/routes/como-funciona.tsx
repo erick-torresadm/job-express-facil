@@ -4,7 +4,7 @@ import { Mic, MapPin, Send, Briefcase } from "lucide-react";
 export const Route = createFileRoute("/como-funciona")({
   head: () => ({
     meta: [
-      { title: "Como funciona — Vaga Já" },
+      { title: "Como funciona — VagasAgora" },
       { name: "description", content: "Em 4 passos você acha vaga perto de casa: profissão, bairro, currículo por áudio ou vídeo, e contato." },
     ],
   }),

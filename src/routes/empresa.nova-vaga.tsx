@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/empresa/nova-vaga")({
   head: () => ({
-    meta: [{ title: "Nova vaga — Vaga Já" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Nova vaga — VagasAgora" }, { name: "robots", content: "noindex" }],
   }),
   component: NovaVaga,
 });
