@@ -15,8 +15,8 @@ function slugify(s: string) {
 export const getEmpresaPagina = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase, userId } = context;
-    const { data } = await supabase
+    const { userId } = context;
+    const { data } = await supabaseAdmin
       .from("profiles")
       .select("company_name, full_name, logo_url, cor_primaria, sobre, slug_publico, campos_extras")
       .eq("id", userId)
@@ -41,14 +41,14 @@ export const salvarEmpresaPagina = createServerFn({ method: "POST" })
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    const { userId } = context;
     // garante slug único
     const { data: existing } = await supabaseAdmin
       .from("profiles").select("id").eq("slug_publico", data.slug_publico).maybeSingle();
     if (existing && existing.id !== userId) {
       throw new Error("Esse link já está em uso, escolha outro.");
     }
-    const { error } = await supabase
+    const { error, data: updated } = await supabaseAdmin
       .from("profiles")
       .update({
         slug_publico: data.slug_publico,
@@ -58,8 +58,11 @@ export const salvarEmpresaPagina = createServerFn({ method: "POST" })
         cor_primaria: data.cor_primaria ?? null,
         campos_extras: data.campos_extras,
       })
-      .eq("id", userId);
-    if (error) throw error;
+      .eq("id", userId)
+      .select("id")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!updated) throw new Error("Perfil não encontrado para atualizar.");
     return { ok: true, slug: data.slug_publico };
   });
 
