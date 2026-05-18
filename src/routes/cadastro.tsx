@@ -287,7 +287,7 @@ function GravadorAudio({ onBack, onDone }: { onBack: () => void; onDone: (s: num
   );
 }
 
-function GravadorVideo({ onBack, onDone }: { onBack: () => void; onDone: (s: number) => void }) {
+function GravadorVideo({ onBack, onDone }: { onBack: () => void; onDone: (s: number, blob: Blob, mimeType: string) => void }) {
   const [stage, setStage] = useState<"idle" | "preview" | "recording" | "done">("idle");
   const [seconds, setSeconds] = useState(0);
   const [error, setError] = useState<string | null>(null);
