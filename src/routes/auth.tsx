@@ -26,6 +26,7 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [cpfCnpj, setCpfCnpj] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
