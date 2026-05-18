@@ -95,7 +95,7 @@ function VagasPage() {
 
         <h2 className="mt-8 mb-3 text-lg font-bold">Vagas em destaque</h2>
         <ul className="space-y-3">
-          {vagas.map((v) => (
+          {vagas.map((v: (typeof VAGAS)[number]) => (
             <li key={v.id} className="rounded-2xl border-2 border-border bg-card p-4 shadow-soft">
               <div className="mb-1 flex items-start justify-between gap-2">
                 <h3 className="font-extrabold leading-tight">{v.titulo}</h3>
