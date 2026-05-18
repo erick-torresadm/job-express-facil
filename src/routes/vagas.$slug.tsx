@@ -1,7 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { MapPin, Clock, DollarSign, Flame, ArrowLeft } from "lucide-react";
 import { PROFISSOES, CIDADES } from "@/lib/mock-data";
 import { listarVagasPublicas, type VagaPublica } from "@/lib/vagas.functions";
+import { calcularRotaCusto, calcularMatchScore } from "@/lib/intel.functions";
+import { DistanciaCustoCard, MatchScoreBadge, FraudBadge } from "@/components/VagaCards";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 
 // SEO-first dynamic page: any slug like "pedreiro-em-osasco" renders a populated page.
 // Inspired by faceted search SEO: page exists for crawlers, content is generated on demand.
