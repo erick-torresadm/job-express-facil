@@ -39,9 +39,9 @@ export function SiteHeader() {
               key={l.to}
               to={l.to}
               activeOptions={{ exact: l.to === "/" }}
-              activeProps={{ className: "text-foreground bg-secondary/80" }}
-              inactiveProps={{ className: "text-muted-foreground" }}
-              className="rounded-full px-3.5 py-2 text-sm font-semibold transition-colors hover:bg-secondary/60 hover:text-foreground"
+              activeProps={{ className: "text-primary-foreground bg-white/15" }}
+              inactiveProps={{ className: "text-primary-foreground/70" }}
+              className="rounded-full px-3.5 py-2 text-sm font-semibold transition-colors hover:bg-white/10 hover:text-primary-foreground"
             >
               {l.label}
             </Link>
