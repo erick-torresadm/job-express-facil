@@ -25,9 +25,9 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-3 z-30 px-3 md:top-5 md:px-6">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border border-border/60 bg-background/70 px-4 py-2.5 shadow-pop backdrop-blur-xl supports-[backdrop-filter]:bg-background/50">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border border-white/10 bg-primary/85 px-4 py-2.5 text-primary-foreground shadow-pop backdrop-blur-xl supports-[backdrop-filter]:bg-primary/70">
         <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-          <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-lg font-extrabold tracking-tight text-transparent">
+          <span className="text-lg font-extrabold tracking-tight text-primary-foreground">
             VagasAgora
           </span>
         </Link>
@@ -39,9 +39,9 @@ export function SiteHeader() {
               key={l.to}
               to={l.to}
               activeOptions={{ exact: l.to === "/" }}
-              activeProps={{ className: "text-foreground bg-secondary/80" }}
-              inactiveProps={{ className: "text-muted-foreground" }}
-              className="rounded-full px-3.5 py-2 text-sm font-semibold transition-colors hover:bg-secondary/60 hover:text-foreground"
+              activeProps={{ className: "text-primary-foreground bg-white/15" }}
+              inactiveProps={{ className: "text-primary-foreground/70" }}
+              className="rounded-full px-3.5 py-2 text-sm font-semibold transition-colors hover:bg-white/10 hover:text-primary-foreground"
             >
               {l.label}
             </Link>
@@ -54,21 +54,21 @@ export function SiteHeader() {
               <NotificationBell />
               <Link
                 to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
-                className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-semibold"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-white/25"
               >
                 <UserIcon className="h-4 w-4" /> Minha conta
               </Link>
               <button onClick={handleSignOut} aria-label="Sair"
-                className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground hover:bg-secondary">
+                className="grid h-9 w-9 place-items-center rounded-full text-primary-foreground/80 hover:bg-white/15">
                 <LogOut className="h-4 w-4" />
               </button>
             </>
           ) : (
             <>
-              <Link to="/auth" className="rounded-full px-4 py-2 text-sm font-semibold text-foreground hover:bg-secondary/60">
+              <Link to="/auth" className="rounded-full px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-white/10">
                 Entrar
               </Link>
-              <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:scale-[1.02]">
+              <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-soft transition-transform hover:scale-[1.02]">
                 <Building2 className="h-4 w-4" /> Criar conta
               </Link>
             </>
@@ -79,14 +79,14 @@ export function SiteHeader() {
         <div className="flex items-center gap-2 md:hidden">
           {user && <NotificationBell />}
           {!user && (
-            <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-accent px-3 py-2 text-xs font-semibold text-primary-foreground shadow-soft">
+            <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground shadow-soft">
               Entrar
             </Link>
           )}
           <button
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Fechar menu" : "Abrir menu"}
-            className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card/80"
+            className="grid h-9 w-9 place-items-center rounded-full border border-white/15 bg-primary/80 text-primary-foreground backdrop-blur-xl"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
