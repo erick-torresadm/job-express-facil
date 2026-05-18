@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X, Building2, LogOut, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
@@ -17,12 +17,99 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const { user, role, signOut } = useAuth();
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isHome = pathname === "/";
 
   const handleSignOut = async () => {
     await signOut();
     setOpen(false);
     navigate({ to: "/" });
   };
+
+  if (!isHome) {
+    return (
+      <>
+        <button
+          onClick={() => setOpen(true)}
+          aria-label="Abrir menu"
+          className="fixed left-3 top-3 z-40 grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-primary/85 text-primary-foreground shadow-pop backdrop-blur-xl md:left-5 md:top-5"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+
+        {open && (
+          <div className="fixed inset-0 z-50 flex">
+            <div
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setOpen(false)}
+            />
+            <aside className="relative z-10 flex h-full w-72 max-w-[85vw] flex-col gap-2 border-r border-border/60 bg-background/95 p-4 shadow-pop backdrop-blur-xl">
+              <div className="flex items-center justify-between">
+                <Link to="/" onClick={() => setOpen(false)} className="font-display text-lg font-extrabold tracking-tight text-foreground">
+                  VagasAgora
+                </Link>
+                <button
+                  onClick={() => setOpen(false)}
+                  aria-label="Fechar menu"
+                  className="grid h-9 w-9 place-items-center rounded-full text-foreground hover:bg-secondary"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <nav className="mt-2 flex flex-col">
+                {navLinks.map((l) => (
+                  <Link
+                    key={l.to}
+                    to={l.to}
+                    onClick={() => setOpen(false)}
+                    activeOptions={{ exact: l.to === "/" }}
+                    activeProps={{ className: "text-accent bg-secondary/60" }}
+                    className="block rounded-2xl px-3 py-3 text-base font-semibold text-foreground hover:bg-secondary"
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+              </nav>
+              <div className="my-2 h-px bg-border" />
+              {user ? (
+                <>
+                  {<NotificationBell />}
+                  <Link
+                    to="/perfil"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-2 rounded-2xl px-3 py-3 text-base font-semibold text-foreground hover:bg-secondary"
+                  >
+                    <UserIcon className="h-5 w-5" /> Meu perfil
+                  </Link>
+                  <Link
+                    to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-2 rounded-2xl px-3 py-3 text-base font-semibold text-foreground hover:bg-secondary"
+                  >
+                    <UserIcon className="h-5 w-5" /> Minha conta
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="flex w-full items-center gap-2 rounded-2xl px-3 py-3 text-left text-base font-semibold text-destructive hover:bg-secondary"
+                  >
+                    <LogOut className="h-5 w-5" /> Sair
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/auth"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-accent px-3 py-3 text-base font-semibold text-primary-foreground"
+                >
+                  <Building2 className="h-5 w-5" /> Criar conta
+                </Link>
+              )}
+            </aside>
+          </div>
+        )}
+      </>
+    );
+  }
 
   return (
     <header className="fixed inset-x-0 top-3 z-30 px-3 md:top-5 md:px-6">
