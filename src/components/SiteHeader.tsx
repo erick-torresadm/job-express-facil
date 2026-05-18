@@ -25,7 +25,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-3 z-30 px-3 md:top-5 md:px-6">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border border-border/60 bg-background/70 px-4 py-2.5 shadow-pop backdrop-blur-xl supports-[backdrop-filter]:bg-background/50">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border border-white/10 bg-primary/85 px-4 py-2.5 text-primary-foreground shadow-pop backdrop-blur-xl supports-[backdrop-filter]:bg-primary/70">
         <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
           <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-lg font-extrabold tracking-tight text-transparent">
             VagasAgora
