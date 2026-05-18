@@ -10,7 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ParaEmpresasRouteImport } from './routes/para-empresas'
 import { Route as EmpresaRouteImport } from './routes/empresa'
+import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
 import { Route as EmpresaNovaVagaRouteImport } from './routes/empresa.nova-vaga'
@@ -20,9 +23,24 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ParaEmpresasRoute = ParaEmpresasRouteImport.update({
+  id: '/para-empresas',
+  path: '/para-empresas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmpresaRoute = EmpresaRouteImport.update({
   id: '/empresa',
   path: '/empresa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContatoRoute = ContatoRouteImport.update({
+  id: '/contato',
+  path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComoFuncionaRoute = ComoFuncionaRouteImport.update({
+  id: '/como-funciona',
+  path: '/como-funciona',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -43,14 +61,20 @@ const EmpresaNovaVagaRoute = EmpresaNovaVagaRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/como-funciona': typeof ComoFuncionaRoute
+  '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
+  '/para-empresas': typeof ParaEmpresasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/vagas/$slug': typeof VagasSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/como-funciona': typeof ComoFuncionaRoute
+  '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
+  '/para-empresas': typeof ParaEmpresasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/vagas/$slug': typeof VagasSlugRoute
@@ -58,7 +82,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/como-funciona': typeof ComoFuncionaRoute
+  '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
+  '/para-empresas': typeof ParaEmpresasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/vagas/$slug': typeof VagasSlugRoute
@@ -67,16 +94,30 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/como-funciona'
+    | '/contato'
     | '/empresa'
+    | '/para-empresas'
     | '/sitemap.xml'
     | '/empresa/nova-vaga'
     | '/vagas/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/empresa' | '/sitemap.xml' | '/empresa/nova-vaga' | '/vagas/$slug'
+  to:
+    | '/'
+    | '/como-funciona'
+    | '/contato'
+    | '/empresa'
+    | '/para-empresas'
+    | '/sitemap.xml'
+    | '/empresa/nova-vaga'
+    | '/vagas/$slug'
   id:
     | '__root__'
     | '/'
+    | '/como-funciona'
+    | '/contato'
     | '/empresa'
+    | '/para-empresas'
     | '/sitemap.xml'
     | '/empresa/nova-vaga'
     | '/vagas/$slug'
@@ -84,7 +125,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ComoFuncionaRoute: typeof ComoFuncionaRoute
+  ContatoRoute: typeof ContatoRoute
   EmpresaRoute: typeof EmpresaRouteWithChildren
+  ParaEmpresasRoute: typeof ParaEmpresasRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VagasSlugRoute: typeof VagasSlugRoute
 }
@@ -98,11 +142,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/para-empresas': {
+      id: '/para-empresas'
+      path: '/para-empresas'
+      fullPath: '/para-empresas'
+      preLoaderRoute: typeof ParaEmpresasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/empresa': {
       id: '/empresa'
       path: '/empresa'
       fullPath: '/empresa'
       preLoaderRoute: typeof EmpresaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contato': {
+      id: '/contato'
+      path: '/contato'
+      fullPath: '/contato'
+      preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/como-funciona': {
+      id: '/como-funciona'
+      path: '/como-funciona'
+      fullPath: '/como-funciona'
+      preLoaderRoute: typeof ComoFuncionaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -142,7 +207,10 @@ const EmpresaRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ComoFuncionaRoute: ComoFuncionaRoute,
+  ContatoRoute: ContatoRoute,
   EmpresaRoute: EmpresaRouteWithChildren,
+  ParaEmpresasRoute: ParaEmpresasRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VagasSlugRoute: VagasSlugRoute,
 }

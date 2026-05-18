@@ -2,7 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import {
   Mic, Camera, MapPin, Volume2, Square, Check, Video,
-  Briefcase, Building2, ArrowLeft, Zap, FileDown, Send, SkipForward, Loader2,
+  ArrowLeft, Zap, FileDown, Send, SkipForward, Loader2,
 } from "lucide-react";
 import { PROFISSOES } from "@/lib/mock-data";
 import { analisarCandidato, type PerfilGerado } from "@/lib/ai.functions";
@@ -33,8 +33,7 @@ function CandidatoFlow() {
   const [contato, setContato] = useState<Contato | null>(null);
 
   return (
-    <div className="min-h-screen bg-background">
-      <TopBar />
+    <div className="bg-background">
       <main className="mx-auto max-w-md px-4 pb-24 pt-4">
         <Progress step={step} />
         {step === "profissao" && (
@@ -57,27 +56,6 @@ function CandidatoFlow() {
         )}
       </main>
     </div>
-  );
-}
-
-function TopBar() {
-  return (
-    <header className="sticky top-0 z-10 border-b bg-background/90 backdrop-blur">
-      <div className="mx-auto flex max-w-md items-center justify-between px-4 py-3">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center rounded-xl bg-accent text-accent-foreground shadow-pop">
-            <Briefcase className="h-5 w-5" />
-          </div>
-          <div className="leading-tight">
-            <p className="text-base font-extrabold">Vaga Já</p>
-            <p className="text-[11px] text-muted-foreground">Emprego perto de você</p>
-          </div>
-        </Link>
-        <Link to="/empresa" className="flex items-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">
-          <Building2 className="h-3.5 w-3.5" /> Sou empresa
-        </Link>
-      </div>
-    </header>
   );
 }
 
