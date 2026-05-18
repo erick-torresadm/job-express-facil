@@ -101,22 +101,51 @@ function Narrator({ text }: { text: string }) {
 }
 
 function StepProfissao({ onPick }: { onPick: (id: string) => void }) {
-  const instr = "Toque na profissão que você trabalha.";
+  const [custom, setCustom] = useState("");
+  const instr = "Digite sua profissão ou escolha uma das sugestões abaixo.";
+  const filtradas = custom.trim().length > 0
+    ? PROFISSOES.filter((p) => p.nome.toLowerCase().includes(custom.toLowerCase().trim()))
+    : PROFISSOES;
   return (
     <section>
       <div className="mb-1 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold">O que você faz?</h1>
         <Narrator text={instr} />
       </div>
-      <p className="mb-5 text-sm text-muted-foreground">Toque na sua área de trabalho.</p>
+      <p className="mb-5 text-sm text-muted-foreground">Digite a sua profissão ou use uma sugestão.</p>
+
+      <div className="mb-4">
+        <input
+          value={custom}
+          onChange={(e) => setCustom(e.target.value)}
+          maxLength={80}
+          placeholder="Ex: confeiteira, soldador, recepcionista…"
+          className="h-14 w-full rounded-2xl border-2 border-border bg-card px-4 text-lg outline-none focus:border-primary"
+        />
+        {custom.trim().length >= 2 && (
+          <button
+            onClick={() => onPick(custom.trim())}
+            className="btn-touch shadow-pop mt-3 flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground"
+          >
+            <Check className="h-5 w-5" /> Usar "{custom.trim()}"
+          </button>
+        )}
+      </div>
+
+      <p className="mb-2 text-xs font-bold uppercase text-muted-foreground">Sugestões populares</p>
       <div className="grid grid-cols-2 gap-3">
-        {PROFISSOES.map((p) => (
+        {filtradas.map((p) => (
           <button key={p.id} onClick={() => onPick(p.nome)}
             className="btn-touch flex flex-col items-center justify-center gap-2 border-2 border-border bg-card p-4 text-card-foreground hover:border-accent hover:bg-accent/5">
             <span className="text-4xl">{p.emoji}</span>
             <span className="text-center text-base leading-tight">{p.nome}</span>
           </button>
         ))}
+        {filtradas.length === 0 && (
+          <p className="col-span-2 text-center text-sm text-muted-foreground">
+            Nenhuma sugestão — use o botão acima com a sua profissão.
+          </p>
+        )}
       </div>
     </section>
   );
