@@ -80,14 +80,16 @@ export const criarAssinaturaAsaas = createServerFn({ method: "POST" })
         .eq("id", userId);
     }
 
-    // 2) Cria a assinatura recorrente (PIX/cartão/boleto na primeira fatura)
+    // 2) Cria a assinatura recorrente
+    // Mensal: só cartão (recorrência automática). Anual: cartão, PIX ou boleto.
     const nextDueDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     const cycle = data.ciclo === "anual" ? "YEARLY" : "MONTHLY";
+    const billingType = data.ciclo === "mensal" ? "CREDIT_CARD" : "UNDEFINED";
     const subscription = await asaas<AsaasSubscription>("/subscriptions", {
       method: "POST",
       body: JSON.stringify({
         customer: customerId,
-        billingType: "UNDEFINED", // candidato escolhe PIX/cartão/boleto
+        billingType,
         value: valor,
         nextDueDate,
         cycle,
