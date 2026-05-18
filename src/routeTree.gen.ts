@@ -38,8 +38,11 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminVerificacoesRouteImport } from './routes/admin.verificacoes'
 import { Route as AdminVagasRouteImport } from './routes/admin.vagas'
 import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
+import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminAnunciosRouteImport } from './routes/admin.anuncios'
 import { Route as ApiPublicAsaasWebhookRouteImport } from './routes/api/public/asaas-webhook'
+import { Route as AdminBlogNovoRouteImport } from './routes/admin.blog.novo'
+import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
 import { Route as ApiPublicCronGerarPostRouteImport } from './routes/api/public/cron.gerar-post'
 
 const TermosRoute = TermosRouteImport.update({
@@ -187,6 +190,11 @@ const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
   path: '/admin/usuarios',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminBlogRoute = AdminBlogRouteImport.update({
+  id: '/admin/blog',
+  path: '/admin/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAnunciosRoute = AdminAnunciosRouteImport.update({
   id: '/admin/anuncios',
   path: '/admin/anuncios',
@@ -196,6 +204,16 @@ const ApiPublicAsaasWebhookRoute = ApiPublicAsaasWebhookRouteImport.update({
   id: '/api/public/asaas-webhook',
   path: '/api/public/asaas-webhook',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminBlogNovoRoute = AdminBlogNovoRouteImport.update({
+  id: '/novo',
+  path: '/novo',
+  getParentRoute: () => AdminBlogRoute,
+} as any)
+const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminBlogRoute,
 } as any)
 const ApiPublicCronGerarPostRoute = ApiPublicCronGerarPostRouteImport.update({
   id: '/api/public/cron/gerar-post',
@@ -220,6 +238,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
   '/admin/anuncios': typeof AdminAnunciosRoute
+  '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/vagas': typeof AdminVagasRoute
   '/admin/verificacoes': typeof AdminVerificacoesRoute
@@ -234,6 +253,8 @@ export interface FileRoutesByFullPath {
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/blog/$id': typeof AdminBlogIdRoute
+  '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
 }
@@ -254,6 +275,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
   '/admin/anuncios': typeof AdminAnunciosRoute
+  '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/vagas': typeof AdminVagasRoute
   '/admin/verificacoes': typeof AdminVerificacoesRoute
@@ -268,6 +290,8 @@ export interface FileRoutesByTo {
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/blog/$id': typeof AdminBlogIdRoute
+  '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
 }
@@ -289,6 +313,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
   '/admin/anuncios': typeof AdminAnunciosRoute
+  '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/vagas': typeof AdminVagasRoute
   '/admin/verificacoes': typeof AdminVerificacoesRoute
@@ -303,6 +328,8 @@ export interface FileRoutesById {
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/blog/$id': typeof AdminBlogIdRoute
+  '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
 }
@@ -325,6 +352,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos'
     | '/admin/anuncios'
+    | '/admin/blog'
     | '/admin/usuarios'
     | '/admin/vagas'
     | '/admin/verificacoes'
@@ -339,6 +367,8 @@ export interface FileRouteTypes {
     | '/u/$handle'
     | '/vagas/$slug'
     | '/admin/'
+    | '/admin/blog/$id'
+    | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
   fileRoutesByTo: FileRoutesByTo
@@ -359,6 +389,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos'
     | '/admin/anuncios'
+    | '/admin/blog'
     | '/admin/usuarios'
     | '/admin/vagas'
     | '/admin/verificacoes'
@@ -373,6 +404,8 @@ export interface FileRouteTypes {
     | '/u/$handle'
     | '/vagas/$slug'
     | '/admin'
+    | '/admin/blog/$id'
+    | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
   id:
@@ -393,6 +426,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos'
     | '/admin/anuncios'
+    | '/admin/blog'
     | '/admin/usuarios'
     | '/admin/vagas'
     | '/admin/verificacoes'
@@ -407,6 +441,8 @@ export interface FileRouteTypes {
     | '/u/$handle'
     | '/vagas/$slug'
     | '/admin/'
+    | '/admin/blog/$id'
+    | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
   fileRoutesById: FileRoutesById
@@ -428,6 +464,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermosRoute: typeof TermosRoute
   AdminAnunciosRoute: typeof AdminAnunciosRoute
+  AdminBlogRoute: typeof AdminBlogRouteWithChildren
   AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminVagasRoute: typeof AdminVagasRoute
   AdminVerificacoesRoute: typeof AdminVerificacoesRoute
@@ -646,6 +683,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsuariosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/blog': {
+      id: '/admin/blog'
+      path: '/admin/blog'
+      fullPath: '/admin/blog'
+      preLoaderRoute: typeof AdminBlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/anuncios': {
       id: '/admin/anuncios'
       path: '/admin/anuncios'
@@ -659,6 +703,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/asaas-webhook'
       preLoaderRoute: typeof ApiPublicAsaasWebhookRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/blog/novo': {
+      id: '/admin/blog/novo'
+      path: '/novo'
+      fullPath: '/admin/blog/novo'
+      preLoaderRoute: typeof AdminBlogNovoRouteImport
+      parentRoute: typeof AdminBlogRoute
+    }
+    '/admin/blog/$id': {
+      id: '/admin/blog/$id'
+      path: '/$id'
+      fullPath: '/admin/blog/$id'
+      preLoaderRoute: typeof AdminBlogIdRouteImport
+      parentRoute: typeof AdminBlogRoute
     }
     '/api/public/cron/gerar-post': {
       id: '/api/public/cron/gerar-post'
@@ -697,6 +755,20 @@ const EmpresaRouteChildren: EmpresaRouteChildren = {
 const EmpresaRouteWithChildren =
   EmpresaRoute._addFileChildren(EmpresaRouteChildren)
 
+interface AdminBlogRouteChildren {
+  AdminBlogIdRoute: typeof AdminBlogIdRoute
+  AdminBlogNovoRoute: typeof AdminBlogNovoRoute
+}
+
+const AdminBlogRouteChildren: AdminBlogRouteChildren = {
+  AdminBlogIdRoute: AdminBlogIdRoute,
+  AdminBlogNovoRoute: AdminBlogNovoRoute,
+}
+
+const AdminBlogRouteWithChildren = AdminBlogRoute._addFileChildren(
+  AdminBlogRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
@@ -714,6 +786,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermosRoute: TermosRoute,
   AdminAnunciosRoute: AdminAnunciosRoute,
+  AdminBlogRoute: AdminBlogRouteWithChildren,
   AdminUsuariosRoute: AdminUsuariosRoute,
   AdminVagasRoute: AdminVagasRoute,
   AdminVerificacoesRoute: AdminVerificacoesRoute,
