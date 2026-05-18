@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check, ArrowLeft, Zap } from "lucide-react";
+import { Check, ArrowLeft, Zap, Sparkles, Loader2 } from "lucide-react";
 import { BAIRROS, PROFISSOES } from "@/lib/mock-data";
+import { gerarDescricaoVaga } from "@/lib/ai.functions";
 
 export const Route = createFileRoute("/empresa/nova-vaga")({
   head: () => ({
