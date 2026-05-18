@@ -24,7 +24,7 @@ export const Route = createFileRoute("/cadastro")({
 
 type Step = "profissao" | "local" | "curriculo" | "contato" | "perfil";
 type Midia = { tipo: "audio" | "video"; duracao: number; blob: Blob; mimeType: string } | null;
-type Contato = { nome: string; email: string; whatsapp: string };
+type Contato = { nome: string; email: string; whatsapp: string; senha: string };
 
 async function blobToBase64(blob: Blob): Promise<string> {
   const buf = new Uint8Array(await blob.arrayBuffer());
