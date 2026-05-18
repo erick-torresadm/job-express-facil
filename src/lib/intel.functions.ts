@@ -60,7 +60,6 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number) {
 }
 
 export const calcularRotaCusto = createServerFn({ method: "POST" })
-  .middleware([])
   .inputValidator((input) =>
     z.object({
       origemLat: z.number(), origemLng: z.number(),
