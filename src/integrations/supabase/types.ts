@@ -488,6 +488,45 @@ export type Database = {
         }
         Relationships: []
       }
+      verificacoes: {
+        Row: {
+          comprovante_url: string
+          created_at: string
+          documento_url: string
+          empresa_id: string
+          id: string
+          motivo_rejeicao: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["verificacao_status"]
+          updated_at: string
+        }
+        Insert: {
+          comprovante_url: string
+          created_at?: string
+          documento_url: string
+          empresa_id: string
+          id?: string
+          motivo_rejeicao?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["verificacao_status"]
+          updated_at?: string
+        }
+        Update: {
+          comprovante_url?: string
+          created_at?: string
+          documento_url?: string
+          empresa_id?: string
+          id?: string
+          motivo_rejeicao?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["verificacao_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -507,6 +546,7 @@ export type Database = {
       candidatura_status: "enviado" | "visto" | "em_analise" | "finalizado"
       plano_ciclo: "mensal" | "anual"
       plano_tipo: "basico" | "full"
+      verificacao_status: "pendente" | "aprovado" | "rejeitado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -639,6 +679,7 @@ export const Constants = {
       candidatura_status: ["enviado", "visto", "em_analise", "finalizado"],
       plano_ciclo: ["mensal", "anual"],
       plano_tipo: ["basico", "full"],
+      verificacao_status: ["pendente", "aprovado", "rejeitado"],
     },
   },
 } as const
