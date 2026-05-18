@@ -103,7 +103,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>
@@ -118,16 +118,20 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isEmpresa = pathname.startsWith("/empresa");
+  const hideChrome =
+    pathname.startsWith("/empresa") ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/cadastro") ||
+    pathname.startsWith("/cv/");
 
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col bg-background">
-        {!isEmpresa && <SiteHeader />}
+        {!hideChrome && <SiteHeader />}
         <div className="flex-1">
           <Outlet />
         </div>
-        {!isEmpresa && <SiteFooter />}
+        {!hideChrome && <SiteFooter />}
       </div>
     </QueryClientProvider>
   );
