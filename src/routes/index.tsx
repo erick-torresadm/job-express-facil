@@ -1,608 +1,290 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
-  Mic, Camera, MapPin, Volume2, Square, Check, Video,
-  ArrowLeft, Zap, FileDown, Send, SkipForward, Loader2,
+  MapPin, Mic, Video, Zap, ShieldCheck, Clock, Building2, HardHat,
+  ArrowRight, Star, Check, Sparkles,
 } from "lucide-react";
-import { PROFISSOES } from "@/lib/mock-data";
-import { analisarCandidato, type PerfilGerado } from "@/lib/ai.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Vaga Já — Achei seu emprego no bairro em 3 toques" },
-      { name: "description", content: "Cadastre seu currículo em 1 minuto por áudio, vídeo ou foto e receba vagas de pedreiro, doméstica, motorista, porteiro e ajudante perto de você. Grátis." },
-      { property: "og:title", content: "Vaga Já — Emprego perto de você, sem complicação" },
-      { property: "og:description", content: "Gravou áudio ou vídeo, achou vaga. Cadastro em 3 toques pra trabalhador de verdade." },
+      { title: "Vaga Já — Emprego perto de você, em 3 toques" },
+      { name: "description", content: "Achou seu próximo emprego no bairro. Cadastre-se em 1 minuto por áudio ou vídeo. Vagas para pedreiro, doméstica, motorista, porteiro e mais." },
+      { property: "og:title", content: "Vaga Já — Emprego perto de você" },
+      { property: "og:description", content: "Cadastro em 1 minuto. Achou vaga no bairro." },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "/" }],
   }),
-  component: CandidatoFlow,
+  component: Landing,
 });
 
-type Step = "profissao" | "local" | "curriculo" | "contato" | "perfil";
-type Midia = { tipo: "audio" | "video"; duracao: number } | null;
-type Contato = { nome: string; email: string; whatsapp: string };
-
-function CandidatoFlow() {
-  const [step, setStep] = useState<Step>("profissao");
-  const [profissao, setProfissao] = useState<string | null>(null);
-  const [local, setLocal] = useState<{ bairro: string; cidade: string } | null>(null);
-  const [midia, setMidia] = useState<Midia>(null);
-  const [contato, setContato] = useState<Contato | null>(null);
-
+function Landing() {
   return (
     <div className="bg-background">
-      <main className="mx-auto max-w-md px-4 pb-24 pt-4">
-        <Progress step={step} />
-        {step === "profissao" && (
-          <StepProfissao onPick={(p) => { setProfissao(p); setStep("local"); }} />
-        )}
-        {step === "local" && (
-          <StepLocal onBack={() => setStep("profissao")} onDone={(l) => { setLocal(l); setStep("curriculo"); }} />
-        )}
-        {step === "curriculo" && (
-          <StepCurriculo
-            onBack={() => setStep("local")}
-            onDone={(m) => { setMidia(m); setStep("contato"); }}
-          />
-        )}
-        {step === "contato" && (
-          <StepContato onBack={() => setStep("curriculo")} onDone={(c) => { setContato(c); setStep("perfil"); }} />
-        )}
-        {step === "perfil" && profissao && local && contato && (
-          <StepPerfil profissao={profissao} local={local} midia={midia} contato={contato} />
-        )}
-      </main>
+      <Hero />
+      <Stats />
+      <Como />
+      <Profissoes />
+      <ParaQuem />
+      <Depoimentos />
+      <CTA />
     </div>
   );
 }
 
-function Progress({ step }: { step: Step }) {
-  const order: Step[] = ["profissao", "local", "curriculo", "contato", "perfil"];
-  const idx = order.indexOf(step);
+function Hero() {
   return (
-    <div className="mb-6 flex gap-1.5">
-      {order.map((s, i) => (
-        <div key={s} className={`h-1.5 flex-1 rounded-full ${i <= idx ? "bg-accent" : "bg-muted"}`} />
-      ))}
-    </div>
-  );
-}
+    <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-[oklch(0.22_0.1_255)] text-primary-foreground">
+      <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 20% 10%, oklch(0.6 0.18 240 / 0.4), transparent 40%), radial-gradient(circle at 80% 90%, oklch(0.7 0.18 200 / 0.3), transparent 40%)" }} />
+      <div className="relative mx-auto max-w-6xl px-4 pb-20 pt-12 md:pb-28 md:pt-20">
+        <div className="grid items-center gap-10 md:grid-cols-2">
+          <div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold backdrop-blur ring-1 ring-white/20">
+              <Sparkles className="h-3.5 w-3.5" /> Novo no Brasil
+            </span>
+            <h1 className="mt-4 text-4xl font-extrabold leading-[1.05] tracking-tight md:text-6xl">
+              Achei meu emprego<br />
+              <span className="bg-gradient-to-r from-white to-[oklch(0.85_0.12_220)] bg-clip-text text-transparent">no bairro.</span>
+            </h1>
+            <p className="mt-4 max-w-xl text-base text-white/80 md:text-lg">
+              Grava áudio ou vídeo de 1 minuto e a Vaga Já monta seu currículo. As empresas chamam você no WhatsApp.
+            </p>
 
-function Narrator({ text }: { text: string }) {
-  const speak = () => {
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "pt-BR"; u.rate = 0.95;
-    window.speechSynthesis.speak(u);
-  };
-  return (
-    <button onClick={speak} aria-label="Ouvir instruções"
-      className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
-      <Volume2 className="h-3.5 w-3.5" /> Ouvir
-    </button>
-  );
-}
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Link to="/cadastro"
+                className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 text-base font-bold text-primary shadow-pop transition hover:translate-y-[-1px]">
+                Quero uma vaga
+                <ArrowRight className="h-5 w-5 transition group-hover:translate-x-1" />
+              </Link>
+              <Link to="/auth"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/30 bg-white/10 px-6 py-4 text-base font-bold text-white backdrop-blur transition hover:bg-white/20">
+                <Building2 className="h-5 w-5" /> Sou empresa
+              </Link>
+            </div>
 
-function StepProfissao({ onPick }: { onPick: (id: string) => void }) {
-  const instr = "Toque na profissão que você trabalha.";
-  return (
-    <section>
-      <div className="mb-1 flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold">O que você faz?</h1>
-        <Narrator text={instr} />
+            <div className="mt-6 flex items-center gap-4 text-xs text-white/70">
+              <div className="flex -space-x-2">
+                {["oklch(0.7_0.15_30)","oklch(0.7_0.15_140)","oklch(0.7_0.15_200)","oklch(0.7_0.15_300)"].map((c,i)=>(
+                  <div key={i} className="h-7 w-7 rounded-full ring-2 ring-primary" style={{ background: c }} />
+                ))}
+              </div>
+              <span>+12 mil trabalhadores cadastrados</span>
+            </div>
+          </div>
+
+          {/* Phone mockup */}
+          <div className="relative mx-auto w-full max-w-[300px]">
+            <div className="aspect-[9/19] rounded-[2.5rem] border-[10px] border-[oklch(0.15_0.04_255)] bg-card shadow-2xl">
+              <div className="flex h-full flex-col gap-3 overflow-hidden rounded-[1.75rem] p-4">
+                <div className="rounded-2xl bg-accent/15 p-3">
+                  <div className="flex items-center gap-2">
+                    <div className="grid h-9 w-9 place-items-center rounded-xl bg-accent text-accent-foreground">
+                      <Mic className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-foreground">Gravando…</p>
+                      <p className="text-[10px] text-muted-foreground">00:42 / 01:00</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-border bg-secondary p-3">
+                  <p className="text-[10px] font-bold uppercase text-muted-foreground">Vaga perto</p>
+                  <p className="text-sm font-bold text-foreground">Pedreiro — Tatuapé</p>
+                  <p className="text-xs text-muted-foreground">R$ 180/dia · 1,2 km</p>
+                </div>
+                <div className="rounded-2xl border border-border bg-secondary p-3">
+                  <p className="text-[10px] font-bold uppercase text-muted-foreground">Vaga perto</p>
+                  <p className="text-sm font-bold text-foreground">Ajudante — Mooca</p>
+                  <p className="text-xs text-muted-foreground">R$ 120/dia · 2,8 km</p>
+                </div>
+                <div className="mt-auto rounded-2xl bg-accent p-3 text-accent-foreground">
+                  <p className="text-xs font-bold">Empresa chamou no WhatsApp ✓</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <p className="mb-5 text-sm text-muted-foreground">Toque na sua área de trabalho.</p>
-      <div className="grid grid-cols-2 gap-3">
-        {PROFISSOES.map((p) => (
-          <button key={p.id} onClick={() => onPick(p.nome)}
-            className="btn-touch flex flex-col items-center justify-center gap-2 border-2 border-border bg-card p-4 text-card-foreground hover:border-accent hover:bg-accent/5">
-            <span className="text-4xl">{p.emoji}</span>
-            <span className="text-center text-base leading-tight">{p.nome}</span>
-          </button>
+    </section>
+  );
+}
+
+function Stats() {
+  const items = [
+    { n: "12k+", l: "Trabalhadores" },
+    { n: "1.8k", l: "Vagas/mês" },
+    { n: "< 1min", l: "Pra cadastrar" },
+    { n: "94%", l: "Aprovam" },
+  ];
+  return (
+    <section className="border-y border-border bg-secondary/30">
+      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-8 md:grid-cols-4">
+        {items.map((s) => (
+          <div key={s.l} className="text-center">
+            <p className="text-2xl font-extrabold text-primary md:text-3xl">{s.n}</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{s.l}</p>
+          </div>
         ))}
       </div>
     </section>
   );
 }
 
-function StepLocal({ onBack, onDone }: { onBack: () => void; onDone: (l: { bairro: string; cidade: string }) => void }) {
-  const [loading, setLoading] = useState(false);
-  const [manual, setManual] = useState(false);
-  const [cep, setCep] = useState("");
-
-  const useGps = () => {
-    setLoading(true);
-    setTimeout(() => onDone({ bairro: "Tatuapé", cidade: "São Paulo" }), 1200);
-  };
-
+function Como() {
+  const steps = [
+    { icon: <HardHat className="h-6 w-6" />, t: "Diga sua profissão", d: "Toque na sua área: pedreiro, doméstica, motorista…" },
+    { icon: <MapPin className="h-6 w-6" />, t: "Onde você mora", d: "GPS ou CEP. Achamos vagas no seu bairro." },
+    { icon: <Mic className="h-6 w-6" />, t: "Conte sobre você", d: "Áudio ou vídeo de até 1 minuto. Sem digitar." },
+    { icon: <Zap className="h-6 w-6" />, t: "Empresa chama você", d: "Aprovação direto no seu WhatsApp." },
+  ];
   return (
-    <section>
-      <button onClick={onBack} className="mb-3 inline-flex items-center gap-1 text-sm text-muted-foreground">
-        <ArrowLeft className="h-4 w-4" /> Voltar
-      </button>
-      <div className="mb-1 flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold">Onde você mora?</h1>
-        <Narrator text="Toque no botão verde para encontrar vagas perto de você." />
+    <section className="mx-auto max-w-6xl px-4 py-16 md:py-24">
+      <div className="mx-auto max-w-2xl text-center">
+        <p className="text-xs font-bold uppercase tracking-wider text-accent">Como funciona</p>
+        <h2 className="mt-2 text-3xl font-extrabold tracking-tight md:text-4xl">Três toques e a vaga chegou.</h2>
+        <p className="mt-3 text-muted-foreground">Sem currículo em Word. Sem upload de PDF. Sem complicação.</p>
       </div>
-      <p className="mb-5 text-sm text-muted-foreground">Vamos buscar vagas no seu bairro.</p>
-
-      <button onClick={useGps} disabled={loading}
-        className="btn-touch shadow-pop flex w-full items-center justify-center gap-3 bg-accent px-6 text-accent-foreground disabled:opacity-70">
-        <MapPin className="h-6 w-6" />
-        {loading ? "Procurando seu bairro…" : "Encontrar vagas perto de mim"}
-      </button>
-
-      {!manual ? (
-        <button onClick={() => setManual(true)} className="mt-4 w-full text-sm text-muted-foreground underline">
-          Não quero usar localização — digitar CEP
-        </button>
-      ) : (
-        <div className="mt-5 space-y-3">
-          <input value={cep} onChange={(e) => setCep(e.target.value)} placeholder="Digite seu CEP ou cidade"
-            className="h-14 w-full rounded-2xl border-2 border-border bg-card px-4 text-lg outline-none focus:border-primary" />
-          <button onClick={() => onDone({ bairro: "Centro", cidade: "São Paulo" })}
-            disabled={cep.length < 3}
-            className="btn-touch w-full bg-primary text-primary-foreground disabled:opacity-50">
-            Continuar
-          </button>
-        </div>
-      )}
-    </section>
-  );
-}
-
-function StepCurriculo({ onBack, onDone }: { onBack: () => void; onDone: (m: Midia) => void }) {
-  const [modo, setModo] = useState<"escolher" | "audio" | "video">("escolher");
-
-  if (modo === "audio") return <GravadorAudio onBack={() => setModo("escolher")} onDone={(d) => onDone({ tipo: "audio", duracao: d })} />;
-  if (modo === "video") return <GravadorVideo onBack={() => setModo("escolher")} onDone={(d) => onDone({ tipo: "video", duracao: d })} />;
-
-  return (
-    <section>
-      <button onClick={onBack} className="mb-3 inline-flex items-center gap-1 text-sm text-muted-foreground">
-        <ArrowLeft className="h-4 w-4" /> Voltar
-      </button>
-      <div className="mb-1 flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold">Conte sobre você</h1>
-        <Narrator text="Você pode gravar um áudio, um vídeo de até 1 minuto, ou pular esta etapa." />
-      </div>
-      <p className="mb-6 text-sm text-muted-foreground">Escolha como quer contar suas experiências. Tudo é opcional.</p>
-
-      <div className="space-y-3">
-        <button onClick={() => setModo("audio")}
-          className="btn-touch shadow-pop flex w-full items-center justify-center gap-3 bg-accent text-accent-foreground">
-          <Mic className="h-6 w-6" /> Gravar áudio
-        </button>
-        <button onClick={() => setModo("video")}
-          className="btn-touch shadow-pop flex w-full items-center justify-center gap-3 bg-primary text-primary-foreground">
-          <Video className="h-6 w-6" /> Gravar vídeo (até 1 min)
-        </button>
-        <button className="btn-touch flex w-full items-center justify-center gap-3 border-2 border-border bg-card">
-          <Camera className="h-6 w-6" /> Tirar foto do meu currículo
-        </button>
-        <button onClick={() => onDone(null)}
-          className="btn-touch flex w-full items-center justify-center gap-2 text-muted-foreground">
-          <SkipForward className="h-5 w-5" /> Pular esta etapa
-        </button>
-      </div>
-    </section>
-  );
-}
-
-function GravadorAudio({ onBack, onDone }: { onBack: () => void; onDone: (s: number) => void }) {
-  const [recording, setRecording] = useState(false);
-  const [seconds, setSeconds] = useState(0);
-  const [done, setDone] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const recorderRef = useRef<MediaRecorder | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-
-  useEffect(() => () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-  }, []);
-
-  const start = async () => {
-    setError(null);
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
-      const mr = new MediaRecorder(stream);
-      recorderRef.current = mr;
-      mr.start();
-      setRecording(true); setSeconds(0);
-      intervalRef.current = setInterval(() => {
-        setSeconds((s) => { if (s >= 60) { stop(); return 60; } return s + 1; });
-      }, 1000);
-    } catch (e) {
-      const err = e as { name?: string };
-      setError(err.name === "NotAllowedError" ? "Permita o microfone nas configurações do navegador." : "Não foi possível acessar o microfone.");
-    }
-  };
-
-  const stop = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    recorderRef.current?.stop();
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    setRecording(false); setDone(true);
-  };
-
-  return (
-    <section>
-      <button onClick={onBack} className="mb-3 inline-flex items-center gap-1 text-sm text-muted-foreground">
-        <ArrowLeft className="h-4 w-4" /> Voltar
-      </button>
-      <h1 className="mb-1 text-2xl font-extrabold">Gravar áudio</h1>
-      <p className="mb-6 text-sm text-muted-foreground">Aperte e fale por até 1 minuto sobre suas experiências.</p>
-
-      <div className="rounded-3xl border-2 border-border bg-card p-6 text-center shadow-soft">
-        <button onClick={recording ? stop : start}
-          className={`mx-auto grid h-28 w-28 place-items-center rounded-full transition-all ${
-            recording ? "bg-destructive text-destructive-foreground animate-pulse shadow-pop" : "bg-accent text-accent-foreground shadow-pop active:scale-95"
-          }`} aria-label={recording ? "Parar gravação" : "Gravar áudio"}>
-          {recording ? <Square className="h-10 w-10" fill="currentColor" /> : <Mic className="h-12 w-12" />}
-        </button>
-        <p className="mt-4 font-mono text-2xl font-bold tabular-nums">
-          {String(Math.floor(seconds / 60)).padStart(2, "0")}:{String(seconds % 60).padStart(2, "0")}
-        </p>
-        {done && <p className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-accent"><Check className="h-4 w-4" /> Áudio gravado</p>}
-        {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
-      </div>
-
-      {done && (
-        <button onClick={() => onDone(seconds)}
-          className="btn-touch shadow-pop mt-6 flex w-full items-center justify-center gap-2 bg-primary text-primary-foreground">
-          <Send className="h-5 w-5" /> Usar este áudio
-        </button>
-      )}
-    </section>
-  );
-}
-
-function GravadorVideo({ onBack, onDone }: { onBack: () => void; onDone: (s: number) => void }) {
-  const [stage, setStage] = useState<"idle" | "preview" | "recording" | "done">("idle");
-  const [seconds, setSeconds] = useState(0);
-  const [error, setError] = useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const recorderRef = useRef<MediaRecorder | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-  }, [previewUrl]);
-
-  const start = async () => {
-    setError(null);
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: true });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play().catch(() => {});
-      }
-      chunksRef.current = [];
-      const mr = new MediaRecorder(stream);
-      recorderRef.current = mr;
-      mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-      mr.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "video/webm" });
-        setPreviewUrl(URL.createObjectURL(blob));
-        setStage("done");
-      };
-      mr.start();
-      setStage("recording");
-      setSeconds(0);
-      intervalRef.current = setInterval(() => {
-        setSeconds((s) => { if (s >= 60) { stop(); return 60; } return s + 1; });
-      }, 1000);
-    } catch (e) {
-      const err = e as { name?: string };
-      setError(err.name === "NotAllowedError" ? "Permita a câmera nas configurações do navegador." : err.name === "NotFoundError" ? "Câmera não encontrada." : "Não foi possível acessar a câmera.");
-      setStage("idle");
-    }
-  };
-
-  const stop = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    recorderRef.current?.stop();
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-  };
-
-  return (
-    <section>
-      <button onClick={onBack} className="mb-3 inline-flex items-center gap-1 text-sm text-muted-foreground">
-        <ArrowLeft className="h-4 w-4" /> Voltar
-      </button>
-      <h1 className="mb-1 text-2xl font-extrabold">Gravar vídeo</h1>
-      <p className="mb-6 text-sm text-muted-foreground">Até 1 minuto contando suas experiências. Olhe para a câmera e fale natural.</p>
-
-      <div className="overflow-hidden rounded-3xl border-2 border-border bg-black shadow-soft">
-        {stage === "done" && previewUrl ? (
-          <video src={previewUrl} controls playsInline className="aspect-[3/4] w-full bg-black object-cover" />
-        ) : (
-          <video ref={videoRef} muted playsInline className="aspect-[3/4] w-full bg-black object-cover" />
-        )}
-      </div>
-
-      <div className="mt-4 text-center">
-        <p className="font-mono text-2xl font-bold tabular-nums">
-          {String(Math.floor(seconds / 60)).padStart(2, "0")}:{String(seconds % 60).padStart(2, "0")} <span className="text-sm font-normal text-muted-foreground">/ 01:00</span>
-        </p>
-        {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
-      </div>
-
-      <div className="mt-5">
-        {stage === "idle" && (
-          <button onClick={start} className="btn-touch shadow-pop flex w-full items-center justify-center gap-3 bg-primary text-primary-foreground">
-            <Video className="h-6 w-6" /> Começar gravação
-          </button>
-        )}
-        {stage === "recording" && (
-          <button onClick={stop} className="btn-touch shadow-pop flex w-full items-center justify-center gap-3 bg-destructive text-destructive-foreground">
-            <Square className="h-5 w-5" fill="currentColor" /> Parar gravação
-          </button>
-        )}
-        {stage === "done" && (
-          <div className="space-y-3">
-            <button onClick={() => { setStage("idle"); setSeconds(0); setPreviewUrl(null); }}
-              className="btn-touch w-full border-2 border-border bg-card">
-              Regravar
-            </button>
-            <button onClick={() => onDone(seconds)}
-              className="btn-touch shadow-pop flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground">
-              <Send className="h-5 w-5" /> Usar este vídeo
-            </button>
+      <div className="mt-12 grid gap-5 md:grid-cols-4">
+        {steps.map((s, i) => (
+          <div key={s.t} className="relative rounded-3xl border border-border bg-card p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-pop">
+            <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-primary text-primary-foreground">
+              {s.icon}
+            </div>
+            <p className="text-[10px] font-bold text-muted-foreground">PASSO {i + 1}</p>
+            <h3 className="mt-1 text-lg font-bold">{s.t}</h3>
+            <p className="mt-2 text-sm text-muted-foreground">{s.d}</p>
           </div>
-        )}
+        ))}
       </div>
     </section>
   );
 }
 
-function StepContato({ onBack, onDone }: { onBack: () => void; onDone: (c: Contato) => void }) {
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [whatsapp, setWhatsapp] = useState("");
-  const [erro, setErro] = useState<string | null>(null);
-
-  const formatPhone = (v: string) => {
-    const d = v.replace(/\D/g, "").slice(0, 11);
-    if (d.length <= 2) return d;
-    if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
-    return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
-  };
-
-  const submit = () => {
-    setErro(null);
-    const n = nome.trim(); const e = email.trim(); const w = whatsapp.replace(/\D/g, "");
-    if (n.length < 2) return setErro("Digite seu nome completo.");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) return setErro("Digite um e-mail válido.");
-    if (w.length < 10 || w.length > 11) return setErro("Digite um WhatsApp válido com DDD.");
-    onDone({ nome: n, email: e, whatsapp: w });
-  };
-
+function Profissoes() {
+  const list = [
+    { e: "🧱", n: "Pedreiro" }, { e: "🧹", n: "Doméstica" }, { e: "🚗", n: "Motorista" },
+    { e: "🛡️", n: "Porteiro" }, { e: "🔧", n: "Ajudante" }, { e: "🍳", n: "Cozinheiro" },
+    { e: "📦", n: "Entregador" }, { e: "🌿", n: "Jardineiro" },
+  ];
   return (
-    <section>
-      <button onClick={onBack} className="mb-3 inline-flex items-center gap-1 text-sm text-muted-foreground">
-        <ArrowLeft className="h-4 w-4" /> Voltar
-      </button>
-      <div className="mb-1 flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold">Como falamos com você?</h1>
-        <Narrator text="Digite seu nome, e-mail e WhatsApp para a empresa entrar em contato." />
-      </div>
-      <p className="mb-5 text-sm text-muted-foreground">A empresa vai chamar você no WhatsApp quando aprovar.</p>
-
-      <div className="space-y-4">
-        <Campo label="Seu nome">
-          <input value={nome} onChange={(e) => setNome(e.target.value)} maxLength={120} placeholder="Ex: José Almeida"
-            className="h-14 w-full rounded-2xl border-2 border-border bg-card px-4 text-lg outline-none focus:border-primary" />
-        </Campo>
-        <Campo label="WhatsApp (com DDD)">
-          <input value={whatsapp} onChange={(e) => setWhatsapp(formatPhone(e.target.value))} inputMode="tel" placeholder="(11) 98765-4321"
-            className="h-14 w-full rounded-2xl border-2 border-border bg-card px-4 text-lg outline-none focus:border-primary" />
-        </Campo>
-        <Campo label="E-mail">
-          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" inputMode="email" maxLength={160} placeholder="seuemail@exemplo.com"
-            className="h-14 w-full rounded-2xl border-2 border-border bg-card px-4 text-lg outline-none focus:border-primary" />
-        </Campo>
-
-        {erro && <p className="text-sm font-medium text-destructive">{erro}</p>}
-
-        <button onClick={submit}
-          className="btn-touch shadow-pop flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground">
-          <Send className="h-5 w-5" /> Finalizar cadastro
-        </button>
+    <section className="bg-secondary/30 py-16 md:py-24">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-xs font-bold uppercase tracking-wider text-accent">Vagas perto de você</p>
+          <h2 className="mt-2 text-3xl font-extrabold tracking-tight md:text-4xl">Pra quem faz o Brasil girar.</h2>
+        </div>
+        <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4">
+          {list.map((p) => (
+            <Link key={p.n} to="/cadastro"
+              className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition hover:border-accent hover:shadow-soft">
+              <span className="text-3xl">{p.e}</span>
+              <div>
+                <p className="font-bold">{p.n}</p>
+                <p className="text-xs text-muted-foreground">Ver vagas →</p>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function Campo({ label, children }: { label: string; children: React.ReactNode }) {
+function ParaQuem() {
   return (
-    <label className="block">
-      <span className="mb-1.5 block text-xs font-bold uppercase text-muted-foreground">{label}</span>
-      {children}
-    </label>
-  );
-}
-
-function StepPerfil({ profissao, local, midia, contato }: {
-  profissao: string;
-  local: { bairro: string; cidade: string };
-  midia: Midia;
-  contato: Contato;
-}) {
-  const [perfil, setPerfil] = useState<PerfilGerado | null>(null);
-  const [erro, setErro] = useState<string | null>(null);
-  const router = useRouter();
-
-  useEffect(() => {
-    let cancel = false;
-    (async () => {
-      try {
-        const p = await analisarCandidato({
-          data: {
-            nome: contato.nome,
-            email: contato.email,
-            whatsapp: contato.whatsapp,
-            profissao,
-            bairro: local.bairro,
-            cidade: local.cidade,
-            temAudio: midia?.tipo === "audio",
-            temVideo: midia?.tipo === "video",
-            duracaoSegundos: midia?.duracao ?? 0,
-          },
-        });
-        if (!cancel) setPerfil(p);
-      } catch (e) {
-        if (!cancel) setErro(e instanceof Error ? e.message : "Erro ao gerar perfil");
-      }
-    })();
-    return () => { cancel = true; };
-  }, [contato, profissao, local, midia]);
-
-  if (!perfil && !erro) {
-    return (
-      <section className="py-12 text-center">
-        <Loader2 className="mx-auto h-12 w-12 animate-spin text-accent" />
-        <p className="mt-4 text-lg font-bold">Montando seu currículo…</p>
-        <p className="text-sm text-muted-foreground">Leva uns segundos.</p>
-      </section>
-    );
-  }
-
-  if (erro && !perfil) {
-    return (
-      <section className="space-y-4">
-        <div className="rounded-2xl border-2 border-destructive/30 bg-destructive/5 p-5">
-          <p className="font-bold text-destructive">Não conseguimos gerar seu perfil agora</p>
-          <p className="mt-1 text-sm text-muted-foreground">{erro}</p>
-        </div>
-        <button onClick={() => router.invalidate()}
-          className="btn-touch w-full bg-primary text-primary-foreground">Tentar de novo</button>
-      </section>
-    );
-  }
-
-  const p = perfil!;
-  const dur = midia?.duracao ?? 0;
-
-  return (
-    <section>
-      <div className="mb-4 rounded-3xl bg-gradient-to-br from-accent to-accent/70 p-6 text-accent-foreground shadow-pop">
-        <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-background/30 px-3 py-1 text-xs font-bold">
-          <Check className="h-3.5 w-3.5" /> Currículo pronto
-        </div>
-        <h1 className="text-2xl font-extrabold">Pronto, {contato.nome.split(" ")[0]}!</h1>
-        <p className="text-sm opacity-90">{p.resumo}</p>
-      </div>
-
-      <div className="space-y-3 rounded-3xl border-2 border-border bg-card p-5 shadow-soft">
-        <Field label="Nome" value={contato.nome} />
-        <Field label="WhatsApp" value={contato.whatsapp.replace(/(\d{2})(\d{4,5})(\d{4})/, "($1) $2-$3")} />
-        <Field label="E-mail" value={contato.email} />
-        <Field label="Onde mora" value={`${local.bairro}, ${local.cidade}`} />
-        <Field label="Profissão" value={profissao} />
-        {midia && (
-          <Field label={midia.tipo === "video" ? "Vídeo gravado" : "Áudio gravado"} value={`${dur} segundos`} />
-        )}
-        <div>
-          <p className="mb-1 text-xs font-bold uppercase text-muted-foreground">Experiências</p>
-          <ul className="space-y-1 text-sm">
-            {p.experiencias.map((e, i) => <li key={i}>• {e}</li>)}
-          </ul>
-        </div>
-        <div>
-          <p className="mb-1 text-xs font-bold uppercase text-muted-foreground">Habilidades</p>
-          <div className="flex flex-wrap gap-1.5">
-            {p.habilidades.map((h, i) => (
-              <span key={i} className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">{h}</span>
+    <section className="mx-auto max-w-6xl px-4 py-16 md:py-24">
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="overflow-hidden rounded-3xl border border-border bg-card p-8 shadow-soft">
+          <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
+            <HardHat className="h-6 w-6" />
+          </div>
+          <h3 className="text-2xl font-extrabold">Sou trabalhador</h3>
+          <p className="mt-2 text-muted-foreground">Cadastro grátis, sem precisar saber escrever bem. Vagas no seu bairro caem no seu WhatsApp.</p>
+          <ul className="mt-5 space-y-2 text-sm">
+            {["Cadastro por áudio ou vídeo", "Sem ficar na fila", "Empresa chama direto", "100% grátis pra começar"].map((t) => (
+              <li key={t} className="flex items-center gap-2"><Check className="h-4 w-4 text-accent" /> {t}</li>
             ))}
-          </div>
-        </div>
-      </div>
-
-      {p.dicas.length > 0 && (
-        <div className="mt-4 rounded-2xl border border-border bg-muted/30 p-4">
-          <p className="mb-2 text-xs font-bold uppercase text-muted-foreground">Dicas pra você</p>
-          <ul className="space-y-1 text-sm">
-            {p.dicas.map((d, i) => <li key={i}>💡 {d}</li>)}
           </ul>
+          <Link to="/cadastro" className="btn-touch mt-6 inline-flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground shadow-pop">
+            Criar meu perfil
+          </Link>
         </div>
-      )}
-
-      <h2 className="mt-8 mb-3 text-lg font-extrabold">Turbine seu perfil 🚀</h2>
-
-      <div className="space-y-3">
-        <Upsell
-          icon={<FileDown className="h-7 w-7" />}
-          title="Currículo profissional em PDF"
-          desc="Baixe e mande no WhatsApp ou imprima pra entregar de porta em porta."
-          price="R$ 9,90"
-          cta="Gerar PDF no Pix"
-          variant="primary"
-        />
-        <Upsell
-          icon={<Zap className="h-7 w-7" />}
-          title="Furar fila"
-          desc="Seu perfil aparece no TOPO das buscas das empresas por 7 dias."
-          price="R$ 4,90"
-          cta="Furar fila agora"
-          variant="accent"
-          badge="MAIS VENDIDO"
-        />
+        <div className="overflow-hidden rounded-3xl border border-border bg-primary p-8 text-primary-foreground shadow-soft">
+          <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/20">
+            <Building2 className="h-6 w-6" />
+          </div>
+          <h3 className="text-2xl font-extrabold">Sou empresa</h3>
+          <p className="mt-2 text-white/80">Encontre pedreiro, ajudante, doméstica, motorista no seu raio. Filtros por bairro, experiência e disponibilidade.</p>
+          <ul className="mt-5 space-y-2 text-sm">
+            {["Publique vaga em 30 segundos", "Receba candidatos qualificados", "Áudio e vídeo do candidato", "Cobramos só quando contrata"].map((t) => (
+              <li key={t} className="flex items-center gap-2"><Check className="h-4 w-4 text-[oklch(0.85_0.15_140)]" /> {t}</li>
+            ))}
+          </ul>
+          <Link to="/auth" className="btn-touch mt-6 inline-flex w-full items-center justify-center gap-2 bg-white text-primary shadow-pop">
+            Publicar vaga
+          </Link>
+        </div>
       </div>
-
-      <Link to="/vagas/$slug" params={{ slug: "pedreiro-em-sao-paulo" }}
-        className="btn-touch mt-6 flex w-full items-center justify-center bg-secondary text-secondary-foreground">
-        Ver vagas pra mim →
-      </Link>
     </section>
   );
 }
 
-function Field({ label, value }: { label: string; value: string }) {
+function Depoimentos() {
+  const dep = [
+    { n: "José A.", p: "Pedreiro · SP", t: "Cadastrei pelo áudio porque escrevo pouco. Em 2 dias me chamaram pra obra." },
+    { n: "Maria R.", p: "Doméstica · RJ", t: "Achei dois trabalhos no meu bairro. Não precisei pegar ônibus." },
+    { n: "Construtora Vale", p: "Empresa", t: "Em uma semana contratamos 4 ajudantes. Muito melhor que jornal." },
+  ];
   return (
-    <div>
-      <p className="text-xs font-bold uppercase text-muted-foreground">{label}</p>
-      <p className="text-base font-medium">{value}</p>
-    </div>
+    <section className="bg-secondary/30 py-16 md:py-24">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-xs font-bold uppercase tracking-wider text-accent">Histórias reais</p>
+          <h2 className="mt-2 text-3xl font-extrabold tracking-tight md:text-4xl">Gente que já achou.</h2>
+        </div>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {dep.map((d) => (
+            <figure key={d.n} className="rounded-3xl border border-border bg-card p-6 shadow-soft">
+              <div className="flex gap-0.5 text-warning">
+                {[...Array(5)].map((_,i)=><Star key={i} className="h-4 w-4 fill-current" />)}
+              </div>
+              <blockquote className="mt-3 text-sm leading-relaxed text-foreground">"{d.t}"</blockquote>
+              <figcaption className="mt-4 text-xs">
+                <p className="font-bold">{d.n}</p>
+                <p className="text-muted-foreground">{d.p}</p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
-function Upsell({ icon, title, desc, price, cta, variant, badge }: {
-  icon: React.ReactNode; title: string; desc: string; price: string; cta: string;
-  variant: "primary" | "accent"; badge?: string;
-}) {
-  const bg = variant === "accent" ? "bg-accent text-accent-foreground" : "bg-primary text-primary-foreground";
+function CTA() {
   return (
-    <div className="relative rounded-3xl border-2 border-border bg-card p-5 shadow-soft">
-      {badge && (
-        <span className="absolute -top-2 right-4 rounded-full bg-warning px-3 py-1 text-[10px] font-extrabold text-warning-foreground">
-          {badge}
-        </span>
-      )}
-      <div className="flex items-start gap-3">
-        <div className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${bg}`}>{icon}</div>
-        <div className="flex-1">
-          <h3 className="font-extrabold">{title}</h3>
-          <p className="text-sm text-muted-foreground">{desc}</p>
+    <section className="mx-auto max-w-6xl px-4 py-16 md:py-24">
+      <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-[oklch(0.25_0.13_255)] p-10 text-center text-primary-foreground shadow-pop md:p-16">
+        <div className="mx-auto inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold backdrop-blur ring-1 ring-white/20">
+          <ShieldCheck className="h-3.5 w-3.5" /> Sem letra miúda
         </div>
+        <h2 className="mx-auto mt-4 max-w-2xl text-3xl font-extrabold tracking-tight md:text-5xl">
+          Cadastra em 1 minuto. Pode ser hoje.
+        </h2>
+        <p className="mx-auto mt-3 max-w-lg text-white/80">Trabalhador ou empresa, é só escolher abaixo.</p>
+        <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link to="/cadastro" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-8 py-4 text-base font-bold text-primary shadow-pop">
+            <HardHat className="h-5 w-5" /> Sou trabalhador
+          </Link>
+          <Link to="/auth" className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/30 bg-white/10 px-8 py-4 text-base font-bold text-white backdrop-blur">
+            <Building2 className="h-5 w-5" /> Sou empresa
+          </Link>
+        </div>
+        <p className="mt-5 inline-flex items-center gap-1.5 text-xs text-white/70">
+          <Clock className="h-3.5 w-3.5" /> Leva menos de 60 segundos
+        </p>
       </div>
-      <div className="mt-4 flex items-center justify-between">
-        <p className="text-2xl font-extrabold">{price}</p>
-        <button className={`rounded-full px-5 py-3 text-sm font-bold ${bg} shadow-pop active:scale-95`}>{cta}</button>
-      </div>
-    </div>
+    </section>
   );
 }

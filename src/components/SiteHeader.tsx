@@ -1,6 +1,7 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Briefcase, Menu, X, Building2 } from "lucide-react";
+import { Briefcase, Menu, X, Building2, LogOut, User as UserIcon } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 const navLinks = [
   { to: "/", label: "Início" },
@@ -11,16 +12,24 @@ const navLinks = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const { user, role, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    setOpen(false);
+    navigate({ to: "/" });
+  };
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
         <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-          <div className="grid h-9 w-9 place-items-center rounded-xl bg-accent text-accent-foreground shadow-pop">
+          <div className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-pop">
             <Briefcase className="h-5 w-5" />
           </div>
           <div className="leading-tight">
-            <p className="text-base font-extrabold">Vaga Já</p>
+            <p className="text-base font-extrabold tracking-tight">Vaga Já</p>
             <p className="text-[11px] text-muted-foreground">Emprego perto de você</p>
           </div>
         </Link>
@@ -39,16 +48,38 @@ export function SiteHeader() {
               {l.label}
             </Link>
           ))}
-          <Link to="/empresa" className="ml-2 inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
-            <Building2 className="h-4 w-4" /> Sou empresa
-          </Link>
+          {user ? (
+            <>
+              <Link
+                to={role === "empresa" ? "/empresa" : "/cadastro"}
+                className="ml-2 inline-flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-semibold"
+              >
+                <UserIcon className="h-4 w-4" /> Minha conta
+              </Link>
+              <button onClick={handleSignOut} aria-label="Sair"
+                className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground hover:bg-secondary">
+                <LogOut className="h-4 w-4" />
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/auth" className="ml-2 rounded-full px-4 py-2 text-sm font-semibold text-foreground hover:bg-secondary">
+                Entrar
+              </Link>
+              <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
+                <Building2 className="h-4 w-4" /> Criar conta
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* Mobile actions */}
         <div className="flex items-center gap-2 md:hidden">
-          <Link to="/empresa" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">
-            <Building2 className="h-3.5 w-3.5" /> Empresa
-          </Link>
+          {!user && (
+            <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">
+              Entrar
+            </Link>
+          )}
           <button
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Fechar menu" : "Abrir menu"}
@@ -75,6 +106,27 @@ export function SiteHeader() {
                 {l.label}
               </Link>
             ))}
+            <div className="my-2 h-px bg-border" />
+            {user ? (
+              <>
+                <Link
+                  to={role === "empresa" ? "/empresa" : "/cadastro"}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-xl px-3 py-3 text-base font-semibold text-foreground"
+                >
+                  <UserIcon className="h-5 w-5" /> Minha conta
+                </Link>
+                <button onClick={handleSignOut}
+                  className="flex w-full items-center gap-2 rounded-xl px-3 py-3 text-left text-base font-semibold text-destructive">
+                  <LogOut className="h-5 w-5" /> Sair
+                </button>
+              </>
+            ) : (
+              <Link to="/auth" onClick={() => setOpen(false)}
+                className="flex items-center gap-2 rounded-xl bg-primary px-3 py-3 text-base font-semibold text-primary-foreground">
+                <Building2 className="h-5 w-5" /> Criar conta
+              </Link>
+            )}
           </div>
         </nav>
       )}
