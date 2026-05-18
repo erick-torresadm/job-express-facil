@@ -41,6 +41,7 @@ function CandidatoFlow() {
   const [profissao, setProfissao] = useState<string | null>(null);
   const [local, setLocal] = useState<{ bairro: string; cidade: string } | null>(null);
   const [midia, setMidia] = useState<Midia>(null);
+  const [texto, setTexto] = useState<string>("");
   const [contato, setContato] = useState<Contato | null>(null);
 
   return (
@@ -55,15 +56,16 @@ function CandidatoFlow() {
         )}
         {step === "curriculo" && (
           <StepCurriculo
+            textoInicial={texto}
             onBack={() => setStep("local")}
-            onDone={(m) => { setMidia(m); setStep("contato"); }}
+            onDone={(m, t) => { setMidia(m); setTexto(t); setStep("contato"); }}
           />
         )}
         {step === "contato" && (
           <StepContato onBack={() => setStep("curriculo")} onDone={(c) => { setContato(c); setStep("perfil"); }} />
         )}
         {step === "perfil" && profissao && local && contato && (
-          <StepPerfil profissao={profissao} local={local} midia={midia} contato={contato} />
+          <StepPerfil profissao={profissao} local={local} midia={midia} texto={texto} contato={contato} />
         )}
       </main>
     </div>
