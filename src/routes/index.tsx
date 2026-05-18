@@ -93,17 +93,17 @@ function Hero() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[oklch(0.85_0.18_140)] opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[oklch(0.85_0.18_140)]" />
               </span>
-              847 vagas abertas agora · São Paulo
+              12.847 vagas ativas · atualizado agora
             </motion.span>
 
             <motion.h1
               variants={fadeUp}
               className="mt-5 text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.03em] sm:text-6xl md:text-[4.5rem]"
             >
-              O emprego que cabe na{" "}
+              Sua próxima vaga{" "}
               <span className="relative inline-block">
                 <span className="relative z-10 bg-gradient-to-r from-white via-white to-[oklch(0.78_0.14_220)] bg-clip-text text-transparent">
-                  sua rua.
+                  começa aqui.
                 </span>
                 <motion.svg
                   className="absolute -bottom-2 left-0 w-full"
@@ -127,9 +127,9 @@ function Hero() {
             </motion.h1>
 
             <motion.p variants={fadeUp} className="mt-6 max-w-xl text-base leading-relaxed text-white/75 md:text-lg">
-              Grava 1 minuto de áudio ou vídeo, nossa IA monta seu currículo,
-              e as empresas chamam você no <strong className="font-bold text-white">WhatsApp</strong>.
-              Sem PDF, sem fila, sem letra miúda.
+              Conectamos profissionais a vagas <strong className="font-bold text-white">CLT, PJ e estágio</strong> em
+              milhares de empresas. Crie seu perfil em 1 minuto e seja chamado direto no WhatsApp —
+              sem PDF, sem fila, sem burocracia.
             </motion.p>
 
             <motion.div variants={fadeUp} className="mt-8 flex flex-col gap-3 sm:flex-row">
