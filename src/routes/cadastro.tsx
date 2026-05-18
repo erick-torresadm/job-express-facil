@@ -277,8 +277,8 @@ function GravadorAudio({ onBack, onDone }: { onBack: () => void; onDone: (s: num
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
       </div>
 
-      {done && (
-        <button onClick={() => onDone(seconds)}
+      {done && blob && (
+        <button onClick={() => onDone(seconds, blob, mimeType)}
           className="btn-touch shadow-pop mt-6 flex w-full items-center justify-center gap-2 bg-primary text-primary-foreground">
           <Send className="h-5 w-5" /> Usar este áudio
         </button>
