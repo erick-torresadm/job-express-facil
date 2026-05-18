@@ -123,10 +123,70 @@ function StepLocal({ onBack, onDone }: { onBack: () => void; onDone: (l: { bairr
   const [loading, setLoading] = useState(false);
   const [manual, setManual] = useState(false);
   const [cep, setCep] = useState("");
+  const [erro, setErro] = useState<string | null>(null);
 
   const useGps = () => {
+    setErro(null);
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setErro("Seu navegador não suporta localização. Digite seu CEP abaixo.");
+      setManual(true);
+      return;
+    }
     setLoading(true);
-    setTimeout(() => onDone({ bairro: "Tatuapé", cidade: "São Paulo" }), 1200);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&accept-language=pt-BR&zoom=16`,
+            { headers: { "Accept": "application/json" } },
+          );
+          if (!res.ok) throw new Error("falha geocoder");
+          const data = await res.json() as { address?: Record<string, string> };
+          const a = data.address ?? {};
+          const bairro = a.suburb || a.neighbourhood || a.city_district || a.village || a.town || "Centro";
+          const cidade = a.city || a.town || a.village || a.municipality || a.county || "—";
+          onDone({ bairro, cidade });
+        } catch {
+          setErro("Não conseguimos identificar seu bairro. Digite seu CEP abaixo.");
+          setManual(true);
+        } finally {
+          setLoading(false);
+        }
+      },
+      (err) => {
+        setLoading(false);
+        setErro(
+          err.code === err.PERMISSION_DENIED
+            ? "Você bloqueou a localização. Permita no navegador ou digite o CEP."
+            : err.code === err.POSITION_UNAVAILABLE
+              ? "Localização indisponível agora. Digite seu CEP."
+              : "Tempo esgotado para obter localização. Digite seu CEP.",
+        );
+        setManual(true);
+      },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 },
+    );
+  };
+
+  const buscarCep = async () => {
+    setErro(null);
+    const limpo = cep.replace(/\D/g, "");
+    if (limpo.length !== 8) {
+      setErro("Digite um CEP com 8 dígitos.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${limpo}/json/`);
+      const data = await res.json() as { bairro?: string; localidade?: string; erro?: boolean };
+      if (data.erro) throw new Error("CEP não encontrado");
+      onDone({ bairro: data.bairro || "Centro", cidade: data.localidade || "—" });
+    } catch {
+      setErro("CEP não encontrado. Tente outro.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -146,18 +206,22 @@ function StepLocal({ onBack, onDone }: { onBack: () => void; onDone: (l: { bairr
         {loading ? "Procurando seu bairro…" : "Encontrar vagas perto de mim"}
       </button>
 
+      {erro && <p className="mt-3 text-sm font-medium text-destructive">{erro}</p>}
+
       {!manual ? (
         <button onClick={() => setManual(true)} className="mt-4 w-full text-sm text-muted-foreground underline">
           Não quero usar localização — digitar CEP
         </button>
       ) : (
         <div className="mt-5 space-y-3">
-          <input value={cep} onChange={(e) => setCep(e.target.value)} placeholder="Digite seu CEP ou cidade"
+          <input value={cep} onChange={(e) => {
+            const d = e.target.value.replace(/\D/g, "").slice(0, 8);
+            setCep(d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d);
+          }} inputMode="numeric" placeholder="00000-000"
             className="h-14 w-full rounded-2xl border-2 border-border bg-card px-4 text-lg outline-none focus:border-primary" />
-          <button onClick={() => onDone({ bairro: "Centro", cidade: "São Paulo" })}
-            disabled={cep.length < 3}
+          <button onClick={buscarCep} disabled={loading || cep.replace(/\D/g, "").length !== 8}
             className="btn-touch w-full bg-primary text-primary-foreground disabled:opacity-50">
-            Continuar
+            {loading ? "Buscando…" : "Continuar"}
           </button>
         </div>
       )}
