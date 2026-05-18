@@ -151,9 +151,40 @@ function CheckoutModal({ plano, ciclo, onClose }: {
     nome: user?.user_metadata?.company_name ?? user?.user_metadata?.full_name ?? "",
     email: user?.email ?? "",
     cpfCnpj: "",
-    telefone: "",
+    telefone: user?.user_metadata?.whatsapp ?? "",
   });
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const [loading, setLoading] = useState(false);
+
+  // Puxa dados do perfil para preencher automaticamente
+  useEffect(() => {
+    if (!user) { setLoadingProfile(false); return; }
+    let cancel = false;
+    (async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, company_name, whatsapp, cpf_cnpj")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (cancel) return;
+      if (data) {
+        setForm((f) => ({
+          nome: f.nome || data.company_name || data.full_name || "",
+          email: f.email,
+          cpfCnpj: f.cpfCnpj || data.cpf_cnpj || "",
+          telefone: f.telefone || data.whatsapp || "",
+        }));
+      }
+      setLoadingProfile(false);
+    })();
+    return () => { cancel = true; };
+  }, [user]);
+
+  const cpfDigits = form.cpfCnpj.replace(/\D/g, "");
+  const telDigits = form.telefone.replace(/\D/g, "");
+  const cpfValido = cpfDigits.length === 11 || cpfDigits.length === 14;
+  const telValido = telDigits.length === 0 || telDigits.length >= 10;
+  const podeEnviar = !loading && form.nome.trim().length >= 2 && form.email.includes("@") && cpfValido && telValido;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,9 +193,22 @@ function CheckoutModal({ plano, ciclo, onClose }: {
       navigate({ to: "/auth" });
       return;
     }
+    if (!cpfValido) {
+      toast.error("Informe um CPF (11 dígitos) ou CNPJ (14 dígitos) válido.");
+      return;
+    }
     setLoading(true);
     try {
-      const { invoiceUrl } = await criar({ data: { plano, ciclo, ...form } });
+      const { invoiceUrl } = await criar({
+        data: {
+          plano,
+          ciclo,
+          nome: form.nome.trim(),
+          email: form.email.trim(),
+          cpfCnpj: cpfDigits,
+          telefone: telDigits || undefined,
+        },
+      });
       window.location.href = invoiceUrl;
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao criar assinatura");
@@ -186,26 +230,44 @@ function CheckoutModal({ plano, ciclo, onClose }: {
           </button>
         </div>
 
-        <div className="mt-4 space-y-3">
-          <Field label="Nome / Razão social" value={form.nome}
-            onChange={(v) => setForm((f) => ({ ...f, nome: v }))} required />
-          <Field label="E-mail" type="email" value={form.email}
-            onChange={(v) => setForm((f) => ({ ...f, email: v }))} required />
-          <Field label="CPF ou CNPJ" value={form.cpfCnpj}
-            onChange={(v) => setForm((f) => ({ ...f, cpfCnpj: v }))}
-            placeholder="Apenas números" required />
-          <Field label="WhatsApp (opcional)" value={form.telefone}
-            onChange={(v) => setForm((f) => ({ ...f, telefone: v }))}
-            placeholder="11999999999" />
-        </div>
+        {loadingProfile ? (
+          <div className="mt-6 flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" /> Carregando seus dados…
+          </div>
+        ) : (
+          <>
+            <div className="mt-4 space-y-3">
+              <Field label="Nome / Razão social" value={form.nome}
+                onChange={(v) => setForm((f) => ({ ...f, nome: v }))} required />
+              <Field label="E-mail" type="email" value={form.email}
+                onChange={(v) => setForm((f) => ({ ...f, email: v }))} required />
+              <div>
+                <Field label="CPF ou CNPJ" value={form.cpfCnpj}
+                  onChange={(v) => setForm((f) => ({ ...f, cpfCnpj: v }))}
+                  placeholder="Apenas números" required />
+                {form.cpfCnpj && !cpfValido && (
+                  <p className="mt-1 text-[11px] text-destructive">Use 11 dígitos (CPF) ou 14 (CNPJ).</p>
+                )}
+              </div>
+              <div>
+                <Field label="WhatsApp (com DDD)" value={form.telefone}
+                  onChange={(v) => setForm((f) => ({ ...f, telefone: v }))}
+                  placeholder="11999999999" />
+                {form.telefone && !telValido && (
+                  <p className="mt-1 text-[11px] text-destructive">Informe pelo menos 10 dígitos (DDD + número).</p>
+                )}
+              </div>
+            </div>
 
-        <button type="submit" disabled={loading}
-          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-bold text-accent-foreground disabled:opacity-60">
-          {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Gerando link...</> : "Ir para pagamento →"}
-        </button>
-        <p className="mt-3 text-center text-[11px] text-muted-foreground">
-          Você será redirecionado para o ambiente seguro do Asaas para escolher Pix, cartão ou boleto.
-        </p>
+            <button type="submit" disabled={!podeEnviar}
+              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-bold text-accent-foreground disabled:opacity-60">
+              {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Gerando link...</> : "Ir para pagamento →"}
+            </button>
+            <p className="mt-3 text-center text-[11px] text-muted-foreground">
+              Você será redirecionado para o ambiente seguro do Asaas para escolher Pix, cartão ou boleto.
+            </p>
+          </>
+        )}
       </form>
     </div>
   );
