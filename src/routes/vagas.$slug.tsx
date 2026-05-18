@@ -5,6 +5,8 @@ import { PROFISSOES, CIDADES } from "@/lib/mock-data";
 import { listarVagasPublicas, type VagaPublica } from "@/lib/vagas.functions";
 import { calcularRotaCusto, calcularMatchScore } from "@/lib/intel.functions";
 import { DistanciaCustoCard, MatchScoreBadge, FraudBadge } from "@/components/VagaCards";
+import { VagaActions } from "@/components/VagaActions";
+import { CriarAlertaCard } from "@/components/CriarAlertaCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
