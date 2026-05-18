@@ -259,6 +259,27 @@ export type Database = {
           },
         ]
       }
+      follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
       notificacoes: {
         Row: {
           created_at: string
@@ -338,12 +359,15 @@ export type Database = {
         Row: {
           asaas_customer_id: string | null
           avatar_url: string | null
+          bio_social: string | null
           campos_extras: Json
           company_name: string | null
           cor_primaria: string | null
+          cover_url: string | null
           cpf_cnpj: string | null
           created_at: string
           full_name: string | null
+          handle: string | null
           id: string
           logo_url: string | null
           slug_publico: string | null
@@ -355,12 +379,15 @@ export type Database = {
         Insert: {
           asaas_customer_id?: string | null
           avatar_url?: string | null
+          bio_social?: string | null
           campos_extras?: Json
           company_name?: string | null
           cor_primaria?: string | null
+          cover_url?: string | null
           cpf_cnpj?: string | null
           created_at?: string
           full_name?: string | null
+          handle?: string | null
           id: string
           logo_url?: string | null
           slug_publico?: string | null
@@ -372,12 +399,15 @@ export type Database = {
         Update: {
           asaas_customer_id?: string | null
           avatar_url?: string | null
+          bio_social?: string | null
           campos_extras?: Json
           company_name?: string | null
           cor_primaria?: string | null
+          cover_url?: string | null
           cpf_cnpj?: string | null
           created_at?: string
           full_name?: string | null
+          handle?: string | null
           id?: string
           logo_url?: string | null
           slug_publico?: string | null
