@@ -1,13 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { Printer, Share2, MessageCircle, Mail, MapPin, Briefcase, Check, ArrowLeft, Copy } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Printer, Share2, MessageCircle, MapPin, Briefcase, Check, ArrowLeft, Copy, Lock } from "lucide-react";
+import { getCurriculoPublico } from "@/lib/curriculo.functions";
 
 type Curriculo = {
   slug: string;
   nome: string;
-  email: string | null;
-  whatsapp: string | null;
   profissao: string;
   bairro: string | null;
   cidade: string | null;
@@ -23,12 +21,7 @@ type Curriculo = {
 
 export const Route = createFileRoute("/cv/$slug")({
   loader: async ({ params }) => {
-    const { data, error } = await supabase
-      .from("curriculos")
-      .select("*")
-      .eq("slug", params.slug)
-      .maybeSingle();
-    if (error) throw new Error(error.message);
+    const data = await getCurriculoPublico({ data: { slug: params.slug } });
     if (!data) throw notFound();
     return data as Curriculo;
   },
@@ -64,10 +57,6 @@ export const Route = createFileRoute("/cv/$slug")({
   ),
 });
 
-function fmtPhone(w: string | null) {
-  if (!w) return "";
-  return w.replace(/\D/g, "").replace(/(\d{2})(\d{4,5})(\d{4})/, "($1) $2-$3");
-}
 
 function CurriculoPage() {
   const cv = Route.useLoaderData() as Curriculo;
@@ -143,20 +132,15 @@ function CurriculoPage() {
             </p>
           </header>
 
-          {/* Contact */}
-          <section className="grid grid-cols-1 gap-3 border-b border-border bg-muted/40 px-8 py-5 sm:grid-cols-2 print:bg-white">
-            {cv.whatsapp && (
-              <div className="flex items-center gap-2 text-sm">
-                <MessageCircle className="h-4 w-4 text-accent" />
-                <span className="font-semibold">{fmtPhone(cv.whatsapp)}</span>
+          {/* Contato protegido — só empresas verificadas após revelar */}
+          <section className="border-b border-border bg-muted/40 px-8 py-5 print:bg-white">
+            <div className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 text-sm">
+              <Lock className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
+              <div>
+                <p className="font-bold text-foreground">Contato protegido</p>
+                <p className="mt-1 text-muted-foreground">WhatsApp e e-mail aparecem apenas para empresas após revelar o contato pelo painel.</p>
               </div>
-            )}
-            {cv.email && (
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4 text-accent" />
-                <span className="font-semibold break-all">{cv.email}</span>
-              </div>
-            )}
+            </div>
           </section>
 
           {/* Body */}
