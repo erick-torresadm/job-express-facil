@@ -101,7 +101,13 @@ export const updateMeuPerfil = createServerFn({ method: "POST" })
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    const patch: Record<string, unknown> = {};
+    const patch: {
+      handle?: string | null;
+      bio_social?: string | null;
+      avatar_url?: string | null;
+      cover_url?: string | null;
+      full_name?: string;
+    } = {};
     if (data.handle !== undefined) patch.handle = data.handle;
     if (data.bio_social !== undefined) patch.bio_social = data.bio_social;
     if (data.avatar_url !== undefined) patch.avatar_url = data.avatar_url;
