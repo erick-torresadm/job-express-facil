@@ -138,8 +138,7 @@ function Hero() {
                 className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-white px-7 py-4 text-base font-bold text-primary shadow-pop transition active:scale-[0.98]"
               >
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-                <span className="relative">Quero uma vaga</span>
-                <ArrowRight className="relative h-5 w-5 transition group-hover:translate-x-1" />
+                <span className="relative">Encontrar vagas</span>
               </Link>
               <Link
                 to="/auth"
