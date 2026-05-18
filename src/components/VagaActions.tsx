@@ -57,6 +57,7 @@ export function VagaActions({ vaga, empresaId }: { vaga: VagaPublica; empresaId?
     <div className="mt-3 flex gap-2">
       <button onClick={() => (user ? setShowApply(true) : null)}
         disabled={candidatado}
+        data-sound={candidatado ? "none" : "pop"}
         className={`flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-sm font-bold transition ${
           candidatado ? "bg-accent/20 text-accent" : "bg-accent text-accent-foreground hover:opacity-90"
         }`}>
@@ -68,6 +69,7 @@ export function VagaActions({ vaga, empresaId }: { vaga: VagaPublica; empresaId?
         </Link>
       )}
       <button onClick={toggleFav} title={fav ? "Remover" : "Salvar"}
+        data-sound={fav ? "pop" : "like"}
         className={`grid h-10 w-10 place-items-center rounded-xl border border-border ${fav ? "bg-destructive/10 text-destructive" : "bg-card"}`}>
         <Heart className={`h-4 w-4 ${fav ? "fill-current" : ""}`} />
       </button>
