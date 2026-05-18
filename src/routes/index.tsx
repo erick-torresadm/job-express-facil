@@ -620,10 +620,10 @@ function ParaQuem() {
           <div className="relative mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/20 backdrop-blur">
             <Building2 className="h-7 w-7" />
           </div>
-          <h3 className="relative text-3xl font-extrabold tracking-[-0.02em]">Sou empresa</h3>
-          <p className="relative mt-3 text-white/80">Encontre pedreiro, ajudante, doméstica, motorista no seu raio. Filtros por bairro, experiência e disponibilidade.</p>
+          <h3 className="relative text-3xl font-extrabold tracking-[-0.02em]">Para empresas</h3>
+          <p className="relative mt-3 text-white/80">Reduza o tempo de contratação em até 70%. Triagem com IA, candidatos qualificados e integração com seu ATS.</p>
           <ul className="relative mt-6 space-y-2.5 text-sm">
-            {["Publique vaga em 30 segundos", "Receba candidatos qualificados", "Áudio e vídeo do candidato", "Cobramos só quando contrata"].map((t) => (
+            {["Publicação em 30 segundos", "Triagem inteligente por IA", "Vídeo-apresentação do candidato", "Modelo CPC: pague só por contratação"].map((t) => (
               <li key={t} className="flex items-center gap-2.5">
                 <span className="grid h-5 w-5 place-items-center rounded-full bg-[oklch(0.85_0.18_140)]/20 text-[oklch(0.85_0.18_140)]">
                   <Check className="h-3 w-3" strokeWidth={3} />
@@ -633,7 +633,7 @@ function ParaQuem() {
             ))}
           </ul>
           <Link to="/auth" className="btn-touch mt-7 inline-flex w-full items-center justify-center gap-2 bg-white text-primary shadow-pop">
-            Publicar vaga <ArrowRight className="h-4 w-4" />
+            Falar com o time comercial <ArrowRight className="h-4 w-4" />
           </Link>
         </motion.div>
       </motion.div>
