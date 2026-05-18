@@ -68,6 +68,7 @@ export const calcularRotaCusto = createServerFn({ method: "POST" })
     }).parse(input),
   )
   .handler(async ({ data }) => {
+    rateLimit("calcularRotaCusto", 10, 60_000);
     let km = 0;
     let minutosCarro = 0;
 
