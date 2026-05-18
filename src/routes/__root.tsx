@@ -11,6 +11,7 @@ import {
 
 import appCss from "../styles.css?url";
 import { SiteHeader } from "@/components/SiteHeader";
+import { TrendingMenu } from "@/components/TrendingMenu";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { CookieConsent } from "@/components/CookieConsent";
@@ -173,6 +174,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col bg-background">
         {!hideChrome && <SiteHeader />}
+        {!hideChrome && <TrendingMenu />}
         <div className="flex-1">
           <Outlet />
         </div>
