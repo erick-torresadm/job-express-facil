@@ -5,6 +5,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/use-auth";
 import { getRevelacoesInfo, getEmpresaDashboard } from "@/lib/empresa.functions";
+import { CandidatosList } from "@/components/CandidatosList";
+
 
 
 export const Route = createFileRoute("/empresa")({
