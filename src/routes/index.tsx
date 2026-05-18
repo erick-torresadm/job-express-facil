@@ -477,9 +477,9 @@ function Como() {
       >
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Como funciona</p>
         <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">
-          Três toques. <span className="text-muted-foreground">A vaga chegou.</span>
+          Do perfil à entrevista <span className="text-muted-foreground">em 48 horas.</span>
         </h2>
-        <p className="mt-4 text-muted-foreground">Sem currículo em Word. Sem upload de PDF. Sem complicação.</p>
+        <p className="mt-4 text-muted-foreground">Esqueça PDFs, anexos e cartas de apresentação. A gente cuida do processo, você foca na vaga.</p>
       </motion.div>
 
       <motion.div
