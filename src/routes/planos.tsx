@@ -158,8 +158,7 @@ function PlanosPage() {
           </table>
         </div>
         <p className="mt-3 text-center text-[11px] text-muted-foreground">
-          Comparativo informativo baseado em valores e recursos divulgados publicamente nos sites oficiais de Catho, Infojobs e Vagas.com (mai/2026).
-          Marcas citadas pertencem aos respectivos titulares — VagasAgora não possui vínculo com elas. Valores aproximados, sujeitos a alteração; consulte cada serviço para condições atualizadas.
+          Comparativo ilustrativo baseado em faixas de preço praticadas por portais de emprego tradicionais do mercado brasileiro. Valores aproximados, sujeitos a alteração — consulte cada serviço para condições atualizadas.
         </p>
       </section>
 
