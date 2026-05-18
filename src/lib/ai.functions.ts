@@ -10,7 +10,11 @@ function slugify(s: string) {
 const GEMINI_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
-async function callGemini(system: string, user: string): Promise<string> {
+type Part =
+  | { text: string }
+  | { inline_data: { mime_type: string; data: string } };
+
+async function callGemini(system: string, parts: Part[]): Promise<string> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error("GEMINI_API_KEY não configurada");
 
@@ -19,8 +23,8 @@ async function callGemini(system: string, user: string): Promise<string> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: system }] },
-      contents: [{ role: "user", parts: [{ text: user }] }],
-      generationConfig: { temperature: 0.7, responseMimeType: "application/json" },
+      contents: [{ role: "user", parts }],
+      generationConfig: { temperature: 0.5, responseMimeType: "application/json" },
     }),
   });
 
@@ -53,6 +57,9 @@ const analisarSchema = z.object({
   temAudio: z.boolean(),
   temVideo: z.boolean(),
   duracaoSegundos: z.number().min(0).max(120),
+  // Base64 puro (sem o prefixo data:) — opcional
+  midiaBase64: z.string().max(15_000_000).optional(),
+  midiaMimeType: z.string().max(80).optional(),
 });
 
 export type PerfilGerado = {
@@ -60,6 +67,7 @@ export type PerfilGerado = {
   experiencias: string[];
   habilidades: string[];
   dicas: string[];
+  transcricao: string;
   slug: string;
 };
 
@@ -67,30 +75,41 @@ export const analisarCandidato = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => analisarSchema.parse(d))
   .handler(async ({ data }): Promise<PerfilGerado> => {
     const sys =
-      "Você é um redator de currículos para trabalhadores brasileiros do mercado operacional (pedreiro, doméstica, motorista, porteiro, ajudante). Escreva em português brasileiro simples, direto e respeitoso. Sempre responda com APENAS um JSON válido no formato pedido, sem markdown.";
+      "Você é um redator de currículos para trabalhadores brasileiros do mercado operacional (pedreiro, doméstica, motorista, porteiro, ajudante, cozinheira, etc). Quando receber um áudio ou vídeo, PRIMEIRO transcreva fielmente o que a pessoa falou em português, e depois use APENAS o que foi dito para preencher experiências e habilidades. Não invente informação. Se a pessoa não falou sobre algo específico, deixe genérico mas honesto. Escreva em português brasileiro simples, direto e respeitoso. Sempre responda APENAS um JSON válido, sem markdown.";
 
-    const mid = data.temVideo
-      ? `O candidato gravou um vídeo de ${data.duracaoSegundos}s contando suas experiências.`
-      : data.temAudio
-        ? `O candidato gravou um áudio de ${data.duracaoSegundos}s contando suas experiências.`
-        : "O candidato não gravou áudio nem vídeo — gere um perfil base só com a profissão.";
+    const temMidia = !!(data.midiaBase64 && data.midiaMimeType);
 
-    const user = `Monte um perfil profissional para o candidato abaixo.
+    const instrucao = temMidia
+      ? `O candidato gravou ${data.temVideo ? "um vídeo" : "um áudio"} de ${data.duracaoSegundos}s contando sobre ele. ESCUTE com atenção a gravação anexada e baseie TODO o currículo no que ele realmente falou.`
+      : "O candidato não gravou áudio nem vídeo — gere um perfil base, modesto, baseado apenas na profissão.";
 
-Nome: ${data.nome}
-Profissão: ${data.profissao}
-Mora em: ${data.bairro}, ${data.cidade}
-${mid}
+    const pedido = `${instrucao}
 
-Responda em JSON com este formato exato:
+Dados do candidato:
+- Nome: ${data.nome}
+- Profissão declarada: ${data.profissao}
+- Cidade: ${data.bairro}, ${data.cidade}
+
+Responda em JSON EXATAMENTE neste formato:
 {
-  "resumo": "1 frase curta vendendo o candidato (máx 140 caracteres)",
-  "experiencias": ["3 a 4 bullets curtos de experiência típica de quem trabalha como ${data.profissao}"],
-  "habilidades": ["4 a 6 habilidades práticas em 1-2 palavras cada"],
-  "dicas": ["2 dicas curtas pro candidato conseguir mais entrevistas"]
+  "transcricao": "${temMidia ? "transcrição literal e completa do que a pessoa falou, em português, pontuação natural" : ""}",
+  "resumo": "1 frase curta (máx 140 caracteres) vendendo o candidato com base no que ele falou",
+  "experiencias": ["3 a 5 bullets curtos, cada um descrevendo uma experiência REAL mencionada na gravação (locais, tempo, tarefas). Se a gravação foi vaga, gere bullets típicos da profissão"],
+  "habilidades": ["4 a 8 habilidades práticas em 1-3 palavras cada, EXTRAÍDAS do que a pessoa falou quando possível"],
+  "dicas": ["2 dicas curtas e práticas pro candidato conseguir mais entrevistas"]
 }`;
 
-    const text = await callGemini(sys, user);
+    const parts: Part[] = [{ text: pedido }];
+    if (temMidia) {
+      parts.push({
+        inline_data: {
+          mime_type: data.midiaMimeType!,
+          data: data.midiaBase64!,
+        },
+      });
+    }
+
+    const text = await callGemini(sys, parts);
     const perfil = extractJson<Omit<PerfilGerado, "slug">>(text);
 
     const slug = `${slugify(data.nome)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -106,6 +125,7 @@ Responda em JSON com este formato exato:
       experiencias: perfil.experiencias,
       habilidades: perfil.habilidades,
       dicas: perfil.dicas,
+      transcricao: perfil.transcricao ?? "",
       tem_audio: data.temAudio,
       tem_video: data.temVideo,
       duracao_segundos: data.duracaoSegundos,
@@ -142,6 +162,6 @@ Responda em JSON:
   "descricao": "2 a 3 frases convidando o candidato a se inscrever, em tom acolhedor",
   "requisitos": ["3 a 5 requisitos práticos curtos"]
 }`;
-    const text = await callGemini(sys, user);
+    const text = await callGemini(sys, [{ text: user }]);
     return extractJson(text);
   });
