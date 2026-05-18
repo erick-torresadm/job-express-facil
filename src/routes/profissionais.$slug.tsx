@@ -39,7 +39,8 @@ export const Route = createFileRoute("/profissionais/$slug")({
     return { profissao, cidade, profSlug, profissionais };
   },
   head: ({ loaderData, params }) => {
-    const d = loaderData ?? { profissao: "Profissionais", cidade: "Brasil", profissionais: [] as Array<{ id: string; profissao: string; bairro: string | null; cidade: string | null; resumo: string }> };
+    type Prof = { id: string; profissao: string; bairro: string | null; cidade: string | null; resumo: string };
+    const d = (loaderData ?? { profissao: "Profissionais", cidade: "Brasil", profissionais: [] as Prof[] }) as { profissao: string; cidade: string; profissionais: Prof[] };
     const { profissao, cidade, profissionais } = d;
     const count = profissionais.length;
     const title =
