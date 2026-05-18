@@ -271,29 +271,8 @@ function PhoneMockup() {
             </div>
           </motion.div>
 
-          {[
-            { t: "Pedreiro — Tatuapé", s: "R$ 180/dia · 1,2 km", c: "oklch(0.7 0.15 30)" },
-            { t: "Ajudante — Mooca", s: "R$ 120/dia · 2,8 km", c: "oklch(0.7 0.15 140)" },
-          ].map((j, i) => (
-            <motion.div
-              key={j.t}
-              className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1 + i * 0.15, duration: 0.5 }}
-            >
-              <div className="h-10 w-10 shrink-0 rounded-xl" style={{ background: j.c }} />
-              <div className="flex-1 min-w-0">
-                <p className="truncate text-sm font-bold text-foreground">{j.t}</p>
-                <p className="text-[11px] text-muted-foreground">{j.s}</p>
-              </div>
-              <Check className="h-4 w-4 text-accent" />
-            </motion.div>
-          ))}
+          <WhatsappFeed />
 
-          <div className="mt-auto rounded-2xl bg-[oklch(0.85_0.15_140)]/15 p-3 ring-1 ring-[oklch(0.7_0.15_140)]/30">
-            <p className="text-xs font-bold text-[oklch(0.4_0.15_140)]">✓ 2 empresas chamaram hoje</p>
-          </div>
         </div>
       </div>
     </motion.div>
