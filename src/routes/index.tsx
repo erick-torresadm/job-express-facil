@@ -724,9 +724,29 @@ function LiveActivity() {
 
 
 function Marquee() {
-  const items = ["Magazine Luiza", "Itaú", "iFood", "Ambev", "Natura", "Renner", "Bradesco", "Localiza", "Stone", "Mercado Livre", "Nubank", "Vivo", "Carrefour", "Boticário"];
+  const items = [
+    "Varejo & Atacado",
+    "Construção Civil",
+    "Saúde & Hospitais",
+    "Logística & Entregas",
+    "Indústria & Produção",
+    "Alimentação & Restaurantes",
+    "Bancos & Fintechs",
+    "Tecnologia & TI",
+    "Educação & Cursos",
+    "Telecom & Atendimento",
+    "Beleza & Estética",
+    "Transporte & Mobilidade",
+    "Hotelaria & Turismo",
+    "Agro & Cooperativas",
+  ];
   return (
     <section className="relative overflow-hidden border-y border-border bg-card py-5">
+      <div className="mb-3 text-center">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+          Setores que já contratam pela plataforma
+        </p>
+      </div>
       <motion.div
         className="flex gap-12 whitespace-nowrap"
         animate={{ x: ["0%", "-50%"] }}
