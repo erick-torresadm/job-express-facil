@@ -984,6 +984,10 @@ function StepPerfil({ profissao, local, midia, texto, contato }: {
         <FileDown className="h-5 w-5" /> Ver, baixar PDF e compartilhar
       </Link>
 
+      <LinkedinCard slug={p.slug} />
+
+
+
       <h2 className="mt-8 mb-3 text-lg font-extrabold">Turbine seu perfil 🚀</h2>
 
       <div className="space-y-3">
