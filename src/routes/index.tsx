@@ -222,7 +222,7 @@ function PhoneMockup() {
           </div>
           <div>
             <p className="text-[10px] font-bold uppercase text-muted-foreground">Match</p>
-            <p className="text-xs font-bold">3 vagas a 1,2 km</p>
+            <p className="text-xs font-bold">94% fit · CLT</p>
           </div>
         </div>
       </motion.div>
