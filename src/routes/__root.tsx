@@ -113,10 +113,18 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isEmpresa = pathname.startsWith("/empresa");
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div className="flex min-h-screen flex-col bg-background">
+        {!isEmpresa && <SiteHeader />}
+        <div className="flex-1">
+          <Outlet />
+        </div>
+        {!isEmpresa && <SiteFooter />}
+      </div>
     </QueryClientProvider>
   );
 }
