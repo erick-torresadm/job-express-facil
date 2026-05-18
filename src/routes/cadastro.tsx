@@ -168,8 +168,8 @@ function StepLocal({ onBack, onDone }: { onBack: () => void; onDone: (l: { bairr
 function StepCurriculo({ onBack, onDone }: { onBack: () => void; onDone: (m: Midia) => void }) {
   const [modo, setModo] = useState<"escolher" | "audio" | "video">("escolher");
 
-  if (modo === "audio") return <GravadorAudio onBack={() => setModo("escolher")} onDone={(d) => onDone({ tipo: "audio", duracao: d })} />;
-  if (modo === "video") return <GravadorVideo onBack={() => setModo("escolher")} onDone={(d) => onDone({ tipo: "video", duracao: d })} />;
+  if (modo === "audio") return <GravadorAudio onBack={() => setModo("escolher")} onDone={(d, blob, mt) => onDone({ tipo: "audio", duracao: d, blob, mimeType: mt })} />;
+  if (modo === "video") return <GravadorVideo onBack={() => setModo("escolher")} onDone={(d, blob, mt) => onDone({ tipo: "video", duracao: d, blob, mimeType: mt })} />;
 
   return (
     <section>
