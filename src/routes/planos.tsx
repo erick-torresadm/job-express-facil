@@ -103,7 +103,7 @@ function PlanosPage() {
           nome="Básico" destaque
           preco={ciclo === "mensal" ? `R$ ${brl(PRECO_BASICO)}` : `R$ ${brl(PRECO_BASICO * 12 * (1 - DESCONTO_ANUAL))}`}
           subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
-          comparativo="Catho Profissional: ~R$ 59,90/mês"
+          comparativo="Portais tradicionais: a partir de ~R$ 59,90/mês"
           features={[
             "Tudo do Free, mais:",
             "100 contatos liberados/mês",
