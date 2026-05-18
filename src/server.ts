@@ -9,6 +9,21 @@ type ServerEntry = {
 
 let serverEntryPromise: Promise<ServerEntry> | undefined;
 
+function canonicalRouteRedirect(request: Request): Response | undefined {
+  if (request.method !== "GET" && request.method !== "HEAD") return undefined;
+
+  const url = new URL(request.url);
+  const redirectTo =
+    url.pathname === "/index" ? "/" :
+    url.pathname === "/login" ? "/auth" :
+    url.pathname === "/vagas" || url.pathname === "/buscar" ? "/vagas/pedreiro-em-sao-paulo" :
+    undefined;
+
+  if (!redirectTo) return undefined;
+  url.pathname = redirectTo;
+  return Response.redirect(url.toString(), 308);
+}
+
 async function getServerEntry(): Promise<ServerEntry> {
   if (!serverEntryPromise) {
     serverEntryPromise = import("@tanstack/react-start/server-entry").then(
@@ -69,6 +84,9 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const redirect = canonicalRouteRedirect(request);
+      if (redirect) return redirect;
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
