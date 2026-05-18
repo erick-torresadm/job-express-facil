@@ -12,6 +12,7 @@ const OSRM_URL = "https://router.project-osrm.org/route/v1/driving";
 const UA = "VagasAgora/1.0 (contato@vagasagora.com.br)";
 
 export const geocodificarEndereco = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
     z.object({
       endereco: z.string().min(3).max(200),
