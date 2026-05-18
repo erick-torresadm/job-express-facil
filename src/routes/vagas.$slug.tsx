@@ -7,6 +7,7 @@ import { calcularRotaCusto, calcularMatchScore } from "@/lib/intel.functions";
 import { DistanciaCustoCard, MatchScoreBadge, FraudBadge } from "@/components/VagaCards";
 import { VagaActions } from "@/components/VagaActions";
 import { CriarAlertaCard } from "@/components/CriarAlertaCard";
+import { AdSlot } from "@/components/AdSlot";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -100,6 +101,10 @@ function VagasPage() {
         </Link>
 
         <CriarAlertaCard profissao={profissao} cidade={cidade} />
+
+        <AdSlot placement="vagas_lista_topo" format="banner" className="mt-6" />
+
+
 
         {vagas.length > 0 && (
           <>
