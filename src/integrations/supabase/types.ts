@@ -110,6 +110,51 @@ export type Database = {
         }
         Relationships: []
       }
+      posts: {
+        Row: {
+          autor: string
+          conteudo: string
+          cover_url: string | null
+          created_at: string
+          id: string
+          publicado: boolean
+          published_at: string
+          resumo: string
+          slug: string
+          tags: Json
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          autor?: string
+          conteudo: string
+          cover_url?: string | null
+          created_at?: string
+          id?: string
+          publicado?: boolean
+          published_at?: string
+          resumo: string
+          slug: string
+          tags?: Json
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          autor?: string
+          conteudo?: string
+          cover_url?: string | null
+          created_at?: string
+          id?: string
+          publicado?: boolean
+          published_at?: string
+          resumo?: string
+          slug?: string
+          tags?: Json
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
