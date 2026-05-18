@@ -51,5 +51,10 @@ export const listarVagasPublicas = createServerFn({ method: "GET" })
     if (data.cidade) q = q.ilike("cidade", data.cidade);
     const { data: rows, error } = await q;
     if (error) throw new Error(error.message);
-    return { vagas: (rows ?? []) as VagaPublica[] };
+    const vagas: VagaPublica[] = (rows ?? []).map((r) => ({
+      ...(r as Record<string, unknown>),
+      requisitos: Array.isArray(r.requisitos) ? (r.requisitos as unknown[]).map(String) : [],
+      perguntas_triagem: Array.isArray(r.perguntas_triagem) ? (r.perguntas_triagem as unknown[]).map(String) : [],
+    })) as VagaPublica[];
+    return { vagas };
   });
