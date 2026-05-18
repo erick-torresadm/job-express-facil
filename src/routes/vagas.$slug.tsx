@@ -99,6 +99,8 @@ function VagasPage() {
           🎤 Cadastrar meu currículo em 1 minuto
         </Link>
 
+        <CriarAlertaCard profissao={profissao} cidade={cidade} />
+
         {vagas.length > 0 && (
           <>
             <h2 className="mt-8 mb-3 text-lg font-bold">Vagas em destaque</h2>
