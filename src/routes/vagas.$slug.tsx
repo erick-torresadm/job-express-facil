@@ -29,7 +29,8 @@ export const Route = createFileRoute("/vagas/$slug")({
     return { profissao, cidade, vagas: list, count };
   },
   head: ({ loaderData }) => {
-    const { profissao, cidade, count } = loaderData;
+    const d = loaderData ?? { profissao: "Vagas", cidade: "Brasil", count: 0, vagas: [] as typeof VAGAS };
+    const { profissao, cidade, count } = d;
     const title = `${count} vagas de ${profissao} em ${cidade} — Vaga Já`;
     const description = `${count} vagas de ${profissao} abertas em ${cidade} hoje. Cadastre seu currículo grátis em 1 minuto por áudio e candidate-se direto pelo celular.`;
     return {
@@ -46,7 +47,7 @@ export const Route = createFileRoute("/vagas/$slug")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "ItemList",
-          itemListElement: loaderData.vagas.map((v, i) => ({
+          itemListElement: d.vagas.map((v, i) => ({
             "@type": "JobPosting",
             position: i + 1,
             title: v.titulo,
