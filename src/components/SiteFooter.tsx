@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, MessageCircle, Mail } from "lucide-react";
-import logoUrl from "@/assets/logo-vagasagora.png";
+
 
 const profissoes = [
   { slug: "pedreiro-em-sao-paulo", label: "Pedreiro em São Paulo" },
@@ -18,14 +18,9 @@ export function SiteFooter() {
         <div className="grid gap-8 md:grid-cols-4">
           <div>
             <div className="flex items-center">
-              <img
-                src={logoUrl}
-                alt="VagasAgora"
-                width={1536}
-                height={1024}
-                loading="lazy"
-                className="h-7 w-auto"
-              />
+              <span className="font-display text-xl font-extrabold tracking-tight text-foreground">
+                VagasAgora
+              </span>
             </div>
             <p className="mt-3 text-sm text-muted-foreground">
               Vagas de verdade, perto de você. Grátis pro trabalhador.
