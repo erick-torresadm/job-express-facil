@@ -10,7 +10,7 @@ export const getCurriculoPublico = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { data: cv } = await supabaseAdmin
       .from("curriculos")
-      .select("slug, nome, profissao, bairro, cidade, resumo, experiencias, habilidades, dicas, idiomas, cnh, disponibilidade, pretensao_salarial, tem_audio, tem_video, duracao_segundos, created_at")
+      .select("slug, nome, profissao, bairro, cidade, resumo, experiencias, habilidades, dicas, idiomas, cnh, disponibilidade, pretensao_salarial, tem_audio, tem_video, duracao_segundos, linkedin_url, created_at")
       .eq("slug", data.slug)
       .maybeSingle();
     return cv ?? null;
