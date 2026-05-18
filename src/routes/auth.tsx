@@ -154,6 +154,12 @@ function AuthPage() {
                       className="h-12 w-full rounded-xl border-2 border-border bg-background pl-10 pr-3 outline-none focus:border-primary" />
                   </Field>
                 )}
+                {role === "empresa" && (
+                  <Field icon={<FileText className="h-4 w-4" />} label="CPF ou CNPJ (para emitir cobranças)">
+                    <input required value={cpfCnpj} onChange={(e) => setCpfCnpj(e.target.value)} inputMode="numeric" placeholder="Apenas números" maxLength={20}
+                      className="h-12 w-full rounded-xl border-2 border-border bg-background pl-10 pr-3 outline-none focus:border-primary" />
+                  </Field>
+                )}
                 <Field icon={<Phone className="h-4 w-4" />} label="WhatsApp">
                   <input required value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} inputMode="tel" placeholder="(11) 98765-4321"
                     className="h-12 w-full rounded-xl border-2 border-border bg-background pl-10 pr-3 outline-none focus:border-primary" />
