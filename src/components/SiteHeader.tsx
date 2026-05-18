@@ -53,6 +53,12 @@ export function SiteHeader() {
             <>
               <NotificationBell />
               <Link
+                to="/perfil"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-white/20"
+              >
+                <UserIcon className="h-4 w-4" /> Meu perfil
+              </Link>
+              <Link
                 to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
                 className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-white/25"
               >
