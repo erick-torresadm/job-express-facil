@@ -7,8 +7,8 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 const ASAAS_BASE = "https://api-sandbox.asaas.com/v3";
 
 const PRECOS = {
-  basico: { mensal: 99, anual: Math.round(99 * 12 * 0.8) },
-  full: { mensal: 299, anual: Math.round(299 * 12 * 0.8) },
+  basico: { mensal: 44.9, anual: Math.round(44.9 * 12 * 0.8 * 100) / 100 },
+  full: { mensal: 82.4, anual: Math.round(82.4 * 12 * 0.8 * 100) / 100 },
 } as const;
 
 function asaasHeaders() {
