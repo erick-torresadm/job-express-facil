@@ -15,12 +15,14 @@ import { Route as ParaEmpresasRouteImport } from './routes/para-empresas'
 import { Route as EmpresaRouteImport } from './routes/empresa'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
+import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as CandidatoRouteImport } from './routes/candidato'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
+import { Route as ProfissionaisSlugRouteImport } from './routes/profissionais.$slug'
 import { Route as EmpresaVerificacaoRouteImport } from './routes/empresa.verificacao'
 import { Route as EmpresaPaginaRouteImport } from './routes/empresa.pagina'
 import { Route as EmpresaNovaVagaRouteImport } from './routes/empresa.nova-vaga'
@@ -62,6 +64,11 @@ const ComoFuncionaRoute = ComoFuncionaRouteImport.update({
   path: '/como-funciona',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoriasRoute = CategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CandidatoRoute = CandidatoRouteImport.update({
   id: '/candidato',
   path: '/candidato',
@@ -90,6 +97,11 @@ const IndexRoute = IndexRouteImport.update({
 const VagasSlugRoute = VagasSlugRouteImport.update({
   id: '/vagas/$slug',
   path: '/vagas/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfissionaisSlugRoute = ProfissionaisSlugRouteImport.update({
+  id: '/profissionais/$slug',
+  path: '/profissionais/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmpresaVerificacaoRoute = EmpresaVerificacaoRouteImport.update({
@@ -149,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/blog': typeof BlogRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/candidato': typeof CandidatoRoute
+  '/categorias': typeof CategoriasRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
@@ -163,6 +176,7 @@ export interface FileRoutesByFullPath {
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
   '/empresa/verificacao': typeof EmpresaVerificacaoRoute
+  '/profissionais/$slug': typeof ProfissionaisSlugRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -173,6 +187,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/candidato': typeof CandidatoRoute
+  '/categorias': typeof CategoriasRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
@@ -187,6 +202,7 @@ export interface FileRoutesByTo {
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
   '/empresa/verificacao': typeof EmpresaVerificacaoRoute
+  '/profissionais/$slug': typeof ProfissionaisSlugRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -198,6 +214,7 @@ export interface FileRoutesById {
   '/blog': typeof BlogRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/candidato': typeof CandidatoRoute
+  '/categorias': typeof CategoriasRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
@@ -212,6 +229,7 @@ export interface FileRoutesById {
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
   '/empresa/verificacao': typeof EmpresaVerificacaoRoute
+  '/profissionais/$slug': typeof ProfissionaisSlugRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -224,6 +242,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/cadastro'
     | '/candidato'
+    | '/categorias'
     | '/como-funciona'
     | '/contato'
     | '/empresa'
@@ -238,6 +257,7 @@ export interface FileRouteTypes {
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
     | '/empresa/verificacao'
+    | '/profissionais/$slug'
     | '/vagas/$slug'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
@@ -248,6 +268,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/cadastro'
     | '/candidato'
+    | '/categorias'
     | '/como-funciona'
     | '/contato'
     | '/empresa'
@@ -262,6 +283,7 @@ export interface FileRouteTypes {
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
     | '/empresa/verificacao'
+    | '/profissionais/$slug'
     | '/vagas/$slug'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
@@ -272,6 +294,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/cadastro'
     | '/candidato'
+    | '/categorias'
     | '/como-funciona'
     | '/contato'
     | '/empresa'
@@ -286,6 +309,7 @@ export interface FileRouteTypes {
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
     | '/empresa/verificacao'
+    | '/profissionais/$slug'
     | '/vagas/$slug'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
@@ -297,6 +321,7 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRouteWithChildren
   CadastroRoute: typeof CadastroRoute
   CandidatoRoute: typeof CandidatoRoute
+  CategoriasRoute: typeof CategoriasRoute
   ComoFuncionaRoute: typeof ComoFuncionaRoute
   ContatoRoute: typeof ContatoRoute
   EmpresaRoute: typeof EmpresaRouteWithChildren
@@ -306,6 +331,7 @@ export interface RootRouteChildren {
   AdminVerificacoesRoute: typeof AdminVerificacoesRoute
   CSlugRoute: typeof CSlugRoute
   CvSlugRoute: typeof CvSlugRoute
+  ProfissionaisSlugRoute: typeof ProfissionaisSlugRoute
   VagasSlugRoute: typeof VagasSlugRoute
   ApiPublicAsaasWebhookRoute: typeof ApiPublicAsaasWebhookRoute
   ApiPublicCronGerarPostRoute: typeof ApiPublicCronGerarPostRoute
@@ -355,6 +381,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ComoFuncionaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/categorias': {
+      id: '/categorias'
+      path: '/categorias'
+      fullPath: '/categorias'
+      preLoaderRoute: typeof CategoriasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/candidato': {
       id: '/candidato'
       path: '/candidato'
@@ -395,6 +428,13 @@ declare module '@tanstack/react-router' {
       path: '/vagas/$slug'
       fullPath: '/vagas/$slug'
       preLoaderRoute: typeof VagasSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profissionais/$slug': {
+      id: '/profissionais/$slug'
+      path: '/profissionais/$slug'
+      fullPath: '/profissionais/$slug'
+      preLoaderRoute: typeof ProfissionaisSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/empresa/verificacao': {
@@ -503,6 +543,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRouteWithChildren,
   CadastroRoute: CadastroRoute,
   CandidatoRoute: CandidatoRoute,
+  CategoriasRoute: CategoriasRoute,
   ComoFuncionaRoute: ComoFuncionaRoute,
   ContatoRoute: ContatoRoute,
   EmpresaRoute: EmpresaRouteWithChildren,
@@ -512,6 +553,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminVerificacoesRoute: AdminVerificacoesRoute,
   CSlugRoute: CSlugRoute,
   CvSlugRoute: CvSlugRoute,
+  ProfissionaisSlugRoute: ProfissionaisSlugRoute,
   VagasSlugRoute: VagasSlugRoute,
   ApiPublicAsaasWebhookRoute: ApiPublicAsaasWebhookRoute,
   ApiPublicCronGerarPostRoute: ApiPublicCronGerarPostRoute,
