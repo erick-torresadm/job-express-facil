@@ -316,12 +316,16 @@ function GravadorVideo({ onBack, onDone }: { onBack: () => void; onDone: (s: num
         await videoRef.current.play().catch(() => {});
       }
       chunksRef.current = [];
-      const mr = new MediaRecorder(stream);
+      const mt = MediaRecorder.isTypeSupported("video/webm") ? "video/webm"
+        : MediaRecorder.isTypeSupported("video/mp4") ? "video/mp4" : "";
+      const mr = mt ? new MediaRecorder(stream, { mimeType: mt }) : new MediaRecorder(stream);
+      setMimeType(mr.mimeType || mt || "video/webm");
       recorderRef.current = mr;
       mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
       mr.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "video/webm" });
-        setPreviewUrl(URL.createObjectURL(blob));
+        const b = new Blob(chunksRef.current, { type: mr.mimeType || "video/webm" });
+        setBlob(b);
+        setPreviewUrl(URL.createObjectURL(b));
         setStage("done");
       };
       mr.start();
