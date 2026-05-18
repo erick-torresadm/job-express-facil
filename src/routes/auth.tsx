@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Briefcase, Building2, HardHat, Mail, Lock, User as UserIcon, Phone, Loader2 } from "lucide-react";
+import { Briefcase, Building2, HardHat, Mail, Lock, User as UserIcon, Phone, Loader2, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
@@ -26,6 +26,7 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [cpfCnpj, setCpfCnpj] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -41,6 +42,15 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
+        if (role === "empresa") {
+          const digits = cpfCnpj.replace(/\D/g, "");
+          if (digits.length !== 11 && digits.length !== 14) {
+            throw new Error("Informe um CPF (11 dígitos) ou CNPJ (14 dígitos) válido.");
+          }
+          if (whatsapp.replace(/\D/g, "").length < 10) {
+            throw new Error("Informe um WhatsApp válido com DDD.");
+          }
+        }
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -51,6 +61,7 @@ function AuthPage() {
               full_name: fullName,
               whatsapp,
               company_name: role === "empresa" ? companyName : null,
+              cpf_cnpj: role === "empresa" ? cpfCnpj.replace(/\D/g, "") : null,
             },
           },
         });
@@ -140,6 +151,12 @@ function AuthPage() {
                 {role === "empresa" && (
                   <Field icon={<Building2 className="h-4 w-4" />} label="Nome da empresa">
                     <input required value={companyName} onChange={(e) => setCompanyName(e.target.value)} maxLength={120}
+                      className="h-12 w-full rounded-xl border-2 border-border bg-background pl-10 pr-3 outline-none focus:border-primary" />
+                  </Field>
+                )}
+                {role === "empresa" && (
+                  <Field icon={<FileText className="h-4 w-4" />} label="CPF ou CNPJ (para emitir cobranças)">
+                    <input required value={cpfCnpj} onChange={(e) => setCpfCnpj(e.target.value)} inputMode="numeric" placeholder="Apenas números" maxLength={20}
                       className="h-12 w-full rounded-xl border-2 border-border bg-background pl-10 pr-3 outline-none focus:border-primary" />
                   </Field>
                 )}
