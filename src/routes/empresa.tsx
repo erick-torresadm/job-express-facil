@@ -43,11 +43,8 @@ function EmpresaLayout() {
 
       <div className="lg:pl-64">
         <header className="flex items-center justify-between border-b border-border bg-background px-4 py-3 lg:px-8">
-          <p className="text-sm text-muted-foreground">Olá, <strong className="text-foreground">Construtora Vega</strong></p>
-          <button className="relative rounded-full bg-secondary p-2">
-            <Bell className="h-4 w-4" />
-            <span className="absolute -right-0.5 -top-0.5 grid h-4 w-4 place-items-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">3</span>
-          </button>
+          <EmpresaSaudacao />
+          <NotificationBell />
         </header>
         <main className="p-4 lg:p-8">
           {isRoot ? <CandidatosList /> : <Outlet />}
