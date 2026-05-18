@@ -51,6 +51,11 @@ export const criarAssinaturaAsaas = createServerFn({ method: "POST" })
     const userId = context.userId;
     const valor = PRECOS[data.plano][data.ciclo];
 
+    const cpfLimpo = data.cpfCnpj.replace(/\D/g, "");
+    if (cpfLimpo.length !== 11 && cpfLimpo.length !== 14) {
+      throw new Error("CPF (11 dígitos) ou CNPJ (14 dígitos) inválido.");
+    }
+
     // 1) Reutiliza ou cria customer
     const { data: profile } = await supabaseAdmin
       .from("profiles")
@@ -59,7 +64,6 @@ export const criarAssinaturaAsaas = createServerFn({ method: "POST" })
       .maybeSingle();
 
     let customerId = profile?.asaas_customer_id ?? null;
-    const cpfLimpo = data.cpfCnpj.replace(/\D/g, "");
 
     if (!customerId) {
       const customer = await asaas<AsaasCustomer>("/customers", {
@@ -74,11 +78,24 @@ export const criarAssinaturaAsaas = createServerFn({ method: "POST" })
         }),
       });
       customerId = customer.id;
-      await supabaseAdmin
-        .from("profiles")
-        .update({ asaas_customer_id: customerId, cpf_cnpj: cpfLimpo })
-        .eq("id", userId);
+    } else {
+      // Atualiza customer existente garantindo que cpfCnpj esteja preenchido
+      // (Asaas rejeita cartão de crédito sem CPF/CNPJ no cadastro do cliente)
+      await asaas<AsaasCustomer>(`/customers/${customerId}`, {
+        method: "POST",
+        body: JSON.stringify({
+          name: data.nome,
+          email: data.email,
+          cpfCnpj: cpfLimpo,
+          mobilePhone: data.telefone?.replace(/\D/g, ""),
+        }),
+      });
     }
+
+    await supabaseAdmin
+      .from("profiles")
+      .update({ asaas_customer_id: customerId, cpf_cnpj: cpfLimpo })
+      .eq("id", userId);
 
     // 2) Cria a assinatura recorrente
     // Mensal: só cartão (recorrência automática). Anual: cartão, PIX ou boleto.
