@@ -176,7 +176,7 @@ export const CANDIDATOS: Candidato[] = [
     id: "c6", nome: "Patrícia Oliveira", idade: 33, telefone: "(11) 95555-4444",
     bairro: "Pinheiros", cidade: "São Paulo", profissoes: ["Caixa", "Vendedora"],
     resumo: "7 anos no varejo, passou por supermercado e farmácia. Conhece sistema de PDV.",
-    experiencias: ["Pague Menos — Caixa (2020–2024)", "Carrefour — Operadora (2017–2020)"],
+    experiencias: ["Rede de farmácias — Caixa (2020–2024)", "Supermercado regional — Operadora (2017–2020)"],
     status: "recusado", cadastradoEm: "3 dias atrás",
   },
 ];
