@@ -1,37 +1,33 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
-const MODEL = "google/gemini-3-flash-preview";
+const GEMINI_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 async function callGemini(system: string, user: string): Promise<string> {
-  const key = process.env.LOVABLE_API_KEY;
-  if (!key) throw new Error("LOVABLE_API_KEY não configurada");
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("GEMINI_API_KEY não configurada");
 
-  const res = await fetch(GATEWAY_URL, {
+  const res = await fetch(`${GEMINI_URL}?key=${key}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${key}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: MODEL,
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ role: "user", parts: [{ text: user }] }],
+      generationConfig: { temperature: 0.7, responseMimeType: "application/json" },
     }),
   });
 
   if (res.status === 429) throw new Error("Muitas requisições. Tente novamente em alguns segundos.");
-  if (res.status === 402) throw new Error("Créditos de IA esgotados. Adicione créditos no workspace.");
   if (!res.ok) {
     const txt = await res.text().catch(() => "");
     throw new Error(`Gemini falhou [${res.status}]: ${txt.slice(0, 200)}`);
   }
 
-  const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
-  return json.choices?.[0]?.message?.content?.trim() ?? "";
+  const json = (await res.json()) as {
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+  };
+  return json.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? "";
 }
 
 function extractJson<T>(text: string): T {
