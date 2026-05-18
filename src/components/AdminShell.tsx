@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  LayoutDashboard, Briefcase, Users, ShieldCheck, Megaphone,
+  LayoutDashboard, Briefcase, Users, ShieldCheck, Megaphone, FileText,
   ArrowLeft, Menu, X, LogOut, Loader2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/use-auth";
 const NAV = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/vagas", label: "Vagas", icon: Briefcase, exact: false },
+  { to: "/admin/blog", label: "Blog", icon: FileText, exact: false },
   { to: "/admin/usuarios", label: "Usuários", icon: Users, exact: false },
   { to: "/admin/verificacoes", label: "Verificações", icon: ShieldCheck, exact: false },
   { to: "/admin/anuncios", label: "Anúncios", icon: Megaphone, exact: false },
