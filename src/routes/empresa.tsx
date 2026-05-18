@@ -78,5 +78,24 @@ function EmpresaSaudacao() {
   return <p className="text-sm text-muted-foreground">Olá, <strong className="text-foreground">{nome}</strong></p>;
 }
 
+function CreditoCard() {
+  const { user } = useAuth();
+  const fetchInfo = useServerFn(getRevelacoesInfo);
+  const [info, setInfo] = useState<{ usadas: number; limite: number; restantes: number } | null>(null);
+  useEffect(() => {
+    if (!user) return;
+    fetchInfo().then(setInfo).catch(() => setInfo(null));
+  }, [user, fetchInfo]);
+  if (!info) return null;
+  const acabou = info.restantes === 0;
+  return (
+    <Link to="/planos" className="m-3 block rounded-2xl bg-accent/15 p-4 text-xs hover:bg-accent/25">
+      <p className="font-bold">{acabou ? "Contatos esgotados" : "Contatos grátis"}</p>
+      <p className="opacity-70">{info.restantes} de {info.limite} restantes</p>
+      <p className="mt-2 font-extrabold text-accent">{acabou ? "Ver planos →" : "Upgrade para mais"}</p>
+    </Link>
+  );
+}
+
 // inline import to avoid circular file
 import { CandidatosList } from "@/components/CandidatosList";
