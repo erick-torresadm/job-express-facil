@@ -21,18 +21,17 @@ function capitalize(s: string) {
 }
 
 export const Route = createFileRoute("/vagas/$slug")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const { profissao, cidade, profSlug } = parseSlug(params.slug);
-    const vagas = VAGAS.filter((v) => v.profissaoSlug === profSlug || v.cidade.toLowerCase() === cidade.toLowerCase());
-    // Fallback: if no real matches, show all so page never looks empty for crawlers
-    const list = vagas.length > 0 ? vagas : VAGAS.slice(0, 4);
-    const count = 47 + (params.slug.length % 200); // simulated count for SEO
-    return { profissao, cidade, vagas: list, count };
+    const { vagas } = await listarVagasPublicas({ data: { profissaoSlug: profSlug, limit: 30 } });
+    const count = vagas.length > 0 ? vagas.length : 0;
+    return { profissao, cidade, vagas, count };
   },
   head: ({ loaderData }) => {
-    const d = loaderData ?? { profissao: "Vagas", cidade: "Brasil", count: 0, vagas: [] as typeof VAGAS };
+    const d = loaderData ?? { profissao: "Vagas", cidade: "Brasil", count: 0, vagas: [] as VagaPublica[] };
     const { profissao, cidade, count } = d;
-    const title = `${count} vagas de ${profissao} em ${cidade} — Vaga Já`;
+    const title = count > 0 ? `${count} vagas de ${profissao} em ${cidade} — Vaga Já` : `Vagas de ${profissao} em ${cidade} — Vaga Já`;
+    const description = `Vagas de ${profissao} abertas em ${cidade}. Cadastre seu currículo grátis em 1 minuto por áudio e candidate-se direto pelo celular.`;
     const description = `${count} vagas de ${profissao} abertas em ${cidade} hoje. Cadastre seu currículo grátis em 1 minuto por áudio e candidate-se direto pelo celular.`;
     return {
       meta: [
