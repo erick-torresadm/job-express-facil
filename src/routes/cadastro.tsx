@@ -261,11 +261,29 @@ function StepLocal({ onBack, onDone }: { onBack: () => void; onDone: (l: { bairr
   );
 }
 
-function StepCurriculo({ onBack, onDone }: { onBack: () => void; onDone: (m: Midia) => void }) {
+function StepCurriculo({ textoInicial, onBack, onDone }: {
+  textoInicial: string;
+  onBack: () => void;
+  onDone: (m: Midia, texto: string) => void;
+}) {
   const [modo, setModo] = useState<"escolher" | "audio" | "video">("escolher");
+  const [texto, setTexto] = useState(textoInicial);
+  const [midiaTmp, setMidiaTmp] = useState<Midia>(null);
 
-  if (modo === "audio") return <GravadorAudio onBack={() => setModo("escolher")} onDone={(d, blob, mt) => onDone({ tipo: "audio", duracao: d, blob, mimeType: mt })} />;
-  if (modo === "video") return <GravadorVideo onBack={() => setModo("escolher")} onDone={(d, blob, mt) => onDone({ tipo: "video", duracao: d, blob, mimeType: mt })} />;
+  if (modo === "audio") return (
+    <GravadorAudio
+      onBack={() => setModo("escolher")}
+      onDone={(d, blob, mt) => { setMidiaTmp({ tipo: "audio", duracao: d, blob, mimeType: mt }); setModo("escolher"); }}
+    />
+  );
+  if (modo === "video") return (
+    <GravadorVideo
+      onBack={() => setModo("escolher")}
+      onDone={(d, blob, mt) => { setMidiaTmp({ tipo: "video", duracao: d, blob, mimeType: mt }); setModo("escolher"); }}
+    />
+  );
+
+  const podeSeguir = !!midiaTmp || texto.trim().length >= 10;
 
   return (
     <section>
@@ -274,23 +292,50 @@ function StepCurriculo({ onBack, onDone }: { onBack: () => void; onDone: (m: Mid
       </button>
       <div className="mb-1 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold">Conte sobre você</h1>
-        <Narrator text="Você pode gravar um áudio, um vídeo de até 1 minuto, ou pular esta etapa." />
+        <Narrator text="Você pode gravar um áudio, um vídeo de até 1 minuto, escrever um texto sobre você, ou tudo junto. A IA lê tudo." />
       </div>
-      <p className="mb-6 text-sm text-muted-foreground">Escolha como quer contar suas experiências. Tudo é opcional.</p>
+      <p className="mb-5 text-sm text-muted-foreground">
+        Quanto mais detalhes, melhor o seu currículo. Pode gravar, escrever, ou os dois — a IA usa tudo junto.
+      </p>
 
       <div className="space-y-3">
         <button onClick={() => setModo("audio")}
           className="btn-touch shadow-pop flex w-full items-center justify-center gap-3 bg-accent text-accent-foreground">
-          <Mic className="h-6 w-6" /> Gravar áudio
+          <Mic className="h-6 w-6" />
+          {midiaTmp?.tipo === "audio" ? `Áudio gravado (${midiaTmp.duracao}s) — regravar` : "Gravar áudio"}
         </button>
         <button onClick={() => setModo("video")}
           className="btn-touch shadow-pop flex w-full items-center justify-center gap-3 bg-primary text-primary-foreground">
-          <Video className="h-6 w-6" /> Gravar vídeo (até 1 min)
+          <Video className="h-6 w-6" />
+          {midiaTmp?.tipo === "video" ? `Vídeo gravado (${midiaTmp.duracao}s) — regravar` : "Gravar vídeo (até 1 min)"}
         </button>
-        <button className="btn-touch flex w-full items-center justify-center gap-3 border-2 border-border bg-card">
-          <Camera className="h-6 w-6" /> Tirar foto do meu currículo
+      </div>
+
+      <div className="mt-6">
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-bold uppercase text-muted-foreground">
+            Escreva sobre você (opcional, mas ajuda muito)
+          </span>
+          <textarea
+            value={texto}
+            onChange={(e) => setTexto(e.target.value.slice(0, 4000))}
+            rows={6}
+            placeholder="Ex: Trabalhei 5 anos como pedreiro na construtora X em São Paulo. Sei fazer alvenaria, reboco, assentar piso e azulejo. Tenho carteira de motorista B…"
+            className="w-full rounded-2xl border-2 border-border bg-card p-4 text-base outline-none focus:border-primary"
+          />
+          <span className="mt-1 block text-xs text-muted-foreground">{texto.length}/4000</span>
+        </label>
+      </div>
+
+      <div className="mt-6 space-y-3">
+        <button
+          onClick={() => onDone(midiaTmp, texto.trim())}
+          disabled={!podeSeguir}
+          className="btn-touch shadow-pop flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground disabled:opacity-50"
+        >
+          <Send className="h-5 w-5" /> Continuar
         </button>
-        <button onClick={() => onDone(null)}
+        <button onClick={() => onDone(null, "")}
           className="btn-touch flex w-full items-center justify-center gap-2 text-muted-foreground">
           <SkipForward className="h-5 w-5" /> Pular esta etapa
         </button>
