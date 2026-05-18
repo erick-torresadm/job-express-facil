@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/empresa/minhas-vagas")({
-  head: () => ({ meta: [{ title: "Minhas vagas — Vaga Já" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Minhas vagas — VagasAgora" }, { name: "robots", content: "noindex" }] }),
   component: MinhasVagas,
 });
 

@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 export const Route = createFileRoute("/empresa")({
   head: () => ({
     meta: [
-      { title: "Painel do Recrutador — Vaga Já" },
+      { title: "Painel do Recrutador — VagasAgora" },
       { name: "description", content: "Encontre candidatos qualificados no seu bairro." },
       { name: "robots", content: "noindex" },
     ],
@@ -25,7 +25,7 @@ function EmpresaLayout() {
             <Building2 className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-base font-extrabold">Vaga Já</p>
+            <p className="text-base font-extrabold">VagasAgora</p>
             <p className="text-xs opacity-70">Painel RH</p>
           </div>
         </div>

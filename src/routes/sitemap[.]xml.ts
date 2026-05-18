@@ -1,20 +1,30 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { PROFISSOES, CIDADES } from "@/lib/mock-data";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const BASE_URL = "";
+const BASE_URL = "https://vagasagora.com.br";
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const staticPaths = ["/", "/empresa"];
-        // Programmatic SEO: profissão × cidade combinations
+        const staticPaths = ["/", "/como-funciona", "/para-empresas", "/contato", "/blog", "/auth", "/cadastro"];
+
         const dynamicPaths = PROFISSOES.flatMap((p) =>
           CIDADES.map((c) => `/vagas/${p.slug}-em-${c.toLowerCase().replace(/\s+/g, "-")}`)
         );
 
-        const urls = [...staticPaths, ...dynamicPaths]
+        let blogPaths: string[] = [];
+        try {
+          const { data } = await supabaseAdmin
+            .from("posts")
+            .select("slug")
+            .eq("publicado", true);
+          blogPaths = (data ?? []).map((p) => `/blog/${p.slug}`);
+        } catch {}
+
+        const urls = [...staticPaths, ...dynamicPaths, ...blogPaths]
           .map((path) => `  <url><loc>${BASE_URL}${path}</loc><changefreq>daily</changefreq></url>`)
           .join("\n");
 

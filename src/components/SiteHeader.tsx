@@ -8,6 +8,7 @@ const navLinks = [
   { to: "/", label: "Início" },
   { to: "/como-funciona", label: "Como funciona" },
   { to: "/para-empresas", label: "Para empresas" },
+  { to: "/blog", label: "Blog" },
   { to: "/contato", label: "Contato" },
 ] as const;
 
@@ -30,7 +31,7 @@ export function SiteHeader() {
             <Briefcase className="h-5 w-5" />
           </div>
           <div className="leading-tight">
-            <p className="text-base font-extrabold tracking-tight">Vaga Já</p>
+            <p className="text-base font-extrabold tracking-tight">VagasAgora</p>
             <p className="text-[11px] text-muted-foreground">Emprego perto de você</p>
           </div>
         </Link>

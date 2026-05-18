@@ -34,8 +34,8 @@ export const Route = createFileRoute("/cv/$slug")({
   },
   head: ({ loaderData }) => {
     const cv = loaderData;
-    const title = cv ? `${cv.nome} — ${cv.profissao} | Currículo Vaga Já` : "Currículo";
-    const desc = cv?.resumo ?? "Currículo profissional gerado no Vaga Já.";
+    const title = cv ? `${cv.nome} — ${cv.profissao} | Currículo VagasAgora` : "Currículo";
+    const desc = cv?.resumo ?? "Currículo profissional gerado no VagasAgora.";
     return {
       meta: [
         { title },
@@ -73,7 +73,7 @@ function CurriculoPage() {
   const cv = Route.useLoaderData() as Curriculo;
   const [copied, setCopied] = useState(false);
   const url = typeof window !== "undefined" ? window.location.href : "";
-  const shareText = `Veja o currículo de ${cv.nome} (${cv.profissao}) no Vaga Já: ${url}`;
+  const shareText = `Veja o currículo de ${cv.nome} (${cv.profissao}) no VagasAgora: ${url}`;
 
   const share = async () => {
     if (typeof navigator !== "undefined" && navigator.share) {
@@ -176,7 +176,7 @@ function CurriculoPage() {
                 <div className="mt-6 rounded-2xl border border-accent/30 bg-accent/5 p-4 print:hidden">
                   <p className="text-xs font-bold uppercase text-accent">Apresentação em {cv.tem_video ? "vídeo" : "áudio"}</p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    O candidato gravou {cv.duracao_segundos}s de apresentação pessoal. Disponível para empresas no Vaga Já.
+                    O candidato gravou {cv.duracao_segundos}s de apresentação pessoal. Disponível para empresas no VagasAgora.
                   </p>
                 </div>
               )}
@@ -195,7 +195,7 @@ function CurriculoPage() {
           </div>
 
           <footer className="border-t border-border px-8 py-4 text-center text-xs text-muted-foreground">
-            Currículo gerado em <strong>Vaga Já</strong> · vagaja.com.br
+            Currículo gerado em <strong>VagasAgora</strong> · vagasagora.com.br
           </footer>
         </article>
 

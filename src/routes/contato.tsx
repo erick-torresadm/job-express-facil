@@ -5,8 +5,8 @@ import { Mail, MessageCircle, MapPin, Send, Check } from "lucide-react";
 export const Route = createFileRoute("/contato")({
   head: () => ({
     meta: [
-      { title: "Contato — Vaga Já" },
-      { name: "description", content: "Fale com o time da Vaga Já por WhatsApp, e-mail ou formulário. Resposta em até 24h úteis." },
+      { title: "Contato — VagasAgora" },
+      { name: "description", content: "Fale com o time da VagasAgora por WhatsApp, e-mail ou formulário. Resposta em até 24h úteis." },
     ],
   }),
   component: Contato,
@@ -23,7 +23,7 @@ function Contato() {
 
       <div className="mt-6 grid gap-3 md:grid-cols-3">
         <Card icon={<MessageCircle className="h-5 w-5" />} t="WhatsApp" v="(11) 90000-0000" href="https://wa.me/5511900000000" />
-        <Card icon={<Mail className="h-5 w-5" />} t="E-mail" v="oi@vagaja.com.br" href="mailto:oi@vagaja.com.br" />
+        <Card icon={<Mail className="h-5 w-5" />} t="E-mail" v="oi@vagasagora.com.br" href="mailto:oi@vagasagora.com.br" />
         <Card icon={<MapPin className="h-5 w-5" />} t="Endereço" v="São Paulo, SP" />
       </div>
 

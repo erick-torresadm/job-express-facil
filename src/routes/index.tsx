@@ -9,9 +9,9 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Vaga Já — Emprego perto de você, em 3 toques" },
+      { title: "VagasAgora — Emprego perto de você, em 3 toques" },
       { name: "description", content: "Cadastre-se em 1 minuto por áudio ou vídeo. Vagas para pedreiro, doméstica, motorista, porteiro e mais — perto da sua casa." },
-      { property: "og:title", content: "Vaga Já — Emprego perto de você" },
+      { property: "og:title", content: "VagasAgora — Emprego perto de você" },
       { property: "og:description", content: "Cadastro em 1 minuto. Achou vaga no bairro." },
       { property: "og:type", content: "website" },
     ],
