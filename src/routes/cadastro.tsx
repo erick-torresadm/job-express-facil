@@ -387,8 +387,8 @@ function GravadorVideo({ onBack, onDone }: { onBack: () => void; onDone: (s: num
               className="btn-touch w-full border-2 border-border bg-card">
               Regravar
             </button>
-            <button onClick={() => onDone(seconds)}
-              className="btn-touch shadow-pop flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground">
+            <button onClick={() => blob && onDone(seconds, blob, mimeType)} disabled={!blob}
+              className="btn-touch shadow-pop flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground disabled:opacity-60">
               <Send className="h-5 w-5" /> Usar este vídeo
             </button>
           </div>
