@@ -704,7 +704,7 @@ function StepPerfil({ profissao, local, midia, texto, contato }: {
         });
         const { data: userData } = await supabase.auth.getUser();
         if (userData.user) {
-          await supabase.from("curriculos").update({ user_id: userData.user.id }).eq("slug", p.slug);
+          try { await claimCurriculo({ data: { slug: p.slug } }); } catch { /* ignora se já reivindicado */ }
         }
         if (!cancel) { setPerfil(p); setDraft(p); }
       } catch (e) {
