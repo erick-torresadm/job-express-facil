@@ -24,7 +24,7 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-3 z-30 px-3 md:top-5 md:px-6">
+    <header className="fixed inset-x-0 top-3 z-30 px-3 md:top-5 md:px-6">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border border-white/10 bg-primary/80 px-4 py-2.5 text-primary-foreground shadow-pop backdrop-blur-xl supports-[backdrop-filter]:bg-primary/60">
         <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
           <span className="text-lg font-extrabold tracking-tight text-primary-foreground">
