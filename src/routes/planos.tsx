@@ -178,7 +178,7 @@ function CheckoutModal({ plano, ciclo, onClose }: {
         <div className="flex items-start justify-between">
           <div>
             <h3 className="text-lg font-extrabold">Assinar plano {plano === "basico" ? "Básico" : "Full"}</h3>
-            <p className="text-xs text-muted-foreground">Cobrança {ciclo} via Asaas (Pix, cartão ou boleto)</p>
+            <p className="text-xs text-muted-foreground">{ciclo === "mensal" ? "Cobrança mensal recorrente no cartão de crédito" : "Cobrança anual — escolha cartão, Pix ou boleto no checkout"}</p>
           </div>
           <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-full hover:bg-secondary">
             <X className="h-4 w-4" />
