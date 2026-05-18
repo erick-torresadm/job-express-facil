@@ -10,13 +10,13 @@ import { analisarCandidato, type PerfilGerado } from "@/lib/ai.functions";
 export const Route = createFileRoute("/cadastro")({
   head: () => ({
     meta: [
-      { title: "Vaga Já — Achei seu emprego no bairro em 3 toques" },
-      { name: "description", content: "Cadastre seu currículo em 1 minuto por áudio, vídeo ou foto e receba vagas de pedreiro, doméstica, motorista, porteiro e ajudante perto de você. Grátis." },
-      { property: "og:title", content: "Vaga Já — Emprego perto de você, sem complicação" },
-      { property: "og:description", content: "Gravou áudio ou vídeo, achou vaga. Cadastro em 3 toques pra trabalhador de verdade." },
+      { title: "Cadastro — Vaga Já" },
+      { name: "description", content: "Cadastre seu currículo em 1 minuto por áudio, vídeo ou foto e receba vagas perto de você. Grátis." },
+      { property: "og:title", content: "Cadastro — Vaga Já" },
+      { property: "og:description", content: "Gravou áudio ou vídeo, achou vaga." },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: "/cadastro" }],
   }),
   component: CandidatoFlow,
 });
