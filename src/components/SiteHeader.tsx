@@ -26,10 +26,14 @@ export function SiteHeader() {
   return (
     <header className="fixed inset-x-0 top-3 z-30 px-3 md:top-5 md:px-6">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border border-white/10 bg-primary/80 px-4 py-2.5 text-primary-foreground shadow-pop backdrop-blur-xl supports-[backdrop-filter]:bg-primary/60">
-        <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-          <span className="text-lg font-extrabold tracking-tight text-primary-foreground">
-            VagasAgora
-          </span>
+        <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)} aria-label="VagasAgora">
+          <img
+            src={logoUrl}
+            alt="VagasAgora"
+            width={1536}
+            height={1024}
+            className="h-6 w-auto brightness-0 invert md:h-7"
+          />
         </Link>
 
         {/* Desktop nav */}
