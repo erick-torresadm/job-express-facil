@@ -117,7 +117,7 @@ function PlanosPage() {
           nome="Full"
           preco={ciclo === "mensal" ? `R$ ${brl(PRECO_FULL)}` : `R$ ${brl(PRECO_FULL * 12 * (1 - DESCONTO_ANUAL))}`}
           subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
-          comparativo="Catho Destaque: ~R$ 109,90/mês"
+          comparativo="Planos destaque do mercado: ~R$ 109,90/mês"
           features={[
             "Tudo do Básico, mais:",
             "Contatos ilimitados",
