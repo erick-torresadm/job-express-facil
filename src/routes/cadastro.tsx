@@ -57,6 +57,9 @@ function CandidatoFlow() {
         </div>
       </header>
       <main className="mx-auto max-w-md px-4 pb-24 pt-4 lg:max-w-5xl">
+        <div className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-accent/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-accent-foreground">
+          ✓ 100% grátis · candidato nunca paga nada
+        </div>
         <Progress step={step} />
         {step === "profissao" && (
           <StepProfissao onPick={(p) => { setProfissao(p); setStep("local"); }} />
