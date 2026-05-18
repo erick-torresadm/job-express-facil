@@ -1,5 +1,14 @@
 User-agent: *
 Allow: /
+Allow: /blog
+Allow: /vagas
 Disallow: /empresa
+Disallow: /auth
 
-Sitemap: /sitemap.xml
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://vagasagora.com.br/sitemap.xml

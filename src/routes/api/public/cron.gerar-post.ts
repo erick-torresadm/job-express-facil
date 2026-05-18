@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const GEMINI_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+// Lovable AI Gateway (Gemini grátis via créditos do workspace, sem API key do Google)
+const AI_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const MODEL = "google/gemini-2.5-flash";
 
-// Pool de tópicos SEO de alto volume para o nicho de empregos populares no Brasil
+// Principais termos de busca de emprego no Brasil (alto volume no Google)
 const TOPICOS = [
   { titulo: "Como conseguir emprego de pedreiro em {cidade}", tags: ["pedreiro", "construção"] },
   { titulo: "Vagas de motorista de aplicativo em {cidade}: o que você precisa saber", tags: ["motorista", "aplicativo"] },
@@ -21,14 +22,27 @@ const TOPICOS = [
   { titulo: "Vagas de costureira em {cidade}: trabalhar em casa ou em ateliê", tags: ["costureira", "moda"] },
   { titulo: "Trabalho de manicure em {cidade}: como montar clientela rápido", tags: ["manicure", "beleza"] },
   { titulo: "Como ser segurança em {cidade}: curso, salário e empresas que contratam", tags: ["segurança", "vigilante"] },
+  { titulo: "Vagas de empregada doméstica em {cidade}: direitos e salário 2026", tags: ["doméstica", "direitos"] },
+  { titulo: "Trabalho de diarista em {cidade}: quanto cobrar por dia", tags: ["diarista", "autônomo"] },
+  { titulo: "Vagas de repositor de supermercado em {cidade}", tags: ["repositor", "comércio"] },
+  { titulo: "Como conseguir emprego de auxiliar de limpeza em {cidade}", tags: ["limpeza", "auxiliar"] },
+  { titulo: "Vagas de motoboy em {cidade}: ganho mensal real", tags: ["motoboy", "entregador"] },
+  { titulo: "Trabalho de recepcionista em {cidade}: o que pedem na entrevista", tags: ["recepcionista", "atendimento"] },
+  { titulo: "Como ser ajudante de pedreiro em {cidade} sem experiência", tags: ["ajudante", "construção"] },
+  { titulo: "Vagas de vendedor em {cidade}: comissão vs salário fixo", tags: ["vendedor", "comércio"] },
   { titulo: "Direitos do trabalhador doméstico em 2026: o que mudou", tags: ["direitos", "doméstica"] },
   { titulo: "Como pedir auxílio-desemprego em {cidade} passo a passo", tags: ["direitos", "desemprego"] },
   { titulo: "Carteira assinada vs MEI: qual vale mais a pena para autônomos", tags: ["mei", "carreira"] },
   { titulo: "Entrevista de emprego: 7 erros que fazem você ser eliminado", tags: ["entrevista", "dicas"] },
   { titulo: "Como negociar salário em vaga operacional sem perder a oportunidade", tags: ["salário", "carreira"] },
+  { titulo: "Currículo simples que funciona: modelo para vaga operacional", tags: ["currículo", "dicas"] },
+  { titulo: "Como achar primeiro emprego em {cidade} sem experiência", tags: ["primeiro emprego", "jovem"] },
 ];
 
-const CIDADES = ["São Paulo", "Rio de Janeiro", "Belo Horizonte", "Curitiba", "Porto Alegre", "Salvador", "Brasília", "Fortaleza", "Recife", "Campinas"];
+const CIDADES = [
+  "São Paulo", "Rio de Janeiro", "Belo Horizonte", "Curitiba", "Porto Alegre",
+  "Salvador", "Brasília", "Fortaleza", "Recife", "Campinas", "Goiânia", "Manaus",
+];
 
 function slugify(s: string) {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -36,48 +50,50 @@ function slugify(s: string) {
 }
 
 async function gerarPostComIA(titulo: string, tags: string[]) {
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) throw new Error("GEMINI_API_KEY ausente");
+  const key = process.env.LOVABLE_API_KEY;
+  if (!key) throw new Error("LOVABLE_API_KEY ausente");
 
-  const system = `Você é redator SEO do blog VagasAgora (vagasagora.com.br), site brasileiro de empregos populares (pedreiro, doméstica, motorista, entregador, porteiro, etc).
+  const system = `Você é redator SEO do blog VagasAgora (vagasagora.com.br), site brasileiro de empregos populares.
 Escreva em português brasileiro claro, direto, para quem tem ensino fundamental ou médio.
-Estrutura obrigatória do artigo (campo "conteudo"):
-- Comece com um parágrafo curto contextualizando (sem H1).
-- Use H2 com "## Título" para cada seção (4 a 6 seções).
-- Use listas com "- " quando fizer sentido.
-- Use **negrito** para destacar valores, prazos e termos importantes.
-- Tamanho total: entre 400 e 600 palavras.
-- Inclua dados realistas de 2026 (faixas salariais, direitos, etc).
-- Termine com uma seção "## Como o VagasAgora ajuda" com CTA para cadastro grátis.
+Estrutura obrigatória do conteúdo:
+- Parágrafo curto de abertura (sem H1).
+- 4 a 6 seções com "## Título".
+- Listas com "- " quando útil.
+- **negrito** em valores, prazos e termos-chave.
+- 450 a 650 palavras.
+- Dados realistas de 2026 (faixas salariais, CLT, etc).
+- Última seção "## Como o VagasAgora ajuda" com CTA para cadastro grátis.
 NÃO inclua o título dentro do conteúdo.`;
 
-  const prompt = `Crie um post de blog com:
-- titulo: "${titulo}" (pode reformular ligeiramente para SEO, mantendo a palavra-chave principal)
-- resumo: 1 frase de 140-160 caracteres com a palavra-chave principal
-- conteudo: artigo completo em markdown conforme as regras
-- tags: array com 3 a 5 tags relevantes (inclua estas como base: ${JSON.stringify(tags)})
+  const userPrompt = `Crie post de blog SEO sobre: "${titulo}".
+Tags base: ${JSON.stringify(tags)}.
+Responda APENAS com JSON válido:
+{"titulo":"...", "resumo":"frase de 140-160 chars com palavra-chave", "conteudo":"markdown completo", "tags":["3 a 5 tags"]}`;
 
-Responda APENAS com JSON válido no formato:
-{"titulo": "...", "resumo": "...", "conteudo": "...", "tags": ["..."]}`;
-
-  const res = await fetch(`${GEMINI_URL}?key=${key}`, {
+  const res = await fetch(AI_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${key}`,
+    },
     body: JSON.stringify({
-      systemInstruction: { parts: [{ text: system }] },
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.7, responseMimeType: "application/json" },
+      model: MODEL,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: userPrompt },
+      ],
+      response_format: { type: "json_object" },
     }),
   });
 
   if (!res.ok) {
     const t = await res.text().catch(() => "");
-    throw new Error(`Gemini ${res.status}: ${t.slice(0, 200)}`);
+    throw new Error(`AI Gateway ${res.status}: ${t.slice(0, 300)}`);
   }
   const json = (await res.json()) as {
-    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    choices?: Array<{ message?: { content?: string } }>;
   };
-  const text = json.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? "";
+  const text = json.choices?.[0]?.message?.content?.trim() ?? "";
   const m = text.match(/\{[\s\S]*\}/);
   if (!m) throw new Error("IA não retornou JSON");
   return JSON.parse(m[0]) as { titulo: string; resumo: string; conteudo: string; tags: string[] };
@@ -87,20 +103,19 @@ export const Route = createFileRoute("/api/public/cron/gerar-post")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        // Autenticação por header simples (compartilhado com pg_cron)
-        const secret = request.headers.get("x-cron-secret");
-        const expected = process.env.SUPABASE_SERVICE_ROLE_KEY;
-        if (!expected || secret !== expected) {
+        // Autenticação simples via apikey (anon key) — padrão para /api/public/* chamado pelo pg_cron
+        const apikey = request.headers.get("apikey") ?? new URL(request.url).searchParams.get("apikey");
+        const expected = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_ANON_KEY;
+        if (expected && apikey !== expected) {
           return new Response("Unauthorized", { status: 401 });
         }
 
         try {
-          // Pega títulos já usados para não repetir
           const { data: existentes } = await supabaseAdmin
             .from("posts")
             .select("titulo")
             .order("published_at", { ascending: false })
-            .limit(50);
+            .limit(80);
           const usados = new Set((existentes ?? []).map((p) => p.titulo.toLowerCase()));
 
           const cidade = CIDADES[Math.floor(Math.random() * CIDADES.length)];
@@ -116,7 +131,6 @@ export const Route = createFileRoute("/api/public/cron/gerar-post")({
           const gerado = await gerarPostComIA(escolhido.titulo, escolhido.tags);
 
           let slug = slugify(gerado.titulo);
-          // garantir unicidade
           const { data: dup } = await supabaseAdmin.from("posts").select("slug").eq("slug", slug).maybeSingle();
           if (dup) slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
 
@@ -135,7 +149,6 @@ export const Route = createFileRoute("/api/public/cron/gerar-post")({
             .single();
 
           if (error) throw error;
-
           return Response.json({ ok: true, post: novo });
         } catch (e: unknown) {
           const msg = e instanceof Error ? e.message : String(e);
