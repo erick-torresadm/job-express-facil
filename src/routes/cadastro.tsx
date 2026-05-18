@@ -203,14 +203,17 @@ function StepCurriculo({ onBack, onDone }: { onBack: () => void; onDone: (m: Mid
   );
 }
 
-function GravadorAudio({ onBack, onDone }: { onBack: () => void; onDone: (s: number) => void }) {
+function GravadorAudio({ onBack, onDone }: { onBack: () => void; onDone: (s: number, blob: Blob, mimeType: string) => void }) {
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [blob, setBlob] = useState<Blob | null>(null);
+  const [mimeType, setMimeType] = useState<string>("audio/webm");
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
 
   useEffect(() => () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -222,8 +225,18 @@ function GravadorAudio({ onBack, onDone }: { onBack: () => void; onDone: (s: num
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
-      const mr = new MediaRecorder(stream);
+      const mt = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm"
+        : MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4" : "";
+      const mr = mt ? new MediaRecorder(stream, { mimeType: mt }) : new MediaRecorder(stream);
+      setMimeType(mr.mimeType || mt || "audio/webm");
       recorderRef.current = mr;
+      chunksRef.current = [];
+      mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      mr.onstop = () => {
+        const b = new Blob(chunksRef.current, { type: mr.mimeType || "audio/webm" });
+        setBlob(b);
+        setDone(true);
+      };
       mr.start();
       setRecording(true); setSeconds(0);
       intervalRef.current = setInterval(() => {
@@ -239,7 +252,7 @@ function GravadorAudio({ onBack, onDone }: { onBack: () => void; onDone: (s: num
     if (intervalRef.current) clearInterval(intervalRef.current);
     recorderRef.current?.stop();
     streamRef.current?.getTracks().forEach((t) => t.stop());
-    setRecording(false); setDone(true);
+    setRecording(false);
   };
 
   return (
