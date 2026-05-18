@@ -502,7 +502,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "candidato" | "empresa"
+      app_role: "candidato" | "empresa" | "admin"
       assinatura_status: "pendente" | "ativa" | "atrasada" | "cancelada"
       candidatura_status: "enviado" | "visto" | "em_analise" | "finalizado"
       plano_ciclo: "mensal" | "anual"
@@ -634,7 +634,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["candidato", "empresa"],
+      app_role: ["candidato", "empresa", "admin"],
       assinatura_status: ["pendente", "ativa", "atrasada", "cancelada"],
       candidatura_status: ["enviado", "visto", "em_analise", "finalizado"],
       plano_ciclo: ["mensal", "anual"],
