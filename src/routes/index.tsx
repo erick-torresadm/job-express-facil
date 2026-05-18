@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import {
-  Mic, Camera, MapPin, Volume2, Square, Sparkles, Check,
-  Briefcase, Building2, ArrowLeft, Zap, FileDown,
+  Mic, Camera, MapPin, Volume2, Square, Check,
+  Briefcase, Building2, ArrowLeft, Zap, FileDown, Send,
 } from "lucide-react";
 import { PROFISSOES } from "@/lib/mock-data";
 
@@ -249,7 +249,7 @@ function StepCurriculo({ onBack, onDone }: { onBack: () => void; onDone: (a: { d
       {done && (
         <button onClick={send}
           className="btn-touch shadow-pop mt-6 flex w-full items-center justify-center gap-2 bg-primary text-primary-foreground">
-          <Sparkles className="h-5 w-5" /> Processar com IA
+          <Send className="h-5 w-5" /> Enviar meu currículo
         </button>
       )}
     </section>

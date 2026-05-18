@@ -5,7 +5,7 @@ export const Route = createFileRoute("/empresa")({
   head: () => ({
     meta: [
       { title: "Painel do Recrutador — Vaga Já" },
-      { name: "description", content: "Encontre candidatos pré-qualificados por IA no seu bairro." },
+      { name: "description", content: "Encontre candidatos qualificados no seu bairro." },
       { name: "robots", content: "noindex" },
     ],
   }),
