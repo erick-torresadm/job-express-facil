@@ -479,6 +479,7 @@ function StepPerfil({ profissao, local, midia, contato }: {
     let cancel = false;
     (async () => {
       try {
+        const midiaBase64 = midia ? await blobToBase64(midia.blob) : undefined;
         const p = await analisarCandidato({
           data: {
             nome: contato.nome,
@@ -490,6 +491,8 @@ function StepPerfil({ profissao, local, midia, contato }: {
             temAudio: midia?.tipo === "audio",
             temVideo: midia?.tipo === "video",
             duracaoSegundos: midia?.duracao ?? 0,
+            midiaBase64,
+            midiaMimeType: midia?.mimeType,
           },
         });
         if (!cancel) setPerfil(p);
