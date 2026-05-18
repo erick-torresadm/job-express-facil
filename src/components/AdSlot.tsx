@@ -62,9 +62,9 @@ export function AdSlot({ placement, format = "banner", className, adsenseSlot }:
   }, [placement]);
 
   const handleClick = () => {
-    if (!ad) return;
-    supabase.rpc("noop").then(() => {}).catch(() => {});
+    // Hook futuro p/ contar cliques via server fn
   };
+
 
   const adsenseEnabled = useMemo(() => ADSENSE_CLIENT && adsenseSlot, [adsenseSlot]);
 
