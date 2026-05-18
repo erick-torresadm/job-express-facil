@@ -7,7 +7,7 @@ import {
 import { PROFISSOES } from "@/lib/mock-data";
 import { analisarCandidato, type PerfilGerado } from "@/lib/ai.functions";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/cadastro")({
   head: () => ({
     meta: [
       { title: "Vaga Já — Achei seu emprego no bairro em 3 toques" },
