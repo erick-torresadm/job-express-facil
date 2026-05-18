@@ -44,6 +44,51 @@ export type Database = {
         }
         Relationships: []
       }
+      anuncios: {
+        Row: {
+          ativo: boolean
+          cliques: number
+          created_at: string
+          html_custom: string | null
+          id: string
+          imagem_url: string | null
+          impressoes: number
+          link_url: string | null
+          placement: string
+          prioridade: number
+          titulo: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          cliques?: number
+          created_at?: string
+          html_custom?: string | null
+          id?: string
+          imagem_url?: string | null
+          impressoes?: number
+          link_url?: string | null
+          placement: string
+          prioridade?: number
+          titulo?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          cliques?: number
+          created_at?: string
+          html_custom?: string | null
+          id?: string
+          imagem_url?: string | null
+          impressoes?: number
+          link_url?: string | null
+          placement?: string
+          prioridade?: number
+          titulo?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       assinaturas: {
         Row: {
           asaas_customer_id: string | null

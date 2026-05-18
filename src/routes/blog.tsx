@@ -4,6 +4,7 @@ import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { AdSlot } from "@/components/AdSlot";
 
 export const Route = createFileRoute("/blog")({
   head: () => ({
@@ -48,7 +49,10 @@ function BlogIndex() {
           </p>
         </header>
 
+        <AdSlot placement="blog_topo" format="banner" className="mb-8" />
+
         {isLoading && <p className="text-muted-foreground">Carregando posts…</p>}
+
 
         <div className="grid gap-4 md:grid-cols-2">
           {posts?.map((p) => (
