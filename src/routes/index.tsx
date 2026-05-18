@@ -178,7 +178,20 @@ function Hero() {
           </motion.div>
 
           {/* Phone with floating notifications */}
-          <PhoneMockup />
+          <div className="flex flex-col items-center">
+            <PhoneMockup />
+            <motion.p
+              initial={{ opacity: 0, y: 6 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="mt-4 max-w-xs text-center text-[10px] leading-relaxed text-muted-foreground/70"
+            >
+              * Ilustração meramente demonstrativa. Nomes, marcas e mensagens exibidos são fictícios
+              e servem apenas para fins de demonstração da interface. Qualquer semelhança com
+              empresas reais é mera coincidência.
+            </motion.p>
+          </div>
         </div>
       </motion.div>
 
