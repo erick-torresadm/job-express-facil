@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin, Clock, DollarSign, Flame, ArrowLeft } from "lucide-react";
-import { VAGAS, PROFISSOES, CIDADES } from "@/lib/mock-data";
+import { PROFISSOES, CIDADES } from "@/lib/mock-data";
+import { listarVagasPublicas, type VagaPublica } from "@/lib/vagas.functions";
 
 // SEO-first dynamic page: any slug like "pedreiro-em-osasco" renders a populated page.
 // Inspired by faceted search SEO: page exists for crawlers, content is generated on demand.
