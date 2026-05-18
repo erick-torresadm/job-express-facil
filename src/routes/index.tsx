@@ -145,7 +145,7 @@ function Hero() {
                 to="/auth"
                 className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/25 bg-white/5 px-7 py-4 text-base font-bold text-white backdrop-blur-md transition hover:bg-white/10 active:scale-[0.98]"
               >
-                <Building2 className="h-5 w-5" /> Sou empresa
+                <Building2 className="h-5 w-5" /> Contratar talentos
               </Link>
             </motion.div>
 
