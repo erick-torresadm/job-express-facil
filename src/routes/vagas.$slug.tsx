@@ -128,6 +128,7 @@ function VagasPage() {
                     <p className="mt-2 text-xs text-muted-foreground">Faixa de mercado: {v.faixa_salarial_sugerida}</p>
                   )}
                   <VagaDistancia vaga={v} />
+                  <VagaActions vaga={v} />
                 </li>
               ))}
             </ul>
