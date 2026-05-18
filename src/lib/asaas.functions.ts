@@ -31,7 +31,7 @@ async function asaas<T>(path: string, init?: RequestInit): Promise<T> {
   return JSON.parse(body) as T;
 }
 
-type AsaasCustomer = { id: string };
+type AsaasCustomer = { id: string; cpfCnpj?: string | null };
 type AsaasSubscription = { id: string; nextDueDate: string };
 type AsaasPayment = { id: string; invoiceUrl: string; status: string };
 
