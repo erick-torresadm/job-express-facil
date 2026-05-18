@@ -57,6 +57,8 @@ const analisarSchema = z.object({
   temAudio: z.boolean(),
   temVideo: z.boolean(),
   duracaoSegundos: z.number().min(0).max(120),
+  // Texto livre escrito pelo candidato (opcional)
+  texto: z.string().max(4000).optional(),
   // Base64 puro (sem o prefixo data:) — opcional
   midiaBase64: z.string().max(15_000_000).optional(),
   midiaMimeType: z.string().max(80).optional(),
@@ -78,10 +80,15 @@ export const analisarCandidato = createServerFn({ method: "POST" })
       "Você é um redator de currículos para trabalhadores brasileiros do mercado operacional (pedreiro, doméstica, motorista, porteiro, ajudante, cozinheira, etc). Quando receber um áudio ou vídeo, PRIMEIRO transcreva fielmente o que a pessoa falou em português, e depois use APENAS o que foi dito para preencher experiências e habilidades. Não invente informação. Se a pessoa não falou sobre algo específico, deixe genérico mas honesto. Escreva em português brasileiro simples, direto e respeitoso. Sempre responda APENAS um JSON válido, sem markdown.";
 
     const temMidia = !!(data.midiaBase64 && data.midiaMimeType);
+    const temTexto = !!(data.texto && data.texto.trim().length > 10);
 
-    const instrucao = temMidia
-      ? `O candidato gravou ${data.temVideo ? "um vídeo" : "um áudio"} de ${data.duracaoSegundos}s contando sobre ele. ESCUTE com atenção a gravação anexada e baseie TODO o currículo no que ele realmente falou.`
-      : "O candidato não gravou áudio nem vídeo — gere um perfil base, modesto, baseado apenas na profissão.";
+    const fontes: string[] = [];
+    if (temMidia) fontes.push(`${data.temVideo ? "um vídeo" : "um áudio"} de ${data.duracaoSegundos}s`);
+    if (temTexto) fontes.push("um texto escrito pelo candidato");
+
+    const instrucao = fontes.length > 0
+      ? `O candidato forneceu: ${fontes.join(" e ")}. Use TODAS as fontes juntas para montar o currículo. Se houver mídia, transcreva e combine com o texto escrito. Não invente nada além do que foi dito/escrito.`
+      : "O candidato não forneceu áudio, vídeo ou texto — gere um perfil base, modesto, baseado apenas na profissão.";
 
     const pedido = `${instrucao}
 
@@ -89,13 +96,13 @@ Dados do candidato:
 - Nome: ${data.nome}
 - Profissão declarada: ${data.profissao}
 - Cidade: ${data.bairro}, ${data.cidade}
-
+${temTexto ? `\nTexto escrito pelo candidato:\n"""\n${data.texto!.trim()}\n"""\n` : ""}
 Responda em JSON EXATAMENTE neste formato:
 {
-  "transcricao": "${temMidia ? "transcrição literal e completa do que a pessoa falou, em português, pontuação natural" : ""}",
-  "resumo": "1 frase curta (máx 140 caracteres) vendendo o candidato com base no que ele falou",
-  "experiencias": ["3 a 5 bullets curtos, cada um descrevendo uma experiência REAL mencionada na gravação (locais, tempo, tarefas). Se a gravação foi vaga, gere bullets típicos da profissão"],
-  "habilidades": ["4 a 8 habilidades práticas em 1-3 palavras cada, EXTRAÍDAS do que a pessoa falou quando possível"],
+  "transcricao": "${temMidia ? "transcrição literal e completa do que a pessoa falou na gravação, em português, pontuação natural" : ""}",
+  "resumo": "1 frase curta (máx 140 caracteres) vendendo o candidato com base no que foi informado",
+  "experiencias": ["3 a 6 bullets curtos, cada um descrevendo uma experiência REAL mencionada na gravação ou no texto (locais, tempo, tarefas). Se ambas as fontes forem vagas, gere bullets típicos da profissão"],
+  "habilidades": ["4 a 10 habilidades práticas em 1-3 palavras cada, EXTRAÍDAS do que a pessoa contou"],
   "dicas": ["2 dicas curtas e práticas pro candidato conseguir mais entrevistas"]
 }`;
 
