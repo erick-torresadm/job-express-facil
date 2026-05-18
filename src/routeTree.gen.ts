@@ -23,6 +23,7 @@ import { Route as EmpresaNovaVagaRouteImport } from './routes/empresa.nova-vaga'
 import { Route as EmpresaMinhasVagasRouteImport } from './routes/empresa.minhas-vagas'
 import { Route as CvSlugRouteImport } from './routes/cv.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as ApiPublicCronGerarPostRouteImport } from './routes/api/public/cron.gerar-post'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -94,6 +95,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const ApiPublicCronGerarPostRoute = ApiPublicCronGerarPostRouteImport.update({
+  id: '/api/public/cron/gerar-post',
+  path: '/api/public/cron/gerar-post',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/vagas/$slug': typeof VagasSlugRoute
+  '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/vagas/$slug': typeof VagasSlugRoute
+  '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/vagas/$slug': typeof VagasSlugRoute
+  '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
     | '/vagas/$slug'
+    | '/api/public/cron/gerar-post'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
     | '/vagas/$slug'
+    | '/api/public/cron/gerar-post'
   id:
     | '__root__'
     | '/'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
     | '/vagas/$slug'
+    | '/api/public/cron/gerar-post'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   CvSlugRoute: typeof CvSlugRoute
   VagasSlugRoute: typeof VagasSlugRoute
+  ApiPublicCronGerarPostRoute: typeof ApiPublicCronGerarPostRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -309,6 +322,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/api/public/cron/gerar-post': {
+      id: '/api/public/cron/gerar-post'
+      path: '/api/public/cron/gerar-post'
+      fullPath: '/api/public/cron/gerar-post'
+      preLoaderRoute: typeof ApiPublicCronGerarPostRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -347,7 +367,18 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   CvSlugRoute: CvSlugRoute,
   VagasSlugRoute: VagasSlugRoute,
+  ApiPublicCronGerarPostRoute: ApiPublicCronGerarPostRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
