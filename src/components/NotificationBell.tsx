@@ -33,7 +33,7 @@ export function NotificationBell({ tone = "light" }: { tone?: "light" | "dark" }
       });
 
     const ch = supabase
-      .channel(`notif-${user.id}`)
+      .channel(`notif-${user.id}-${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "notificacoes", filter: `user_id=eq.${user.id}` },
