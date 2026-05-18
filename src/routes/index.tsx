@@ -190,7 +190,7 @@ function PhoneMockup() {
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
       className="relative mx-auto hidden w-full max-w-[320px] sm:block"
     >
       {/* Floating chip — top */}
@@ -564,7 +564,7 @@ function CTA() {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] as const }}
         className="relative overflow-hidden rounded-[2rem] border border-border bg-card p-10 text-center shadow-soft md:p-16"
       >
         {/* Decorative orbs */}
