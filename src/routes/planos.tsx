@@ -1,5 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, Sparkles } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { Check, Sparkles, Loader2, X } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { criarAssinaturaAsaas } from "@/lib/asaas.functions";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/planos")({
   head: () => ({
@@ -13,9 +18,12 @@ export const Route = createFileRoute("/planos")({
   component: PlanosPage,
 });
 
-const DESCONTO_ANUAL = 0.2; // 20% off
+const DESCONTO_ANUAL = 0.2;
 
 function PlanosPage() {
+  const [ciclo, setCiclo] = useState<"mensal" | "anual">("mensal");
+  const [checkout, setCheckout] = useState<null | { plano: "basico" | "full" }>(null);
+
   return (
     <div className="min-h-screen bg-secondary">
       <header className="border-b bg-background">
@@ -31,22 +39,30 @@ function PlanosPage() {
         </span>
         <h1 className="mt-4 text-4xl font-extrabold lg:text-5xl">Contrate sem perder tempo</h1>
         <p className="mt-3 text-muted-foreground">Cobre só por candidato que você quiser falar. Cancele quando quiser.</p>
+
+        <div className="mt-6 inline-flex rounded-full bg-card p-1 shadow-soft">
+          {(["mensal", "anual"] as const).map((c) => (
+            <button key={c} onClick={() => setCiclo(c)}
+              className={`rounded-full px-4 py-2 text-sm font-bold transition ${
+                ciclo === c ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+              }`}>
+              {c === "mensal" ? "Mensal" : "Anual (-20%)"}
+            </button>
+          ))}
+        </div>
       </section>
 
       <section className="mx-auto grid max-w-5xl gap-6 px-4 pb-16 lg:grid-cols-3">
         <PlanoCard
           nome="Free"
-          preco="R$ 0"
-          subtitulo="Para experimentar"
+          preco="R$ 0" subtitulo="Para experimentar"
           features={["10 contatos liberados", "Acesso a todos os currículos", "1 vaga ativa", "Suporte por e-mail"]}
-          cta="Começar grátis" to="/auth"
+          cta="Começar grátis" onClick="link-auth"
         />
         <PlanoCard
-          nome="Básico"
-          preco="R$ 99"
-          subtitulo="por mês"
-          precoAnual={Math.round(99 * 12 * (1 - DESCONTO_ANUAL))}
-          destaque
+          nome="Básico" destaque
+          preco={ciclo === "mensal" ? "R$ 99" : `R$ ${Math.round(99 * 12 * (1 - DESCONTO_ANUAL)).toLocaleString("pt-BR")}`}
+          subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
           features={[
             "100 contatos liberados/mês",
             "5 vagas ativas simultâneas",
@@ -54,13 +70,12 @@ function PlanosPage() {
             "Notificações de novos candidatos",
             "Filtros por bairro e profissão",
           ]}
-          cta="Assinar Básico" to="/auth"
+          cta="Assinar Básico" onClick={() => setCheckout({ plano: "basico" })}
         />
         <PlanoCard
           nome="Full"
-          preco="R$ 299"
-          subtitulo="por mês"
-          precoAnual={Math.round(299 * 12 * (1 - DESCONTO_ANUAL))}
+          preco={ciclo === "mensal" ? "R$ 299" : `R$ ${Math.round(299 * 12 * (1 - DESCONTO_ANUAL)).toLocaleString("pt-BR")}`}
+          subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
           features={[
             "Contatos ilimitados",
             "Vagas ilimitadas",
@@ -69,24 +84,34 @@ function PlanosPage() {
             "Detecção de fraude e salário sugerido",
             "Suporte prioritário",
           ]}
-          cta="Assinar Full" to="/auth"
+          cta="Assinar Full" onClick={() => setCheckout({ plano: "full" })}
         />
       </section>
 
       <section className="mx-auto max-w-3xl px-4 pb-16 text-center">
         <p className="text-sm text-muted-foreground">
-          Pagando anual: <strong className="text-foreground">20% de desconto</strong> nos planos pagos.
-          Sem fidelidade. Cancele a hora que quiser.
+          Pagando anual: <strong className="text-foreground">20% de desconto</strong>.
+          Pix, cartão ou boleto. Sem fidelidade. Cancele quando quiser.
         </p>
       </section>
+
+      {checkout && (
+        <CheckoutModal plano={checkout.plano} ciclo={ciclo} onClose={() => setCheckout(null)} />
+      )}
     </div>
   );
 }
 
-function PlanoCard({ nome, preco, subtitulo, features, cta, to, destaque, precoAnual }: {
+function PlanoCard({ nome, preco, subtitulo, features, cta, onClick, destaque }: {
   nome: string; preco: string; subtitulo: string;
-  features: string[]; cta: string; to: string; destaque?: boolean; precoAnual?: number;
+  features: string[]; cta: string;
+  onClick: "link-auth" | (() => void);
+  destaque?: boolean;
 }) {
+  const isLink = onClick === "link-auth";
+  const btnCls = `mt-6 inline-flex w-full items-center justify-center rounded-xl py-3 text-sm font-bold ${
+    destaque ? "bg-primary text-primary-foreground hover:opacity-90" : "bg-secondary text-foreground hover:bg-accent/20"
+  }`;
   return (
     <article className={`relative rounded-3xl border bg-card p-6 ${destaque ? "border-primary shadow-lg ring-2 ring-primary/30" : "border-border"}`}>
       {destaque && (
@@ -99,9 +124,6 @@ function PlanoCard({ nome, preco, subtitulo, features, cta, to, destaque, precoA
         <span className="text-4xl font-extrabold">{preco}</span>
         <span className="text-sm text-muted-foreground">{subtitulo}</span>
       </div>
-      {precoAnual && (
-        <p className="mt-1 text-xs text-accent">ou R$ {precoAnual.toLocaleString("pt-BR")}/ano (20% off)</p>
-      )}
       <ul className="mt-6 space-y-2 text-sm">
         {features.map((f) => (
           <li key={f} className="flex items-start gap-2">
@@ -109,9 +131,94 @@ function PlanoCard({ nome, preco, subtitulo, features, cta, to, destaque, precoA
           </li>
         ))}
       </ul>
-      <Link to={to} className={`mt-6 inline-flex w-full items-center justify-center rounded-xl py-3 text-sm font-bold ${destaque ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground hover:bg-accent/20"}`}>
-        {cta}
-      </Link>
+      {isLink ? (
+        <Link to="/auth" className={btnCls}>{cta}</Link>
+      ) : (
+        <button onClick={onClick} className={btnCls}>{cta}</button>
+      )}
     </article>
+  );
+}
+
+function CheckoutModal({ plano, ciclo, onClose }: {
+  plano: "basico" | "full"; ciclo: "mensal" | "anual"; onClose: () => void;
+}) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const criar = useServerFn(criarAssinaturaAsaas);
+  const [form, setForm] = useState({
+    nome: user?.user_metadata?.company_name ?? user?.user_metadata?.full_name ?? "",
+    email: user?.email ?? "",
+    cpfCnpj: "",
+    telefone: "",
+  });
+  const [loading, setLoading] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      toast.info("Entre na sua conta para assinar");
+      navigate({ to: "/auth" });
+      return;
+    }
+    setLoading(true);
+    try {
+      const { invoiceUrl } = await criar({ data: { plano, ciclo, ...form } });
+      window.location.href = invoiceUrl;
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao criar assinatura");
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" onClick={onClose}>
+      <form onSubmit={submit} onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md rounded-3xl bg-card p-6 shadow-pop">
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="text-lg font-extrabold">Assinar plano {plano === "basico" ? "Básico" : "Full"}</h3>
+            <p className="text-xs text-muted-foreground">Cobrança {ciclo} via Asaas (Pix, cartão ou boleto)</p>
+          </div>
+          <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-full hover:bg-secondary">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="mt-4 space-y-3">
+          <Field label="Nome / Razão social" value={form.nome}
+            onChange={(v) => setForm((f) => ({ ...f, nome: v }))} required />
+          <Field label="E-mail" type="email" value={form.email}
+            onChange={(v) => setForm((f) => ({ ...f, email: v }))} required />
+          <Field label="CPF ou CNPJ" value={form.cpfCnpj}
+            onChange={(v) => setForm((f) => ({ ...f, cpfCnpj: v }))}
+            placeholder="Apenas números" required />
+          <Field label="WhatsApp (opcional)" value={form.telefone}
+            onChange={(v) => setForm((f) => ({ ...f, telefone: v }))}
+            placeholder="11999999999" />
+        </div>
+
+        <button type="submit" disabled={loading}
+          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-bold text-accent-foreground disabled:opacity-60">
+          {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Gerando link...</> : "Ir para pagamento →"}
+        </button>
+        <p className="mt-3 text-center text-[11px] text-muted-foreground">
+          Você será redirecionado para o ambiente seguro do Asaas para escolher Pix, cartão ou boleto.
+        </p>
+      </form>
+    </div>
+  );
+}
+
+function Field({ label, value, onChange, type = "text", required, placeholder }: {
+  label: string; value: string; onChange: (v: string) => void;
+  type?: string; required?: boolean; placeholder?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="text-xs font-bold uppercase text-muted-foreground">{label}</span>
+      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} required={required} placeholder={placeholder}
+        className="mt-1 h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none focus:border-primary" />
+    </label>
   );
 }
