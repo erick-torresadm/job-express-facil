@@ -32,7 +32,9 @@ function Landing() {
       <Hero />
       <Marquee />
       <Como />
+      <Stats />
       <Profissoes />
+      <LiveActivity />
       <ParaQuem />
       <Depoimentos />
       <CTA />
