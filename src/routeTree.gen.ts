@@ -9,38 +9,102 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as EmpresaRouteImport } from './routes/empresa'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
+import { Route as EmpresaNovaVagaRouteImport } from './routes/empresa.nova-vaga'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmpresaRoute = EmpresaRouteImport.update({
+  id: '/empresa',
+  path: '/empresa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VagasSlugRoute = VagasSlugRouteImport.update({
+  id: '/vagas/$slug',
+  path: '/vagas/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmpresaNovaVagaRoute = EmpresaNovaVagaRouteImport.update({
+  id: '/nova-vaga',
+  path: '/nova-vaga',
+  getParentRoute: () => EmpresaRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/empresa': typeof EmpresaRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
+  '/vagas/$slug': typeof VagasSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/empresa': typeof EmpresaRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
+  '/vagas/$slug': typeof VagasSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/empresa': typeof EmpresaRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
+  '/vagas/$slug': typeof VagasSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/empresa'
+    | '/sitemap.xml'
+    | '/empresa/nova-vaga'
+    | '/vagas/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/empresa' | '/sitemap.xml' | '/empresa/nova-vaga' | '/vagas/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/empresa'
+    | '/sitemap.xml'
+    | '/empresa/nova-vaga'
+    | '/vagas/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EmpresaRoute: typeof EmpresaRouteWithChildren
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  VagasSlugRoute: typeof VagasSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/empresa': {
+      id: '/empresa'
+      path: '/empresa'
+      fullPath: '/empresa'
+      preLoaderRoute: typeof EmpresaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +112,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vagas/$slug': {
+      id: '/vagas/$slug'
+      path: '/vagas/$slug'
+      fullPath: '/vagas/$slug'
+      preLoaderRoute: typeof VagasSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/empresa/nova-vaga': {
+      id: '/empresa/nova-vaga'
+      path: '/nova-vaga'
+      fullPath: '/empresa/nova-vaga'
+      preLoaderRoute: typeof EmpresaNovaVagaRouteImport
+      parentRoute: typeof EmpresaRoute
+    }
   }
 }
 
+interface EmpresaRouteChildren {
+  EmpresaNovaVagaRoute: typeof EmpresaNovaVagaRoute
+}
+
+const EmpresaRouteChildren: EmpresaRouteChildren = {
+  EmpresaNovaVagaRoute: EmpresaNovaVagaRoute,
+}
+
+const EmpresaRouteWithChildren =
+  EmpresaRoute._addFileChildren(EmpresaRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  EmpresaRoute: EmpresaRouteWithChildren,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  VagasSlugRoute: VagasSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
