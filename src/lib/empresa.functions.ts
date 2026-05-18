@@ -192,3 +192,77 @@ export const revelarContato = createServerFn({ method: "POST" })
     if (!contato) throw new Error("Currículo não encontrado");
     return contato;
   });
+
+// ---------- Listagem de candidatos pro painel da empresa ----------
+
+export const listarCandidatosBusca = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({
+      busca: z.string().trim().max(120).optional().nullable(),
+      profissao: z.string().trim().max(80).optional().nullable(),
+      cidade: z.string().trim().max(80).optional().nullable(),
+      bairro: z.string().trim().max(80).optional().nullable(),
+      limite: z.number().int().min(1).max(60).default(30),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { userId } = context;
+
+    let q = supabaseAdmin
+      .from("curriculos")
+      .select("id,slug,nome,profissao,bairro,cidade,resumo,habilidades,experiencias,tem_video,tem_audio,created_at")
+      .order("created_at", { ascending: false })
+      .limit(data.limite);
+
+    if (data.profissao) q = q.ilike("profissao", `%${data.profissao}%`);
+    if (data.cidade) q = q.ilike("cidade", `%${data.cidade}%`);
+    if (data.bairro) q = q.ilike("bairro", `%${data.bairro}%`);
+    if (data.busca) q = q.or(`nome.ilike.%${data.busca}%,resumo.ilike.%${data.busca}%,profissao.ilike.%${data.busca}%`);
+
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+
+    // marca quais a empresa já revelou (sem custo na próxima vez)
+    const ids = (rows ?? []).map((r) => r.id);
+    let revelados = new Set<string>();
+    if (ids.length) {
+      const { data: revs } = await supabaseAdmin
+        .from("revelacoes").select("curriculo_id")
+        .eq("empresa_id", userId).in("curriculo_id", ids);
+      revelados = new Set((revs ?? []).map((r) => r.curriculo_id as string));
+    }
+
+    return (rows ?? []).map((r) => ({ ...r, ja_revelado: revelados.has(r.id) }));
+  });
+
+// ---------- KPIs do dashboard da empresa ----------
+
+export const getEmpresaDashboard = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { userId } = context;
+    const [vagasAtivas, vagasTotais, candTotais, candNovas, revel, perfil] = await Promise.all([
+      supabaseAdmin.from("vagas").select("id", { count: "exact", head: true }).eq("empresa_id", userId).eq("ativa", true),
+      supabaseAdmin.from("vagas").select("id", { count: "exact", head: true }).eq("empresa_id", userId),
+      supabaseAdmin.from("candidaturas").select("id", { count: "exact", head: true }).eq("empresa_id", userId),
+      supabaseAdmin.from("candidaturas").select("id", { count: "exact", head: true })
+        .eq("empresa_id", userId)
+        .gte("created_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
+      supabaseAdmin.from("revelacoes").select("id", { count: "exact", head: true }).eq("empresa_id", userId),
+      supabaseAdmin.from("profiles").select("verificada,slug_publico").eq("id", userId).maybeSingle(),
+    ]);
+
+    const usadas = revel.count ?? 0;
+    return {
+      vagas_ativas: vagasAtivas.count ?? 0,
+      vagas_totais: vagasTotais.count ?? 0,
+      candidaturas_totais: candTotais.count ?? 0,
+      candidaturas_7d: candNovas.count ?? 0,
+      contatos_usados: usadas,
+      contatos_limite: FREE_REVELACOES,
+      contatos_restantes: Math.max(0, FREE_REVELACOES - usadas),
+      verificada: perfil.data?.verificada ?? false,
+      tem_pagina: !!perfil.data?.slug_publico,
+    };
+  });
