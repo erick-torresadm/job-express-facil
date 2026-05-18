@@ -89,7 +89,7 @@ export const criarAssinaturaAsaas = createServerFn({ method: "POST" })
       // Atualiza customer existente garantindo que cpfCnpj esteja preenchido
       // (Asaas rejeita cartão de crédito sem CPF/CNPJ no cadastro do cliente)
       await asaas<AsaasCustomer>(`/customers/${customerId}`, {
-        method: "POST",
+        method: "PUT",
         body: JSON.stringify({
           name: data.nome,
           email: data.email,
