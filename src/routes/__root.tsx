@@ -132,7 +132,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col bg-background">
         {!hideChrome && <SiteHeader />}
-        <div className={`flex-1 ${hideChrome ? "" : "pt-20 md:pt-24"}`}>
+        <div className="flex-1">
           <Outlet />
         </div>
         {!hideChrome && <SiteFooter />}
