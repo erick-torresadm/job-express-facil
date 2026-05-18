@@ -75,14 +75,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Vagaja" },
+      { name: "description", content: "Vaga Certa Agora is a job board app connecting job seekers and employers with an accessible, mobile-first design." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Vagaja" },
+      { property: "og:description", content: "Vaga Certa Agora is a job board app connecting job seekers and employers with an accessible, mobile-first design." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Vagaja" },
+      { name: "twitter:description", content: "Vaga Certa Agora is a job board app connecting job seekers and employers with an accessible, mobile-first design." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6e952237-6fa1-4e09-8597-aff9515424ce/id-preview-cd17920a--f540e22b-4e9f-464c-a652-5e61aa0a6160.lovable.app-1779078886347.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6e952237-6fa1-4e09-8597-aff9515424ce/id-preview-cd17920a--f540e22b-4e9f-464c-a652-5e61aa0a6160.lovable.app-1779078886347.png" },
     ],
     links: [
       {
