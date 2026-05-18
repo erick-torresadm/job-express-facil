@@ -657,8 +657,8 @@ function Depoimentos() {
           variants={fadeUp}
           className="mx-auto max-w-2xl text-center"
         >
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[oklch(0.78_0.14_220)]">Histórias reais</p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">Gente que já achou.</h2>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[oklch(0.78_0.14_220)]">Quem já está dentro</p>
+          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">Carreiras que decolaram aqui.</h2>
         </motion.div>
 
         <motion.div
