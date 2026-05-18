@@ -12,10 +12,24 @@ export const Route = createFileRoute("/empresa/nova-vaga")({
 });
 
 function NovaVaga() {
-  const [form, setForm] = useState({ titulo: "", salario: "", horario: "", bairro: BAIRROS[0], profissao: PROFISSOES[0].nome, urgente: false });
+  const [form, setForm] = useState({ titulo: "", salario: "", horario: "", bairro: BAIRROS[0], profissao: PROFISSOES[0].nome, urgente: false, descricao: "", requisitos: [] as string[] });
   const [saved, setSaved] = useState(false);
+  const [gerando, setGerando] = useState(false);
+  const [erroIA, setErroIA] = useState<string | null>(null);
 
   const upd = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }));
+
+  const sugerir = async () => {
+    setErroIA(null); setGerando(true);
+    try {
+      const r = await gerarDescricaoVaga({ data: { titulo: form.titulo || form.profissao, profissao: form.profissao, bairro: form.bairro, salario: form.salario || "A combinar", horario: form.horario || "Comercial" } });
+      setForm((f) => ({ ...f, descricao: r.descricao, requisitos: r.requisitos }));
+    } catch (e) {
+      setErroIA(e instanceof Error ? e.message : "Erro ao gerar texto");
+    } finally {
+      setGerando(false);
+    }
+  };
 
   if (saved) {
     return (
