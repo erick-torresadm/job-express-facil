@@ -139,6 +139,7 @@ function RootComponent() {
         {!hideChrome && <SiteFooter />}
       </div>
       <Toaster position="top-right" richColors />
+      <CookieConsent />
     </QueryClientProvider>
   );
 }
