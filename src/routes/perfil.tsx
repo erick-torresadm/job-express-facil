@@ -248,6 +248,7 @@ function PerfilEditPage() {
               <button
                 onClick={salvar}
                 disabled={saving}
+                data-sound="success"
                 className="ml-auto inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-bold text-accent-foreground shadow-pop disabled:opacity-60"
               >
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}

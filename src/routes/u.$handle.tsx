@@ -131,6 +131,7 @@ function PerfilPublicoPage() {
                 <button
                   onClick={seguir}
                   disabled={loadingFollow}
+                  data-sound={perfil.is_following ? "pop" : "like"}
                   className={`inline-flex items-center gap-1.5 rounded-full px-5 py-2 text-sm font-bold shadow-pop disabled:opacity-60 ${
                     perfil.is_following
                       ? "border-2 border-border bg-card hover:bg-muted"
