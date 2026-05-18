@@ -131,16 +131,16 @@ function Hero() {
               </span>
             </motion.h1>
 
-            <motion.p variants={fadeUp} className="mt-6 max-w-xl text-base leading-relaxed text-white/75 md:text-lg">
+            <motion.p variants={fadeUp} className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-white/75 sm:text-base md:mx-0 md:mt-6 md:text-lg">
               Conectamos profissionais a vagas <strong className="font-bold text-white">CLT, PJ e estágio</strong> em
               milhares de empresas. Crie seu perfil em 1 minuto e seja chamado direto no WhatsApp —
               sem PDF, sem fila, sem burocracia.
             </motion.p>
 
-            <motion.div variants={fadeUp} className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <motion.div variants={fadeUp} className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center md:justify-start">
               <Link
                 to="/cadastro"
-                className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-white px-7 py-4 text-base font-bold text-primary shadow-pop transition active:scale-[0.98]"
+                className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-white px-6 py-3.5 text-[15px] font-bold text-primary shadow-pop transition active:scale-[0.98] sm:px-7 sm:py-4 sm:text-base"
               >
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 <span className="relative">Encontrar vagas</span>
@@ -148,13 +148,13 @@ function Hero() {
               </Link>
               <Link
                 to="/auth"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/25 bg-white/5 px-7 py-4 text-base font-bold text-white backdrop-blur-md transition hover:bg-white/10 active:scale-[0.98]"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/25 bg-white/5 px-6 py-3.5 text-[15px] font-bold text-white backdrop-blur-md transition hover:bg-white/10 active:scale-[0.98] sm:px-7 sm:py-4 sm:text-base"
               >
                 <Building2 className="h-5 w-5" /> Contratar talentos
               </Link>
             </motion.div>
 
-            <motion.div variants={fadeUp} className="mt-8 flex items-center gap-4">
+            <motion.div variants={fadeUp} className="mt-7 flex items-center justify-center gap-4 md:justify-start">
               <div className="flex -space-x-2">
                 {["oklch(0.72_0.15_30)", "oklch(0.72_0.15_140)", "oklch(0.72_0.15_200)", "oklch(0.72_0.15_300)"].map((c, i) => (
                   <motion.div
@@ -167,7 +167,7 @@ function Hero() {
                   />
                 ))}
               </div>
-              <div className="text-xs text-white/70">
+              <div className="text-left text-xs text-white/70">
                 <div className="flex items-center gap-1 text-white">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-3 w-3 fill-[oklch(0.85_0.18_85)] text-[oklch(0.85_0.18_85)]" />
@@ -178,6 +178,7 @@ function Hero() {
               </div>
             </motion.div>
           </motion.div>
+
 
           {/* Phone with floating notifications */}
           <div className="flex flex-col items-center">
