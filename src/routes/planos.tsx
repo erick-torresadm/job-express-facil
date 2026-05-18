@@ -140,9 +140,9 @@ function PlanosPage() {
               <tr className="border-b border-border bg-secondary/60">
                 <th className="px-4 py-3 text-left font-bold">Recurso</th>
                 <th className="px-4 py-3 text-center font-bold">VagasAgora<br /><span className="text-xs text-muted-foreground">Básico R$ 44,90</span></th>
-                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Catho<br /><span className="text-xs">R$ 59,90</span></th>
-                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Infojobs<br /><span className="text-xs">R$ 79,00</span></th>
-                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Vagas.com<br /><span className="text-xs">R$ 69,00</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Portal tradicional A<br /><span className="text-xs">~R$ 59,90</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Portal tradicional B<br /><span className="text-xs">~R$ 79,00</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Marketplace de vagas<br /><span className="text-xs">~R$ 69,00</span></th>
               </tr>
             </thead>
             <tbody>
@@ -158,7 +158,8 @@ function PlanosPage() {
           </table>
         </div>
         <p className="mt-3 text-center text-[11px] text-muted-foreground">
-          Preços de concorrentes coletados em mai/2026 nos sites oficiais — sujeitos a alteração.
+          Comparativo baseado em faixas de preço públicas dos principais portais de emprego brasileiros (mai/2026).
+          Marcas e valores reais pertencem aos respectivos titulares e podem variar — consulte cada serviço.
         </p>
       </section>
 
