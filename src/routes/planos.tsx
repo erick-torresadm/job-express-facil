@@ -103,7 +103,7 @@ function PlanosPage() {
           nome="Básico" destaque
           preco={ciclo === "mensal" ? `R$ ${brl(PRECO_BASICO)}` : `R$ ${brl(PRECO_BASICO * 12 * (1 - DESCONTO_ANUAL))}`}
           subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
-          comparativo="Catho Profissional: ~R$ 59,90/mês"
+          comparativo="Portais tradicionais: a partir de ~R$ 59,90/mês"
           features={[
             "Tudo do Free, mais:",
             "100 contatos liberados/mês",
@@ -117,7 +117,7 @@ function PlanosPage() {
           nome="Full"
           preco={ciclo === "mensal" ? `R$ ${brl(PRECO_FULL)}` : `R$ ${brl(PRECO_FULL * 12 * (1 - DESCONTO_ANUAL))}`}
           subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
-          comparativo="Catho Destaque: ~R$ 109,90/mês"
+          comparativo="Planos destaque do mercado: ~R$ 109,90/mês"
           features={[
             "Tudo do Básico, mais:",
             "Contatos ilimitados",
@@ -140,9 +140,9 @@ function PlanosPage() {
               <tr className="border-b border-border bg-secondary/60">
                 <th className="px-4 py-3 text-left font-bold">Recurso</th>
                 <th className="px-4 py-3 text-center font-bold">VagasAgora<br /><span className="text-xs text-muted-foreground">Básico R$ 44,90</span></th>
-                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Catho<br /><span className="text-xs">~R$ 59,90</span></th>
-                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Infojobs<br /><span className="text-xs">~R$ 79,00</span></th>
-                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Vagas.com<br /><span className="text-xs">~R$ 69,00</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Portal tradicional<br /><span className="text-xs">~R$ 59,90</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Outro portal<br /><span className="text-xs">~R$ 79,00</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Marketplace de vagas<br /><span className="text-xs">~R$ 69,00</span></th>
               </tr>
             </thead>
             <tbody>
@@ -158,8 +158,7 @@ function PlanosPage() {
           </table>
         </div>
         <p className="mt-3 text-center text-[11px] text-muted-foreground">
-          Comparativo informativo baseado em valores e recursos divulgados publicamente nos sites oficiais de Catho, Infojobs e Vagas.com (mai/2026).
-          Marcas citadas pertencem aos respectivos titulares — VagasAgora não possui vínculo com elas. Valores aproximados, sujeitos a alteração; consulte cada serviço para condições atualizadas.
+          Comparativo ilustrativo baseado em faixas de preço praticadas por portais de emprego tradicionais do mercado brasileiro. Valores aproximados, sujeitos a alteração — consulte cada serviço para condições atualizadas.
         </p>
       </section>
 
