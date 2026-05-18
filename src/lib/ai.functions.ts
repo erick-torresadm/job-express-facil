@@ -154,8 +154,17 @@ const vagaSchema = z.object({
 });
 
 export const gerarDescricaoVaga = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => vagaSchema.parse(d))
-  .handler(async ({ data }): Promise<{ descricao: string; requisitos: string[] }> => {
+  .handler(async ({ data, context }): Promise<{ descricao: string; requisitos: string[] }> => {
+    // Restringe geração de vagas a usuários com role "empresa".
+    const { data: roles } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId);
+    const isEmpresa = (roles ?? []).some((r) => r.role === "empresa");
+    if (!isEmpresa) throw new Error("Apenas empresas podem gerar descrições de vaga.");
+
     const sys =
       "Você escreve anúncios de vaga para mercado operacional brasileiro. Linguagem simples, sem jargão de RH. Responda APENAS JSON válido, sem markdown.";
     const user = `Escreva uma vaga clara e atrativa:
