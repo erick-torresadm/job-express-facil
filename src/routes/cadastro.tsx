@@ -143,7 +143,7 @@ function StepProfissao({ onPick }: { onPick: (id: string) => void }) {
       </div>
 
       <p className="mb-2 text-xs font-bold uppercase text-muted-foreground">Sugestões populares</p>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {filtradas.map((p) => (
           <button key={p.id} onClick={() => onPick(p.nome)}
             className="btn-touch flex flex-col items-center justify-center gap-2 border-2 border-border bg-card p-4 text-card-foreground hover:border-accent hover:bg-accent/5">
@@ -152,7 +152,7 @@ function StepProfissao({ onPick }: { onPick: (id: string) => void }) {
           </button>
         ))}
         {filtradas.length === 0 && (
-          <p className="col-span-2 text-center text-sm text-muted-foreground">
+          <p className="col-span-2 text-center text-sm text-muted-foreground sm:col-span-3 lg:col-span-4 xl:col-span-5">
             Nenhuma sugestão — use o botão acima com a sua profissão.
           </p>
         )}
