@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "social_media_public_read" ON storage.objects;
