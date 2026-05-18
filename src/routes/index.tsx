@@ -511,7 +511,7 @@ function Stats() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-background via-secondary/30 to-background py-20 md:py-28">
+    <section className="relative overflow-hidden bg-gradient-to-b from-background via-secondary/30 to-background py-14 sm:py-20 md:py-28">
       <motion.div
         aria-hidden
         className="absolute inset-0 opacity-[0.04]"
@@ -533,7 +533,7 @@ function Stats() {
           className="mx-auto max-w-2xl text-center"
         >
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Os números</p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">
+          <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.02em] sm:text-4xl md:text-5xl">
             A maior rede de empregos <span className="text-muted-foreground">da nova economia.</span>
           </h2>
         </motion.div>
@@ -561,7 +561,7 @@ function Stats() {
               <div className="relative mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-pop">
                 {s.icon}
               </div>
-              <p className="relative text-4xl font-extrabold tracking-[-0.03em] md:text-5xl">
+              <p className="relative text-3xl font-extrabold tracking-[-0.03em] sm:text-4xl md:text-5xl">
                 <Counter to={s.n} suffix={s.suffix} />
               </p>
               <p className="relative mt-2 text-sm font-bold">{s.l}</p>
@@ -627,7 +627,7 @@ function LiveActivity() {
             </motion.span>
             <motion.h2
               variants={fadeUp}
-              className="mt-5 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl"
+              className="mt-5 text-3xl font-extrabold tracking-[-0.02em] sm:text-4xl md:text-5xl"
             >
               Pessoas sendo contratadas <br />
               <span className="bg-gradient-to-r from-white to-[oklch(0.78_0.14_220)] bg-clip-text text-transparent">
@@ -751,7 +751,7 @@ function Como() {
     { icon: <Zap className="h-6 w-6" />, t: "Recrutador te chama", d: "Convite de entrevista direto no WhatsApp. Sem espera, sem ansiedade." },
   ];
   return (
-    <section className="mx-auto max-w-6xl px-4 py-20 md:py-28">
+    <section className="mx-auto max-w-6xl px-4 py-14 sm:py-20 md:py-28">
       <motion.div
         initial="hidden"
         whileInView="show"
@@ -760,7 +760,7 @@ function Como() {
         className="mx-auto max-w-2xl text-center"
       >
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Como funciona</p>
-        <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">
+        <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.02em] sm:text-4xl md:text-5xl">
           Do perfil à entrevista <span className="text-muted-foreground">em 48 horas.</span>
         </h2>
         <p className="mt-4 text-muted-foreground">Esqueça PDFs, anexos e cartas de apresentação. A gente cuida do processo, você foca na vaga.</p>
@@ -807,7 +807,7 @@ function Profissoes() {
     { e: "🎓", n: "Estágio & Trainee", v: "476 vagas" },
   ];
   return (
-    <section className="bg-secondary/40 py-20 md:py-28">
+    <section className="bg-secondary/40 py-14 sm:py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4">
         <motion.div
           initial="hidden"
@@ -818,7 +818,7 @@ function Profissoes() {
         >
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Áreas em alta</p>
-            <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">Empresas contratando agora.</h2>
+            <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.02em] sm:text-4xl md:text-5xl">Empresas contratando agora.</h2>
           </div>
           <Link to="/cadastro" className="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:text-accent">
             Ver todas as vagas <ArrowRight className="h-4 w-4" />
@@ -855,7 +855,7 @@ function Profissoes() {
 
 function ParaQuem() {
   return (
-    <section className="mx-auto max-w-6xl px-4 py-20 md:py-28">
+    <section className="mx-auto max-w-6xl px-4 py-14 sm:py-20 md:py-28">
       <motion.div
         initial="hidden"
         whileInView="show"
@@ -942,7 +942,7 @@ function Depoimentos() {
           className="mx-auto max-w-2xl text-center"
         >
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-[oklch(0.78_0.14_220)]">Quem já está dentro</p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.02em] md:text-5xl">Carreiras que decolaram aqui.</h2>
+          <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.02em] sm:text-4xl md:text-5xl">Carreiras que decolaram aqui.</h2>
         </motion.div>
 
         <motion.div
@@ -982,7 +982,7 @@ function Depoimentos() {
 
 function CTA() {
   return (
-    <section className="mx-auto max-w-6xl px-4 py-20 md:py-28">
+    <section className="mx-auto max-w-6xl px-4 py-14 sm:py-20 md:py-28">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -1010,7 +1010,7 @@ function CTA() {
           <div className="mx-auto inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold">
             <ShieldCheck className="h-3.5 w-3.5 text-accent" /> Cadastro verificado · LGPD
           </div>
-          <h2 className="mx-auto mt-5 max-w-2xl text-4xl font-extrabold tracking-[-0.02em] md:text-6xl">
+          <h2 className="mx-auto mt-5 max-w-2xl text-3xl font-extrabold tracking-[-0.02em] sm:text-4xl md:text-6xl">
             Sua próxima oportunidade<br />
             <span className="text-accent">já está aberta.</span>
           </h2>
