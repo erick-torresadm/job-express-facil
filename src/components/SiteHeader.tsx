@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Menu, X, Building2, LogOut, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { NotificationBell } from "@/components/NotificationBell";
+import logoUrl from "@/assets/logo-vagasagora.png";
 
 const navLinks = [
   { to: "/", label: "Início" },
