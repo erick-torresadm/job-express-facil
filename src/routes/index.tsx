@@ -81,27 +81,29 @@ function Hero() {
         />
       </motion.div>
 
-      <motion.div style={{ y }} className="relative mx-auto max-w-6xl px-4 pb-20 pt-12 md:pb-32 md:pt-24">
-        <div className="grid items-center gap-12 md:grid-cols-[1.1fr_0.9fr]">
+      <motion.div style={{ y }} className="relative mx-auto max-w-6xl px-4 pb-16 pt-10 sm:pb-20 sm:pt-12 md:pb-32 md:pt-24">
+        <div className="grid items-center gap-10 md:gap-12 md:grid-cols-[1.1fr_0.9fr]">
           <motion.div
             initial="hidden"
             animate="show"
             variants={{ show: { transition: { staggerChildren: 0.08 } } }}
+            className="text-center md:text-left"
           >
             <motion.span
               variants={fadeUp}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-semibold backdrop-blur-md"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-[11px] font-semibold backdrop-blur-md sm:text-xs"
             >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[oklch(0.85_0.18_140)] opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[oklch(0.85_0.18_140)]" />
               </span>
-              12.847 vagas ativas · atualizado agora
+              <span className="hidden xs:inline">12.847 vagas ativas · atualizado agora</span>
+              <span className="xs:hidden">12.847 vagas ativas agora</span>
             </motion.span>
 
             <motion.h1
               variants={fadeUp}
-              className="mt-5 text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.03em] sm:text-6xl md:text-[4.5rem]"
+              className="mt-5 text-[2rem] font-extrabold leading-[1.05] tracking-[-0.03em] xs:text-[2.4rem] sm:text-6xl md:text-[4.5rem]"
             >
               Sua próxima vaga{" "}
               <span className="relative inline-block">
