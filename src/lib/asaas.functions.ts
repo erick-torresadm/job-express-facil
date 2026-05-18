@@ -128,13 +128,11 @@ export const criarAssinaturaAsaas = createServerFn({ method: "POST" })
       .update({ asaas_customer_id: customerId, cpf_cnpj: cpfLimpo })
       .eq("id", userId);
 
-    // 2) Cria a assinatura recorrente
-    // UNDEFINED mantém cartão, Pix e boleto disponíveis no checkout da Asaas.
-    // Criar direto como CREDIT_CARD sem capturar cartão na API pode gerar cobrança
-    // antes do cadastro estar completo e disparar erro de CPF/CNPJ ausente.
+    // 2) Cria a assinatura recorrente com cobrança no cartão de crédito.
+    // O checkout da Asaas vai capturar o cartão e usar o mesmo nas próximas cobranças.
     const nextDueDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     const cycle = data.ciclo === "anual" ? "YEARLY" : "MONTHLY";
-    const billingType = "UNDEFINED";
+    const billingType = "CREDIT_CARD";
     const subscription = await asaas<AsaasSubscription>("/subscriptions", {
       method: "POST",
       body: JSON.stringify({
