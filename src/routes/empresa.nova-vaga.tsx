@@ -81,6 +81,22 @@ function NovaVaga() {
     const { data: profile } = await supabase.from("profiles").select("company_name,full_name").eq("id", user.id).maybeSingle();
     const empresaNome = profile?.company_name || profile?.full_name || "Empresa";
 
+    // Roda IA em paralelo (não bloqueia a publicação se algo falhar)
+    const enderecoBusca = form.endereco || `${form.bairro}, ${form.cidade}`;
+    const [geo, fraude, triagem, alim, faixa] = await Promise.allSettled([
+      geocodificarEndereco({ data: { endereco: enderecoBusca, cidade: form.cidade } }),
+      analisarVagaFraude({ data: { titulo: form.titulo, descricao: form.descricao || form.titulo, salario: form.salario, empresa: empresaNome } }),
+      gerarPerguntasTriagem({ data: { titulo: form.titulo, profissao: form.profissao, descricao: form.descricao } }),
+      estimarCustoAlimentacao({ data: { bairro: form.bairro, cidade: form.cidade } }),
+      sugerirSalarioFaixa({ data: { profissao: form.profissao, cidade: form.cidade, horario: form.horario } }),
+    ]);
+
+    const geoData = geo.status === "fulfilled" ? geo.value : null;
+    const fraudeData = fraude.status === "fulfilled" ? fraude.value : null;
+    const triagemData = triagem.status === "fulfilled" ? triagem.value : null;
+    const alimData = alim.status === "fulfilled" ? alim.value : null;
+    const faixaData = faixa.status === "fulfilled" ? faixa.value : null;
+
     const { error } = await supabase.from("vagas").insert({
       empresa_id: user.id,
       titulo: form.titulo,
@@ -89,19 +105,31 @@ function NovaVaga() {
       horario: form.horario,
       bairro: form.bairro,
       cidade: form.cidade,
+      endereco: form.endereco || null,
+      latitude: geoData?.latitude ?? null,
+      longitude: geoData?.longitude ?? null,
       profissao: form.profissao,
       profissao_slug: prof?.slug ?? form.profissao.toLowerCase().replace(/\s+/g, "-"),
       descricao: form.descricao || null,
       requisitos: form.requisitos,
       urgente: form.urgente,
       ativa: true,
+      perguntas_triagem: triagemData?.perguntas ?? [],
+      risco_fraude: fraudeData?.risco ?? 0,
+      risco_motivo: fraudeData?.motivos?.join("; ") ?? null,
+      custo_alimentacao_mes: alimData?.mensal_medio ?? null,
+      faixa_salarial_sugerida: faixaData ? `R$ ${faixaData.min}–${faixaData.max} (médio R$ ${faixaData.medio})` : null,
     });
     setSalvando(false);
     if (error) {
       toast.error("Erro ao publicar: " + error.message);
       return;
     }
-    toast.success("Vaga publicada!");
+    if (fraudeData && fraudeData.risco >= 70) {
+      toast.warning("Vaga publicada mas marcada como suspeita pela IA. Revise.");
+    } else {
+      toast.success("Vaga publicada!");
+    }
     setSaved(true);
   };
 
