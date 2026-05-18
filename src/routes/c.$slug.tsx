@@ -81,7 +81,10 @@ function PaginaPublicaEmpresa() {
             </div>
           )}
           <div>
-            <h1 className="text-2xl font-extrabold leading-tight">{empresa.company_name}</h1>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-2xl font-extrabold leading-tight">{empresa.company_name}</h1>
+              {empresa.verificada && <VerifiedBadge size="md" />}
+            </div>
             <p className="text-sm opacity-80">Trabalhe com a gente • Envie seu currículo grátis</p>
           </div>
         </div>
