@@ -75,8 +75,8 @@ export function SiteFooter() {
         <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-border pt-6 text-xs text-muted-foreground md:flex-row md:items-center">
           <p>© {year} VagasAgora. Feito no Brasil 🇧🇷</p>
           <div className="flex gap-4">
-            <Link to="/contato" className="hover:text-accent">Termos</Link>
-            <Link to="/contato" className="hover:text-accent">Privacidade</Link>
+            <Link to="/termos" className="hover:text-accent">Termos</Link>
+            <Link to="/privacidade" className="hover:text-accent">Privacidade</Link>
           </div>
         </div>
       </div>
