@@ -37,13 +37,13 @@ function Hero() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-[oklch(0.22_0.1_255)] text-primary-foreground">
       <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 20% 10%, oklch(0.6 0.18 240 / 0.4), transparent 40%), radial-gradient(circle at 80% 90%, oklch(0.7 0.18 200 / 0.3), transparent 40%)" }} />
-      <div className="relative mx-auto max-w-6xl px-4 pb-20 pt-12 md:pb-28 md:pt-20">
+      <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-10 md:pb-28 md:pt-20">
         <div className="grid items-center gap-10 md:grid-cols-2">
-          <div>
+          <div className="animate-fade-up">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold backdrop-blur ring-1 ring-white/20">
               <Sparkles className="h-3.5 w-3.5" /> Novo no Brasil
             </span>
-            <h1 className="mt-4 text-4xl font-extrabold leading-[1.05] tracking-tight md:text-6xl">
+            <h1 className="mt-4 text-[2.25rem] font-extrabold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
               Achei meu emprego<br />
               <span className="bg-gradient-to-r from-white to-[oklch(0.85_0.12_220)] bg-clip-text text-transparent">no bairro.</span>
             </h1>
@@ -53,12 +53,12 @@ function Hero() {
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Link to="/cadastro"
-                className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 text-base font-bold text-primary shadow-pop transition hover:translate-y-[-1px]">
+                className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 text-base font-bold text-primary shadow-pop transition hover:translate-y-[-1px] active:scale-[0.98]">
                 Quero uma vaga
                 <ArrowRight className="h-5 w-5 transition group-hover:translate-x-1" />
               </Link>
               <Link to="/auth"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/30 bg-white/10 px-6 py-4 text-base font-bold text-white backdrop-blur transition hover:bg-white/20">
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/30 bg-white/10 px-6 py-4 text-base font-bold text-white backdrop-blur transition hover:bg-white/20 active:scale-[0.98]">
                 <Building2 className="h-5 w-5" /> Sou empresa
               </Link>
             </div>
@@ -74,7 +74,7 @@ function Hero() {
           </div>
 
           {/* Phone mockup */}
-          <div className="relative mx-auto w-full max-w-[300px]">
+          <div className="relative mx-auto hidden w-full max-w-[300px] sm:block animate-float">
             <div className="aspect-[9/19] rounded-[2.5rem] border-[10px] border-[oklch(0.15_0.04_255)] bg-card shadow-2xl">
               <div className="flex h-full flex-col gap-3 overflow-hidden rounded-[1.75rem] p-4">
                 <div className="rounded-2xl bg-accent/15 p-3">
