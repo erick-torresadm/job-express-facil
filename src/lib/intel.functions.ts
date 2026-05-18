@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { rateLimit } from "@/lib/rate-limit.server";
 
 // =================================================================
 // Geocodificação via Nominatim (OpenStreetMap) — grátis, sem chave
