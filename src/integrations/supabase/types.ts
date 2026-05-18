@@ -44,6 +44,48 @@ export type Database = {
         }
         Relationships: []
       }
+      assinaturas: {
+        Row: {
+          asaas_customer_id: string | null
+          asaas_subscription_id: string | null
+          ciclo: Database["public"]["Enums"]["plano_ciclo"]
+          created_at: string
+          empresa_id: string
+          id: string
+          plano: Database["public"]["Enums"]["plano_tipo"]
+          proximo_vencimento: string | null
+          status: Database["public"]["Enums"]["assinatura_status"]
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          asaas_customer_id?: string | null
+          asaas_subscription_id?: string | null
+          ciclo: Database["public"]["Enums"]["plano_ciclo"]
+          created_at?: string
+          empresa_id: string
+          id?: string
+          plano: Database["public"]["Enums"]["plano_tipo"]
+          proximo_vencimento?: string | null
+          status?: Database["public"]["Enums"]["assinatura_status"]
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          asaas_customer_id?: string | null
+          asaas_subscription_id?: string | null
+          ciclo?: Database["public"]["Enums"]["plano_ciclo"]
+          created_at?: string
+          empresa_id?: string
+          id?: string
+          plano?: Database["public"]["Enums"]["plano_tipo"]
+          proximo_vencimento?: string | null
+          status?: Database["public"]["Enums"]["assinatura_status"]
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: []
+      }
       candidaturas: {
         Row: {
           candidato_id: string
@@ -268,10 +310,12 @@ export type Database = {
       }
       profiles: {
         Row: {
+          asaas_customer_id: string | null
           avatar_url: string | null
           campos_extras: Json
           company_name: string | null
           cor_primaria: string | null
+          cpf_cnpj: string | null
           created_at: string
           full_name: string | null
           id: string
@@ -283,10 +327,12 @@ export type Database = {
           whatsapp: string | null
         }
         Insert: {
+          asaas_customer_id?: string | null
           avatar_url?: string | null
           campos_extras?: Json
           company_name?: string | null
           cor_primaria?: string | null
+          cpf_cnpj?: string | null
           created_at?: string
           full_name?: string | null
           id: string
@@ -298,10 +344,12 @@ export type Database = {
           whatsapp?: string | null
         }
         Update: {
+          asaas_customer_id?: string | null
           avatar_url?: string | null
           campos_extras?: Json
           company_name?: string | null
           cor_primaria?: string | null
+          cpf_cnpj?: string | null
           created_at?: string
           full_name?: string | null
           id?: string
@@ -455,7 +503,10 @@ export type Database = {
     }
     Enums: {
       app_role: "candidato" | "empresa"
+      assinatura_status: "pendente" | "ativa" | "atrasada" | "cancelada"
       candidatura_status: "enviado" | "visto" | "em_analise" | "finalizado"
+      plano_ciclo: "mensal" | "anual"
+      plano_tipo: "basico" | "full"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -584,7 +635,10 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["candidato", "empresa"],
+      assinatura_status: ["pendente", "ativa", "atrasada", "cancelada"],
       candidatura_status: ["enviado", "visto", "em_analise", "finalizado"],
+      plano_ciclo: ["mensal", "anual"],
+      plano_tipo: ["basico", "full"],
     },
   },
 } as const
