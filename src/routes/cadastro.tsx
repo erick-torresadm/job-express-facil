@@ -165,6 +165,7 @@ function StepLocal({ onBack, onDone }: { onBack: () => void; onDone: (l: { bairr
   const [manual, setManual] = useState(false);
   const [cep, setCep] = useState("");
   const [erro, setErro] = useState<string | null>(null);
+  const [confirmacao, setConfirmacao] = useState<{ bairro: string; cidade: string; origem: "gps" | "cep" } | null>(null);
 
   const useGps = () => {
     setErro(null);
@@ -187,7 +188,7 @@ function StepLocal({ onBack, onDone }: { onBack: () => void; onDone: (l: { bairr
           const a = data.address ?? {};
           const bairro = a.suburb || a.neighbourhood || a.city_district || a.village || a.town || "Centro";
           const cidade = a.city || a.town || a.village || a.municipality || a.county || "—";
-          onDone({ bairro, cidade });
+          setConfirmacao({ bairro, cidade, origem: "gps" });
         } catch {
           setErro("Não conseguimos identificar seu bairro. Digite seu CEP abaixo.");
           setManual(true);
@@ -222,13 +223,23 @@ function StepLocal({ onBack, onDone }: { onBack: () => void; onDone: (l: { bairr
       const res = await fetch(`https://viacep.com.br/ws/${limpo}/json/`);
       const data = await res.json() as { bairro?: string; localidade?: string; erro?: boolean };
       if (data.erro) throw new Error("CEP não encontrado");
-      onDone({ bairro: data.bairro || "Centro", cidade: data.localidade || "—" });
+      setConfirmacao({ bairro: data.bairro || "Centro", cidade: data.localidade || "—", origem: "cep" });
     } catch {
       setErro("CEP não encontrado. Tente outro.");
     } finally {
       setLoading(false);
     }
   };
+
+  if (confirmacao) {
+    return (
+      <ConfirmarEndereco
+        inicial={confirmacao}
+        onBack={() => setConfirmacao(null)}
+        onConfirm={(l) => onDone(l)}
+      />
+    );
+  }
 
   return (
     <section>
@@ -266,6 +277,66 @@ function StepLocal({ onBack, onDone }: { onBack: () => void; onDone: (l: { bairr
           </button>
         </div>
       )}
+    </section>
+  );
+}
+
+function ConfirmarEndereco({ inicial, onBack, onConfirm }: {
+  inicial: { bairro: string; cidade: string; origem: "gps" | "cep" };
+  onBack: () => void;
+  onConfirm: (l: { bairro: string; cidade: string }) => void;
+}) {
+  const [bairro, setBairro] = useState(inicial.bairro);
+  const [cidade, setCidade] = useState(inicial.cidade);
+
+  const valido = bairro.trim().length >= 2 && cidade.trim().length >= 2 && cidade.trim() !== "—";
+
+  return (
+    <section>
+      <button onClick={onBack} className="mb-3 inline-flex items-center gap-1 text-sm text-muted-foreground">
+        <ArrowLeft className="h-4 w-4" /> Voltar
+      </button>
+      <div className="mb-1 flex items-center justify-between">
+        <h1 className="text-2xl font-extrabold">Confere o endereço?</h1>
+        <Narrator text="Confira se o bairro e a cidade estão certos. Se quiser, pode corrigir antes de continuar." />
+      </div>
+      <p className="mb-5 text-sm text-muted-foreground">
+        {inicial.origem === "gps"
+          ? "Encontramos isto pela sua localização. Pode editar se algo estiver errado."
+          : "Encontramos isto pelo seu CEP. Pode editar se quiser."}
+      </p>
+
+      <div className="space-y-4">
+        <label className="block">
+          <span className="mb-1 block text-sm font-bold uppercase text-muted-foreground">Bairro</span>
+          <input
+            value={bairro}
+            onChange={(e) => setBairro(e.target.value.slice(0, 80))}
+            placeholder="Ex: Vila Mariana"
+            className="h-14 w-full rounded-2xl border-2 border-border bg-card px-4 text-lg outline-none focus:border-primary"
+          />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-sm font-bold uppercase text-muted-foreground">Cidade</span>
+          <input
+            value={cidade}
+            onChange={(e) => setCidade(e.target.value.slice(0, 80))}
+            placeholder="Ex: São Paulo"
+            className="h-14 w-full rounded-2xl border-2 border-border bg-card px-4 text-lg outline-none focus:border-primary"
+          />
+        </label>
+
+        <button
+          onClick={() => onConfirm({ bairro: bairro.trim(), cidade: cidade.trim() })}
+          disabled={!valido}
+          className="btn-touch shadow-pop w-full bg-accent text-accent-foreground disabled:opacity-50"
+        >
+          Está certo, continuar
+        </button>
+        <button onClick={onBack} className="w-full text-sm text-muted-foreground underline">
+          Buscar novamente
+        </button>
+      </div>
     </section>
   );
 }
