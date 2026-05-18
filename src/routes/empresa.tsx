@@ -36,12 +36,10 @@ function EmpresaLayout() {
           <NavItem to="/empresa" icon={<Users className="h-4 w-4" />} label="Candidatos" exact />
           <NavItem to="/empresa/nova-vaga" icon={<PlusSquare className="h-4 w-4" />} label="Nova vaga" />
           <NavItem to="/empresa/minhas-vagas" icon={<Briefcase className="h-4 w-4" />} label="Minhas vagas" />
+          <NavItem to="/empresa/pagina" icon={<Globe className="h-4 w-4" />} label="Minha página" />
           <NavItem to="/empresa" icon={<BarChart3 className="h-4 w-4" />} label="Métricas" disabled />
         </nav>
-        <div className="m-3 rounded-2xl bg-accent/15 p-4 text-xs">
-          <p className="font-bold">Construtora Vega</p>
-          <p className="opacity-70">Plano Pro · 47 desbloqueios</p>
-        </div>
+        <CreditoCard />
       </aside>
 
       <div className="lg:pl-64">
