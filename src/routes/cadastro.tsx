@@ -56,7 +56,7 @@ function CandidatoFlow() {
           <Link to="/" className="font-bold text-sm">VagasAgora</Link>
         </div>
       </header>
-      <main className="mx-auto max-w-md px-4 pb-24 pt-4">
+      <main className="mx-auto max-w-md px-4 pb-24 pt-4 lg:max-w-5xl">
         <Progress step={step} />
         {step === "profissao" && (
           <StepProfissao onPick={(p) => { setProfissao(p); setStep("local"); }} />
