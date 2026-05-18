@@ -467,7 +467,10 @@ function StepContato({ onBack, onDone }: { onBack: () => void; onDone: (c: Conta
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [senha, setSenha] = useState("");
+  const [showSenha, setShowSenha] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const formatPhone = (v: string) => {
     const d = v.replace(/\D/g, "").slice(0, 11);
@@ -476,13 +479,54 @@ function StepContato({ onBack, onDone }: { onBack: () => void; onDone: (c: Conta
     return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
   };
 
-  const submit = () => {
+  const submit = async () => {
     setErro(null);
-    const n = nome.trim(); const e = email.trim(); const w = whatsapp.replace(/\D/g, "");
+    const n = nome.trim();
+    const e = email.trim().toLowerCase();
+    const w = whatsapp.replace(/\D/g, "");
     if (n.length < 2) return setErro("Digite seu nome completo.");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) return setErro("Digite um e-mail válido.");
     if (w.length < 10 || w.length > 11) return setErro("Digite um WhatsApp válido com DDD.");
-    onDone({ nome: n, email: e, whatsapp: w });
+    if (senha.length < 6) return setErro("Senha precisa ter pelo menos 6 caracteres.");
+
+    setLoading(true);
+    try {
+      // Tenta cadastrar; se já existe, faz login com a mesma senha
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: e,
+        password: senha,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: { full_name: n, whatsapp: w, role: "candidato" },
+        },
+      });
+
+      if (signUpError) {
+        const msg = signUpError.message.toLowerCase();
+        if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
+          const { error: signInError } = await supabase.auth.signInWithPassword({ email: e, password: senha });
+          if (signInError) {
+            setLoading(false);
+            return setErro("E-mail já cadastrado. A senha que você digitou está errada.");
+          }
+        } else if (msg.includes("pwned") || msg.includes("compromised") || msg.includes("password")) {
+          setLoading(false);
+          return setErro("Essa senha é fraca ou já vazou em outros sites. Escolha outra.");
+        } else {
+          setLoading(false);
+          return setErro(signUpError.message);
+        }
+      } else if (!signUpData.session) {
+        // Caso o auto-confirm esteja desativado, tenta login mesmo assim
+        await supabase.auth.signInWithPassword({ email: e, password: senha }).catch(() => null);
+      }
+
+      onDone({ nome: n, email: e, whatsapp: w, senha });
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Erro ao cadastrar. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -491,10 +535,10 @@ function StepContato({ onBack, onDone }: { onBack: () => void; onDone: (c: Conta
         <ArrowLeft className="h-4 w-4" /> Voltar
       </button>
       <div className="mb-1 flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold">Como falamos com você?</h1>
-        <Narrator text="Digite seu nome, e-mail e WhatsApp para a empresa entrar em contato." />
+        <h1 className="text-2xl font-extrabold">Crie sua conta</h1>
+        <Narrator text="Digite seu nome, e-mail, WhatsApp e crie uma senha para acessar sua conta." />
       </div>
-      <p className="mb-5 text-sm text-muted-foreground">A empresa vai chamar você no WhatsApp quando aprovar.</p>
+      <p className="mb-5 text-sm text-muted-foreground">Sua conta guarda seu currículo. Você usa o e-mail e a senha para entrar depois.</p>
 
       <div className="space-y-4">
         <Campo label="Seu nome">
@@ -506,16 +550,32 @@ function StepContato({ onBack, onDone }: { onBack: () => void; onDone: (c: Conta
             className="h-14 w-full rounded-2xl border-2 border-border bg-card px-4 text-lg outline-none focus:border-primary" />
         </Campo>
         <Campo label="E-mail">
-          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" inputMode="email" maxLength={160} placeholder="seuemail@exemplo.com"
+          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" inputMode="email" autoComplete="email" maxLength={160} placeholder="seuemail@exemplo.com"
             className="h-14 w-full rounded-2xl border-2 border-border bg-card px-4 text-lg outline-none focus:border-primary" />
+        </Campo>
+        <Campo label="Crie uma senha (mín. 6)">
+          <div className="relative">
+            <Lock className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+            <input value={senha} onChange={(e) => setSenha(e.target.value)} type={showSenha ? "text" : "password"} autoComplete="new-password" maxLength={72} placeholder="Mínimo 6 caracteres"
+              className="h-14 w-full rounded-2xl border-2 border-border bg-card pl-12 pr-12 text-lg outline-none focus:border-primary" />
+            <button type="button" onClick={() => setShowSenha((v) => !v)} aria-label={showSenha ? "Esconder senha" : "Mostrar senha"}
+              className="absolute right-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-muted">
+              {showSenha ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
         </Campo>
 
         {erro && <p className="text-sm font-medium text-destructive">{erro}</p>}
 
-        <button onClick={submit}
-          className="btn-touch shadow-pop flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground">
-          <Send className="h-5 w-5" /> Finalizar cadastro
+        <button onClick={submit} disabled={loading}
+          className="btn-touch shadow-pop flex w-full items-center justify-center gap-2 bg-accent text-accent-foreground disabled:opacity-70">
+          {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+          {loading ? "Criando sua conta…" : "Criar conta e gerar currículo"}
         </button>
+
+        <p className="text-center text-xs text-muted-foreground">
+          Já tem conta? <Link to="/auth" className="font-semibold text-primary underline">Entrar</Link>
+        </p>
       </div>
     </section>
   );
