@@ -947,9 +947,9 @@ function ParaQuem() {
 
 function Depoimentos() {
   const dep = [
-    { n: "Ana Carolina Souza", p: "Analista Administrativo · São Paulo", t: "Em uma semana fui chamada por 4 empresas. Hoje sou CLT no Itaú — nunca imaginei que seria tão rápido.", c: "oklch(0.7 0.15 30)" },
+    { n: "Ana Carolina Souza", p: "Analista Administrativo · São Paulo", t: "Em uma semana fui chamada por 4 empresas. Hoje estou CLT em uma rede do varejo — nunca imaginei que seria tão rápido.", c: "oklch(0.7 0.15 30)" },
     { n: "Rafael Mendes", p: "Vendedor · Belo Horizonte", t: "O perfil em vídeo mudou o jogo. Os recrutadores já chegavam na conversa sabendo quem eu era.", c: "oklch(0.7 0.15 320)" },
-    { n: "Beatriz Oliveira", p: "Head de RH · Magazine Luiza", t: "Reduzimos o tempo médio de contratação de 32 para 9 dias. A qualidade dos candidatos é absurda.", c: "oklch(0.7 0.15 200)" },
+    { n: "Beatriz Oliveira", p: "Head de RH · Rede de varejo nacional", t: "Reduzimos o tempo médio de contratação de 32 para 9 dias. A qualidade dos candidatos é absurda.", c: "oklch(0.7 0.15 200)" },
   ];
   return (
     <section className="bg-primary py-14 text-primary-foreground sm:py-20 md:py-28">
