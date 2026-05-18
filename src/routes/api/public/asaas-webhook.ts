@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { timingSafeEqual } from "node:crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 // Webhook do Asaas — recebe eventos de pagamento e atualiza a assinatura local.
@@ -32,12 +33,20 @@ export const Route = createFileRoute("/api/public/asaas-webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        // Verificação opcional: se ASAAS_WEBHOOK_TOKEN for definido, exigir o header
+        // ⚠️ ASAAS_WEBHOOK_TOKEN é OBRIGATÓRIO — sem ele, qualquer um poderia
+        // ativar/cancelar assinaturas alheias. Comparação timing-safe.
         const expected = process.env.ASAAS_WEBHOOK_TOKEN;
-        if (expected) {
-          const sent = request.headers.get("asaas-access-token");
-          if (sent !== expected) return new Response("forbidden", { status: 403 });
+        if (!expected) {
+          console.error("[asaas-webhook] ASAAS_WEBHOOK_TOKEN não configurado — rejeitando.");
+          return new Response("misconfigured", { status: 503 });
         }
+        const sent = request.headers.get("asaas-access-token") ?? "";
+        const a = Buffer.from(sent);
+        const b = Buffer.from(expected);
+        if (a.length !== b.length || !timingSafeEqual(a, b)) {
+          return new Response("forbidden", { status: 403 });
+        }
+
 
         let payload: AsaasEvent;
         try { payload = (await request.json()) as AsaasEvent; }
