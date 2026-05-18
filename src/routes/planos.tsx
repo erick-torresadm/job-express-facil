@@ -140,9 +140,9 @@ function PlanosPage() {
               <tr className="border-b border-border bg-secondary/60">
                 <th className="px-4 py-3 text-left font-bold">Recurso</th>
                 <th className="px-4 py-3 text-center font-bold">VagasAgora<br /><span className="text-xs text-muted-foreground">Básico R$ 44,90</span></th>
-                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Catho<br /><span className="text-xs">~R$ 59,90</span></th>
-                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Infojobs<br /><span className="text-xs">~R$ 79,00</span></th>
-                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Vagas.com<br /><span className="text-xs">~R$ 69,00</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Portal tradicional<br /><span className="text-xs">~R$ 59,90</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Outro portal<br /><span className="text-xs">~R$ 79,00</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Marketplace de vagas<br /><span className="text-xs">~R$ 69,00</span></th>
               </tr>
             </thead>
             <tbody>
