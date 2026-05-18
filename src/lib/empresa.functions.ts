@@ -69,7 +69,7 @@ export const getPaginaPublica = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { data: empresa } = await supabaseAdmin
       .from("profiles")
-      .select("id, company_name, logo_url, cor_primaria, sobre, slug_publico, campos_extras")
+      .select("id, company_name, logo_url, cor_primaria, sobre, slug_publico, campos_extras, verificada")
       .eq("slug_publico", data.slug)
       .maybeSingle();
     if (!empresa) return null;
