@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Building2, Users, PlusSquare, BarChart3, Briefcase, Globe } from "lucide-react";
+import { Building2, Users, PlusSquare, BarChart3, Briefcase, Globe, ShieldCheck } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/use-auth";
@@ -37,6 +37,7 @@ function EmpresaLayout() {
           <NavItem to="/empresa/nova-vaga" icon={<PlusSquare className="h-4 w-4" />} label="Nova vaga" />
           <NavItem to="/empresa/minhas-vagas" icon={<Briefcase className="h-4 w-4" />} label="Minhas vagas" />
           <NavItem to="/empresa/pagina" icon={<Globe className="h-4 w-4" />} label="Minha página" />
+          <NavItem to="/empresa/verificacao" icon={<ShieldCheck className="h-4 w-4" />} label="Verificação" />
           <NavItem to="/empresa" icon={<BarChart3 className="h-4 w-4" />} label="Métricas" disabled />
         </nav>
         <CreditoCard />

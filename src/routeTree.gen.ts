@@ -21,12 +21,14 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
+import { Route as EmpresaVerificacaoRouteImport } from './routes/empresa.verificacao'
 import { Route as EmpresaPaginaRouteImport } from './routes/empresa.pagina'
 import { Route as EmpresaNovaVagaRouteImport } from './routes/empresa.nova-vaga'
 import { Route as EmpresaMinhasVagasRouteImport } from './routes/empresa.minhas-vagas'
 import { Route as CvSlugRouteImport } from './routes/cv.$slug'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AdminVerificacoesRouteImport } from './routes/admin.verificacoes'
 import { Route as ApiPublicAsaasWebhookRouteImport } from './routes/api/public/asaas-webhook'
 import { Route as ApiPublicCronGerarPostRouteImport } from './routes/api/public/cron.gerar-post'
 
@@ -90,6 +92,11 @@ const VagasSlugRoute = VagasSlugRouteImport.update({
   path: '/vagas/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmpresaVerificacaoRoute = EmpresaVerificacaoRouteImport.update({
+  id: '/verificacao',
+  path: '/verificacao',
+  getParentRoute: () => EmpresaRoute,
+} as any)
 const EmpresaPaginaRoute = EmpresaPaginaRouteImport.update({
   id: '/pagina',
   path: '/pagina',
@@ -120,6 +127,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const AdminVerificacoesRoute = AdminVerificacoesRouteImport.update({
+  id: '/admin/verificacoes',
+  path: '/admin/verificacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAsaasWebhookRoute = ApiPublicAsaasWebhookRouteImport.update({
   id: '/api/public/asaas-webhook',
   path: '/api/public/asaas-webhook',
@@ -143,12 +155,14 @@ export interface FileRoutesByFullPath {
   '/para-empresas': typeof ParaEmpresasRoute
   '/planos': typeof PlanosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/verificacoes': typeof AdminVerificacoesRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/c/$slug': typeof CSlugRoute
   '/cv/$slug': typeof CvSlugRoute
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
+  '/empresa/verificacao': typeof EmpresaVerificacaoRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -165,12 +179,14 @@ export interface FileRoutesByTo {
   '/para-empresas': typeof ParaEmpresasRoute
   '/planos': typeof PlanosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/verificacoes': typeof AdminVerificacoesRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/c/$slug': typeof CSlugRoute
   '/cv/$slug': typeof CvSlugRoute
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
+  '/empresa/verificacao': typeof EmpresaVerificacaoRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -188,12 +204,14 @@ export interface FileRoutesById {
   '/para-empresas': typeof ParaEmpresasRoute
   '/planos': typeof PlanosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/verificacoes': typeof AdminVerificacoesRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/c/$slug': typeof CSlugRoute
   '/cv/$slug': typeof CvSlugRoute
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
+  '/empresa/verificacao': typeof EmpresaVerificacaoRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -212,12 +230,14 @@ export interface FileRouteTypes {
     | '/para-empresas'
     | '/planos'
     | '/sitemap.xml'
+    | '/admin/verificacoes'
     | '/blog/$slug'
     | '/c/$slug'
     | '/cv/$slug'
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
+    | '/empresa/verificacao'
     | '/vagas/$slug'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
@@ -234,12 +254,14 @@ export interface FileRouteTypes {
     | '/para-empresas'
     | '/planos'
     | '/sitemap.xml'
+    | '/admin/verificacoes'
     | '/blog/$slug'
     | '/c/$slug'
     | '/cv/$slug'
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
+    | '/empresa/verificacao'
     | '/vagas/$slug'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
@@ -256,12 +278,14 @@ export interface FileRouteTypes {
     | '/para-empresas'
     | '/planos'
     | '/sitemap.xml'
+    | '/admin/verificacoes'
     | '/blog/$slug'
     | '/c/$slug'
     | '/cv/$slug'
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
+    | '/empresa/verificacao'
     | '/vagas/$slug'
     | '/api/public/asaas-webhook'
     | '/api/public/cron/gerar-post'
@@ -279,6 +303,7 @@ export interface RootRouteChildren {
   ParaEmpresasRoute: typeof ParaEmpresasRoute
   PlanosRoute: typeof PlanosRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  AdminVerificacoesRoute: typeof AdminVerificacoesRoute
   CSlugRoute: typeof CSlugRoute
   CvSlugRoute: typeof CvSlugRoute
   VagasSlugRoute: typeof VagasSlugRoute
@@ -372,6 +397,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VagasSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/empresa/verificacao': {
+      id: '/empresa/verificacao'
+      path: '/verificacao'
+      fullPath: '/empresa/verificacao'
+      preLoaderRoute: typeof EmpresaVerificacaoRouteImport
+      parentRoute: typeof EmpresaRoute
+    }
     '/empresa/pagina': {
       id: '/empresa/pagina'
       path: '/pagina'
@@ -414,6 +446,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/admin/verificacoes': {
+      id: '/admin/verificacoes'
+      path: '/admin/verificacoes'
+      fullPath: '/admin/verificacoes'
+      preLoaderRoute: typeof AdminVerificacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/asaas-webhook': {
       id: '/api/public/asaas-webhook'
       path: '/api/public/asaas-webhook'
@@ -445,12 +484,14 @@ interface EmpresaRouteChildren {
   EmpresaMinhasVagasRoute: typeof EmpresaMinhasVagasRoute
   EmpresaNovaVagaRoute: typeof EmpresaNovaVagaRoute
   EmpresaPaginaRoute: typeof EmpresaPaginaRoute
+  EmpresaVerificacaoRoute: typeof EmpresaVerificacaoRoute
 }
 
 const EmpresaRouteChildren: EmpresaRouteChildren = {
   EmpresaMinhasVagasRoute: EmpresaMinhasVagasRoute,
   EmpresaNovaVagaRoute: EmpresaNovaVagaRoute,
   EmpresaPaginaRoute: EmpresaPaginaRoute,
+  EmpresaVerificacaoRoute: EmpresaVerificacaoRoute,
 }
 
 const EmpresaRouteWithChildren =
@@ -468,6 +509,7 @@ const rootRouteChildren: RootRouteChildren = {
   ParaEmpresasRoute: ParaEmpresasRoute,
   PlanosRoute: PlanosRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  AdminVerificacoesRoute: AdminVerificacoesRoute,
   CSlugRoute: CSlugRoute,
   CvSlugRoute: CvSlugRoute,
   VagasSlugRoute: VagasSlugRoute,
