@@ -204,8 +204,8 @@ function PhoneMockup() {
             <MessageCircle className="h-4 w-4" />
           </div>
           <div>
-            <p className="text-[10px] font-bold uppercase text-muted-foreground">WhatsApp</p>
-            <p className="text-xs font-bold">Construtora Vale chamou!</p>
+            <p className="text-[10px] font-bold uppercase text-muted-foreground">Entrevista</p>
+            <p className="text-xs font-bold">Magazine Luiza convidou</p>
           </div>
         </div>
       </motion.div>
