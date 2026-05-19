@@ -157,7 +157,6 @@ function PostPage() {
           </div>
         </article>
       </main>
-      <SiteFooter />
     </div>
   );
 }
