@@ -1,48 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { timingSafeEqual } from "node:crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-// Lovable AI Gateway (Gemini grátis via créditos do workspace, sem API key do Google)
+// Lovable AI Gateway (Gemini grátis via créditos do workspace)
 const AI_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
-const MODEL = "google/gemini-2.5-flash";
-
-// Principais termos de busca de emprego no Brasil (alto volume no Google)
-const TOPICOS = [
-  { titulo: "Como conseguir emprego de pedreiro em {cidade}", tags: ["pedreiro", "construção"] },
-  { titulo: "Vagas de motorista de aplicativo em {cidade}: o que você precisa saber", tags: ["motorista", "aplicativo"] },
-  { titulo: "Como ser entregador de aplicativo em {cidade}: guia completo", tags: ["entregador", "delivery"] },
-  { titulo: "Vagas de porteiro em {cidade}: salário, horários e como se candidatar", tags: ["porteiro", "segurança"] },
-  { titulo: "Trabalho de auxiliar de cozinha em {cidade}: por onde começar", tags: ["cozinha", "restaurante"] },
-  { titulo: "Como arrumar trabalho de babá em {cidade} com carteira assinada", tags: ["babá", "cuidados"] },
-  { titulo: "Vagas de cuidador de idosos em {cidade}: requisitos e salário", tags: ["cuidador", "saúde"] },
-  { titulo: "Trabalho de jardineiro em {cidade}: como conseguir clientes fixos", tags: ["jardineiro", "autônomo"] },
-  { titulo: "Como ser eletricista autônomo em {cidade} e cobrar bem", tags: ["eletricista", "autônomo"] },
-  { titulo: "Vagas de soldador em {cidade}: cursos rápidos que pagam o investimento", tags: ["soldador", "indústria"] },
-  { titulo: "Trabalho de garçom em {cidade}: dicas para ganhar mais gorjeta", tags: ["garçom", "restaurante"] },
-  { titulo: "Como conseguir vaga de operador de caixa em {cidade}", tags: ["caixa", "comércio"] },
-  { titulo: "Vagas de costureira em {cidade}: trabalhar em casa ou em ateliê", tags: ["costureira", "moda"] },
-  { titulo: "Trabalho de manicure em {cidade}: como montar clientela rápido", tags: ["manicure", "beleza"] },
-  { titulo: "Como ser segurança em {cidade}: curso, salário e empresas que contratam", tags: ["segurança", "vigilante"] },
-  { titulo: "Vagas de empregada doméstica em {cidade}: direitos e salário 2026", tags: ["doméstica", "direitos"] },
-  { titulo: "Trabalho de diarista em {cidade}: quanto cobrar por dia", tags: ["diarista", "autônomo"] },
-  { titulo: "Vagas de repositor de supermercado em {cidade}", tags: ["repositor", "comércio"] },
-  { titulo: "Como conseguir emprego de auxiliar de limpeza em {cidade}", tags: ["limpeza", "auxiliar"] },
-  { titulo: "Vagas de motoboy em {cidade}: ganho mensal real", tags: ["motoboy", "entregador"] },
-  { titulo: "Trabalho de recepcionista em {cidade}: o que pedem na entrevista", tags: ["recepcionista", "atendimento"] },
-  { titulo: "Como ser ajudante de pedreiro em {cidade} sem experiência", tags: ["ajudante", "construção"] },
-  { titulo: "Vagas de vendedor em {cidade}: comissão vs salário fixo", tags: ["vendedor", "comércio"] },
-  { titulo: "Direitos do trabalhador doméstico em 2026: o que mudou", tags: ["direitos", "doméstica"] },
-  { titulo: "Como pedir auxílio-desemprego em {cidade} passo a passo", tags: ["direitos", "desemprego"] },
-  { titulo: "Carteira assinada vs MEI: qual vale mais a pena para autônomos", tags: ["mei", "carreira"] },
-  { titulo: "Entrevista de emprego: 7 erros que fazem você ser eliminado", tags: ["entrevista", "dicas"] },
-  { titulo: "Como negociar salário em vaga operacional sem perder a oportunidade", tags: ["salário", "carreira"] },
-  { titulo: "Currículo simples que funciona: modelo para vaga operacional", tags: ["currículo", "dicas"] },
-  { titulo: "Como achar primeiro emprego em {cidade} sem experiência", tags: ["primeiro emprego", "jovem"] },
-];
+const MODEL_TREND = "google/gemini-2.5-flash";
+const MODEL_WRITE = "google/gemini-2.5-flash";
 
 const CIDADES = [
   "São Paulo", "Rio de Janeiro", "Belo Horizonte", "Curitiba", "Porto Alegre",
   "Salvador", "Brasília", "Fortaleza", "Recife", "Campinas", "Goiânia", "Manaus",
+  "Guarulhos", "São Bernardo do Campo", "Osasco", "Santo André", "Niterói",
+  "Duque de Caxias", "Nova Iguaçu", "Ribeirão Preto", "Sorocaba", "São José dos Campos",
 ];
 
 function slugify(s: string) {
@@ -50,118 +18,148 @@ function slugify(s: string) {
     .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80);
 }
 
-async function gerarPostComIA(titulo: string, tags: string[]) {
+async function aiJson<T>(system: string, user: string, model = MODEL_WRITE): Promise<T> {
   const key = process.env.LOVABLE_API_KEY;
   if (!key) throw new Error("LOVABLE_API_KEY ausente");
-
-  const system = `Você é redator SEO do blog VagasAgora (vagasagora.com.br), site brasileiro de empregos populares.
-Escreva em português brasileiro claro, direto, para quem tem ensino fundamental ou médio.
-Estrutura obrigatória do conteúdo:
-- Parágrafo curto de abertura (sem H1).
-- 4 a 6 seções com "## Título".
-- Listas com "- " quando útil.
-- **negrito** em valores, prazos e termos-chave.
-- 450 a 650 palavras.
-- Dados realistas de 2026 (faixas salariais, CLT, etc).
-- Última seção "## Como o VagasAgora ajuda" com CTA para cadastro grátis.
-NÃO inclua o título dentro do conteúdo.`;
-
-  const userPrompt = `Crie post de blog SEO sobre: "${titulo}".
-Tags base: ${JSON.stringify(tags)}.
-Responda APENAS com JSON válido:
-{"titulo":"...", "resumo":"frase de 140-160 chars com palavra-chave", "conteudo":"markdown completo", "tags":["3 a 5 tags"]}`;
-
   const res = await fetch(AI_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${key}`,
-    },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
     body: JSON.stringify({
-      model: MODEL,
+      model,
       messages: [
         { role: "system", content: system },
-        { role: "user", content: userPrompt },
+        { role: "user", content: user },
       ],
       response_format: { type: "json_object" },
     }),
   });
-
   if (!res.ok) {
     const t = await res.text().catch(() => "");
     throw new Error(`AI Gateway ${res.status}: ${t.slice(0, 300)}`);
   }
-  const json = (await res.json()) as {
-    choices?: Array<{ message?: { content?: string } }>;
-  };
+  const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
   const text = json.choices?.[0]?.message?.content?.trim() ?? "";
   const m = text.match(/\{[\s\S]*\}/);
   if (!m) throw new Error("IA não retornou JSON");
-  return JSON.parse(m[0]) as { titulo: string; resumo: string; conteudo: string; tags: string[] };
+  return JSON.parse(m[0]) as T;
+}
+
+// Pesquisa de tendências via IA: combina profissão × cidade × intenção de busca
+async function pesquisarTendencias(quantidade: number, evitar: string[]) {
+  const cidades = Array.from({ length: quantidade }, () => CIDADES[Math.floor(Math.random() * CIDADES.length)]);
+  const system = `Você é especialista em SEO para o nicho de empregos populares no Brasil em 2026.
+Sugira títulos de posts de blog com ALTO potencial de tráfego orgânico no Google Brasil.
+Foque em long-tail: profissão + cidade + intenção (salário, como conseguir, vagas, direitos, CLT vs MEI, sem experiência, curso, entrevista, melhor empresa).
+Cubra tanto o lado do CANDIDATO (vagas, salário, direitos, primeiro emprego) quanto da EMPRESA (CLT, encargos, terceirização, como contratar).
+Inclua profissões operacionais de alta demanda: pedreiro, motorista, entregador, porteiro, cozinheiro, doméstica, diarista, motoboy, soldador, eletricista, cuidador, babá, vendedor, repositor, recepcionista, segurança, manicure, costureira, garçom, auxiliar de limpeza, jardineiro, ajudante.`;
+
+  const user = `Gere ${quantidade} ideias de posts ÚNICAS, evitando esses títulos já publicados:
+${evitar.slice(0, 40).map((t) => `- ${t}`).join("\n") || "(nenhum)"}
+
+Use preferencialmente estas cidades (uma por título): ${cidades.join(", ")}.
+
+Responda APENAS com JSON:
+{"ideias":[{"titulo":"...","palavra_chave":"...","tags":["3-5 tags lowercase"]}]}`;
+
+  const out = await aiJson<{ ideias: Array<{ titulo: string; palavra_chave: string; tags: string[] }> }>(
+    system, user, MODEL_TREND
+  );
+  return out.ideias ?? [];
+}
+
+async function gerarConteudo(titulo: string, palavraChave: string, tags: string[]) {
+  const system = `Você é redator SEO do blog VagasAgora (vagasagora.com.br), site brasileiro de empregos populares.
+Escreva em português brasileiro claro, direto, para quem tem ensino fundamental ou médio.
+Estrutura obrigatória:
+- Parágrafo curto de abertura (sem H1, sem repetir o título).
+- 4 a 6 seções com "## Título".
+- Listas com "- " quando útil.
+- **negrito** em valores, prazos e termos-chave.
+- 500 a 750 palavras.
+- Use a palavra-chave principal naturalmente 3-5 vezes.
+- Dados realistas de 2026 (faixas salariais CLT, encargos, etc).
+- Última seção "## Como o VagasAgora ajuda" com CTA para cadastro grátis.`;
+
+  const user = `Título: "${titulo}"
+Palavra-chave principal: "${palavraChave}"
+Tags: ${JSON.stringify(tags)}
+
+Responda APENAS JSON:
+{"titulo":"${titulo}","resumo":"meta description 140-160 chars com a palavra-chave","conteudo":"markdown completo","tags":${JSON.stringify(tags)}}`;
+
+  return aiJson<{ titulo: string; resumo: string; conteudo: string; tags: string[] }>(system, user);
+}
+
+async function criarUmPost(evitar: Set<string>) {
+  const [ideia] = await pesquisarTendencias(1, Array.from(evitar));
+  if (!ideia) throw new Error("IA não sugeriu ideia");
+  if (evitar.has(ideia.titulo.toLowerCase())) throw new Error("título duplicado sugerido");
+
+  const gerado = await gerarConteudo(ideia.titulo, ideia.palavra_chave, ideia.tags);
+  let slug = slugify(gerado.titulo);
+  const { data: dup } = await supabaseAdmin.from("posts").select("slug").eq("slug", slug).maybeSingle();
+  if (dup) slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
+
+  const { data: novo, error } = await supabaseAdmin
+    .from("posts")
+    .insert({
+      slug,
+      titulo: gerado.titulo,
+      resumo: gerado.resumo.slice(0, 220),
+      conteudo: gerado.conteudo,
+      tags: gerado.tags ?? ideia.tags,
+      autor: "Equipe VagasAgora",
+      publicado: true,
+    })
+    .select("slug,titulo")
+    .single();
+
+  if (error) throw error;
+  evitar.add(novo.titulo.toLowerCase());
+  return novo;
 }
 
 export const Route = createFileRoute("/api/public/cron/gerar-post")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        // ⚠️ Autenticação via CRON_SECRET dedicado (NÃO usar anon/publishable
-        // key — vai no bundle do cliente). Header `x-cron-secret` ou query `?secret=`.
-        const expected = process.env.CRON_SECRET;
-        if (!expected) {
-          console.error("[cron.gerar-post] CRON_SECRET não configurado.");
-          return new Response("misconfigured", { status: 503 });
-        }
+        // Auth: apikey == SUPABASE_PUBLISHABLE_KEY (mesma chave que o pg_cron envia)
+        const expected = process.env.SUPABASE_PUBLISHABLE_KEY;
         const sent =
+          request.headers.get("apikey") ??
           request.headers.get("x-cron-secret") ??
           new URL(request.url).searchParams.get("secret") ??
           "";
-        const a = Buffer.from(sent);
-        const b = Buffer.from(expected);
-        if (a.length !== b.length || !timingSafeEqual(a, b)) {
+        if (!expected || sent !== expected) {
           return new Response("Unauthorized", { status: 401 });
         }
 
+        const url = new URL(request.url);
+        const qtd = Math.min(Math.max(parseInt(url.searchParams.get("qtd") ?? "1", 10) || 1, 1), 10);
 
         try {
           const { data: existentes } = await supabaseAdmin
             .from("posts")
             .select("titulo")
             .order("published_at", { ascending: false })
-            .limit(80);
-          const usados = new Set((existentes ?? []).map((p) => p.titulo.toLowerCase()));
+            .limit(120);
+          const evitar = new Set((existentes ?? []).map((p) => p.titulo.toLowerCase()));
 
-          const cidade = CIDADES[Math.floor(Math.random() * CIDADES.length)];
-          const candidatos = TOPICOS
-            .map((t) => ({ ...t, titulo: t.titulo.replace("{cidade}", cidade) }))
-            .filter((t) => !usados.has(t.titulo.toLowerCase()));
+          const criados: Array<{ slug: string; titulo: string }> = [];
+          const erros: string[] = [];
 
-          if (candidatos.length === 0) {
-            return Response.json({ ok: true, skipped: true, reason: "todos os tópicos já cobertos" });
+          for (let i = 0; i < qtd; i++) {
+            try {
+              const novo = await criarUmPost(evitar);
+              criados.push(novo);
+            } catch (e) {
+              erros.push(e instanceof Error ? e.message : String(e));
+            }
+            // pequeno respiro entre chamadas para evitar rate limit
+            if (i < qtd - 1) await new Promise((r) => setTimeout(r, 1500));
           }
 
-          const escolhido = candidatos[Math.floor(Math.random() * candidatos.length)];
-          const gerado = await gerarPostComIA(escolhido.titulo, escolhido.tags);
-
-          let slug = slugify(gerado.titulo);
-          const { data: dup } = await supabaseAdmin.from("posts").select("slug").eq("slug", slug).maybeSingle();
-          if (dup) slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
-
-          const { data: novo, error } = await supabaseAdmin
-            .from("posts")
-            .insert({
-              slug,
-              titulo: gerado.titulo,
-              resumo: gerado.resumo.slice(0, 220),
-              conteudo: gerado.conteudo,
-              tags: gerado.tags ?? escolhido.tags,
-              autor: "Equipe VagasAgora",
-              publicado: true,
-            })
-            .select("slug,titulo")
-            .single();
-
-          if (error) throw error;
-          return Response.json({ ok: true, post: novo });
+          return Response.json({ ok: true, solicitados: qtd, criados, erros });
         } catch (e: unknown) {
           const msg = e instanceof Error ? e.message : String(e);
           return Response.json({ ok: false, error: msg }, { status: 500 });
