@@ -2,8 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SiteFooter } from "@/components/SiteFooter";
 import { AdSlot } from "@/components/AdSlot";
 
 export const Route = createFileRoute("/blog/")({
