@@ -88,7 +88,7 @@ function BlogIndex() {
           </p>
         )}
       </main>
-      <SiteFooter />
+      
     </div>
   );
 }
