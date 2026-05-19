@@ -34,7 +34,7 @@ function BlogIndex() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
+      
       <main className="mx-auto max-w-4xl px-4 py-10">
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Voltar
