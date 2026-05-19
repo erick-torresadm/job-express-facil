@@ -1,8 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Calendar, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SiteFooter } from "@/components/SiteFooter";
 import { AdSlot } from "@/components/AdSlot";
 
 async function fetchPost(slug: string) {
@@ -54,12 +52,12 @@ export const Route = createFileRoute("/blog/$slug")({
   component: PostPage,
   notFoundComponent: () => (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
+      
       <div className="mx-auto max-w-3xl px-4 py-20 text-center">
         <h1 className="text-3xl font-black">Post não encontrado</h1>
         <Link to="/blog" className="mt-4 inline-block text-primary underline">Ver todos os posts</Link>
       </div>
-      <SiteFooter />
+      
     </div>
   ),
 });
@@ -111,7 +109,6 @@ function PostPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
       <main className="mx-auto max-w-3xl px-4 py-10">
         <Link to="/blog" className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Todos os posts
@@ -159,7 +156,6 @@ function PostPage() {
           </div>
         </article>
       </main>
-      <SiteFooter />
     </div>
   );
 }
