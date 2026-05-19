@@ -57,7 +57,7 @@ export const Route = createFileRoute("/blog/$slug")({
         <h1 className="text-3xl font-black">Post não encontrado</h1>
         <Link to="/blog" className="mt-4 inline-block text-primary underline">Ver todos os posts</Link>
       </div>
-      <SiteFooter />
+      
     </div>
   ),
 });
