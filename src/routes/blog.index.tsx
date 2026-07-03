@@ -11,9 +11,9 @@ export const Route = createFileRoute("/blog/")({
       { name: "description", content: "Guias práticos para conseguir emprego rápido: currículo em vídeo, vagas perto de você, direitos trabalhistas e mais. Atualizado toda semana." },
       { property: "og:title", content: "Blog VagasAgora" },
       { property: "og:description", content: "Dicas de emprego, currículo e carreira para quem quer começar a trabalhar agora." },
-      { property: "og:url", content: "https://vagasagora.com.br/blog" },
+      { property: "og:url", content: "https://job-express-facil.lovable.app/blog" },
     ],
-    links: [{ rel: "canonical", href: "https://vagasagora.com.br/blog" }],
+    links: [{ rel: "canonical", href: "https://job-express-facil.lovable.app/blog" }],
   }),
   component: BlogIndex,
 });
