@@ -8,7 +8,7 @@ const OPTIONS = [
   { slug: "animmaster", nome: "AnimMaster / Animata", desc: "Cards animados, gradientes shader, movimento constante." },
 ];
 
-export const Route = createFileRoute("/preview")({
+export const Route = createFileRoute("/preview/")({
   head: () => ({ meta: [{ title: "Preview de estilos — VagasAgora" }, { name: "robots", content: "noindex" }] }),
   component: PreviewIndex,
 });
