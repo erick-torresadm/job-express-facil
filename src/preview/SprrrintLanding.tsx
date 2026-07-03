@@ -37,11 +37,10 @@ export default function SprrrintLanding() {
         </motion.div>
 
         <motion.h1
-          style={{ y }}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0, transition: { delay: 0.1, duration: 0.8 } }}
           className="mx-auto mt-8 max-w-5xl text-6xl font-light leading-[0.98] tracking-[-0.04em] md:text-[110px]"
-          style={{ fontFamily: "'Outfit', 'Georgia', serif" }}
+          style={{ y, fontFamily: "'Outfit', 'Georgia', serif" }}
         >
           A vaga certa,<br />
           <em className="bg-gradient-to-r from-[#FF7A45] via-[#FFB86B] to-[#E64980] bg-clip-text text-transparent">no seu tempo.</em>
