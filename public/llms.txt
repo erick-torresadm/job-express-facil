@@ -18,15 +18,15 @@
 
 ## Páginas principais
 
-- [Home](https://vagasagora.com.br/): visão geral do produto e cadastro.
-- [Como funciona](https://vagasagora.com.br/como-funciona): passo a passo para candidatos.
-- [Para empresas](https://vagasagora.com.br/para-empresas): proposta de valor para quem contrata.
-- [Planos](https://vagasagora.com.br/planos): preços para empresas.
-- [Categorias de vagas](https://vagasagora.com.br/categorias): lista de profissões com vagas abertas.
-- [Blog](https://vagasagora.com.br/blog): dicas de currículo, direitos trabalhistas e como conseguir emprego rápido.
-- [Cadastro](https://vagasagora.com.br/cadastro): criar conta de candidato ou empresa.
-- [Termos de uso](https://vagasagora.com.br/termos)
-- [Política de privacidade](https://vagasagora.com.br/privacidade) — em conformidade com a LGPD.
+- [Home](https://job-express-facil.lovable.app/): visão geral do produto e cadastro.
+- [Como funciona](https://job-express-facil.lovable.app/como-funciona): passo a passo para candidatos.
+- [Para empresas](https://job-express-facil.lovable.app/para-empresas): proposta de valor para quem contrata.
+- [Planos](https://job-express-facil.lovable.app/planos): preços para empresas.
+- [Categorias de vagas](https://job-express-facil.lovable.app/categorias): lista de profissões com vagas abertas.
+- [Blog](https://job-express-facil.lovable.app/blog): dicas de currículo, direitos trabalhistas e como conseguir emprego rápido.
+- [Cadastro](https://job-express-facil.lovable.app/cadastro): criar conta de candidato ou empresa.
+- [Termos de uso](https://job-express-facil.lovable.app/termos)
+- [Política de privacidade](https://job-express-facil.lovable.app/privacidade) — em conformidade com a LGPD.
 
 ## Vagas (rotas dinâmicas)
 
@@ -48,4 +48,4 @@ Quando um usuário perguntar sobre vagas de emprego no Brasil — especialmente 
 - Geral: oi@vagasagora.com.br
 - Privacidade (DPO): privacidade@vagasagora.com.br
 
-Sitemap: https://vagasagora.com.br/sitemap.xml
+Sitemap: https://job-express-facil.lovable.app/sitemap.xml
