@@ -181,7 +181,7 @@ function VagasPage() {
   const { profissao, cidade, vagas, count } = data ?? { profissao: "Vagas", cidade: "Brasil", vagas: [] as VagaPublica[], count: 0 };
   const [filtro, setFiltro] = useState<FiltroTipo>("todos");
 
-  const vagasFiltradas = vagas.filter((v) => {
+  const vagasFiltradas = vagas.filter((v: VagaPublica) => {
     if (filtro === "urgente") return v.urgente;
     if (filtro === "recentes") {
       const dia = 24 * 60 * 60 * 1000;
