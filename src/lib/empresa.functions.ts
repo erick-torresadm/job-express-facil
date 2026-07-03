@@ -207,7 +207,20 @@ export const listarCandidatosBusca = createServerFn({ method: "POST" })
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { userId } = context;
+    const { supabase, userId } = context;
+
+    // Only accounts with the 'empresa' role may browse the candidate directory.
+    // Without this check any signed-in candidato could enumerate every resume
+    // via the admin client (which bypasses RLS). We read user_roles directly
+    // (RLS allows a user to see their own roles).
+    const { data: myRoles } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+    const isEmpresa = (myRoles ?? []).some((r) => r.role === "empresa");
+    if (!isEmpresa) {
+      throw new Error("Acesso restrito a contas de empresa.");
+    }
 
     let q = supabaseAdmin
       .from("curriculos")

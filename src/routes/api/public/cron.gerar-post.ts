@@ -123,14 +123,20 @@ export const Route = createFileRoute("/api/public/cron/gerar-post")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        // Auth: apikey == SUPABASE_PUBLISHABLE_KEY (mesma chave que o pg_cron envia)
-        const expected = process.env.SUPABASE_PUBLISHABLE_KEY;
-        const sent =
-          request.headers.get("apikey") ??
-          request.headers.get("x-cron-secret") ??
-          new URL(request.url).searchParams.get("secret") ??
-          "";
-        if (!expected || sent !== expected) {
+        // Auth: header `x-cron-secret` must match server-only CRON_SECRET.
+        // Never accept the Supabase publishable/anon key here — it is shipped
+        // to every browser and would let anyone spam AI-generated posts.
+        const expected = process.env.CRON_SECRET;
+        const sent = request.headers.get("x-cron-secret") ?? "";
+        if (!expected || sent.length !== expected.length) {
+          return new Response("Unauthorized", { status: 401 });
+        }
+        // constant-time-ish compare
+        let diff = 0;
+        for (let i = 0; i < expected.length; i++) {
+          diff |= expected.charCodeAt(i) ^ sent.charCodeAt(i);
+        }
+        if (diff !== 0) {
           return new Response("Unauthorized", { status: 401 });
         }
 
