@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Menu, X, Building2, LogOut, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { NotificationBell } from "@/components/NotificationBell";
+import { GlobalSearch } from "@/components/GlobalSearch";
+
 
 
 const navLinks = [
