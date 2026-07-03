@@ -199,6 +199,9 @@ export function SiteHeader() {
       {/* Mobile drawer */}
       {open && (
         <nav className="mx-auto mt-2 max-w-6xl rounded-3xl border border-border/60 bg-background/95 p-2 shadow-pop backdrop-blur-xl md:hidden">
+          <div className="px-1 pb-2">
+            <GlobalSearch variant="hero" />
+          </div>
           {navLinks.map((l) => (
             <Link
               key={l.to}
