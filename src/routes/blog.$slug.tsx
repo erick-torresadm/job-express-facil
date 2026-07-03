@@ -18,7 +18,7 @@ async function fetchPost(slug: string) {
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => ({ post: await fetchPost(params.slug) }),
   head: ({ loaderData, params }) => {
-    const url = `https://vagasagora.com.br/blog/${params.slug}`;
+    const url = `https://job-express-facil.lovable.app/blog/${params.slug}`;
     const title = loaderData?.post ? `${loaderData.post.titulo} — VagasAgora` : "Post";
     const desc = loaderData?.post?.resumo ?? "";
     return {

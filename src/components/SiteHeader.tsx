@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Menu, X, Building2, LogOut, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { NotificationBell } from "@/components/NotificationBell";
+import { GlobalSearch } from "@/components/GlobalSearch";
+
 
 
 const navLinks = [
@@ -136,6 +138,13 @@ export function SiteHeader() {
           ))}
         </nav>
 
+        {/* Busca global desktop */}
+        <div className="hidden flex-1 justify-center px-2 md:flex lg:max-w-xs">
+          <GlobalSearch />
+        </div>
+
+
+
         <div className="hidden items-center gap-2 md:flex">
           {user ? (
             <>
@@ -190,6 +199,9 @@ export function SiteHeader() {
       {/* Mobile drawer */}
       {open && (
         <nav className="mx-auto mt-2 max-w-6xl rounded-3xl border border-border/60 bg-background/95 p-2 shadow-pop backdrop-blur-xl md:hidden">
+          <div className="px-1 pb-2">
+            <GlobalSearch variant="hero" />
+          </div>
           {navLinks.map((l) => (
             <Link
               key={l.to}

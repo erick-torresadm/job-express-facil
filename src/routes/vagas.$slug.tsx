@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { MapPin, Clock, DollarSign, Flame, ArrowLeft } from "lucide-react";
+import { MapPin, Clock, DollarSign, Flame, ArrowLeft, ChevronDown } from "lucide-react";
 import { PROFISSOES, CIDADES } from "@/lib/mock-data";
+import { SITE_URL } from "@/lib/site";
 import { listarVagasPublicas, type VagaPublica } from "@/lib/vagas.functions";
 import { calcularRotaCusto, calcularMatchScore } from "@/lib/intel.functions";
 import { DistanciaCustoCard, MatchScoreBadge, FraudBadge } from "@/components/VagaCards";
@@ -28,6 +29,33 @@ function capitalize(s: string) {
   return s.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 }
 
+// FAQ estruturada (também alimenta JSON-LD FAQPage → resposta direta em Google e LLMs)
+function buildFAQ(profissao: string, cidade: string) {
+  const p = profissao.toLowerCase();
+  return [
+    {
+      q: `Quanto ganha um ${p} em ${cidade}?`,
+      a: `O salário médio de ${p} em ${cidade} varia entre R$ 1.500 e R$ 3.200 por mês, dependendo da experiência, do bairro e do tipo de contrato (CLT, PJ ou diária). Vagas com adicional noturno, insalubridade ou horas extras podem chegar a R$ 4.000. No VagasAgora você vê a faixa de mercado direto no anúncio.`,
+    },
+    {
+      q: `Preciso ter experiência pra trabalhar de ${p} em ${cidade}?`,
+      a: `Não necessariamente. Muitas vagas de ${p} em ${cidade} aceitam candidatos sem experiência formal, especialmente pra funções de ajudante ou auxiliar. Grave seu currículo em áudio contando o que já fez (mesmo informal) e a IA monta a apresentação pra você.`,
+    },
+    {
+      q: `As vagas de ${p} em ${cidade} são CLT ou PJ?`,
+      a: `Temos os dois formatos. A maioria das vagas operacionais em ${cidade} é CLT com carteira assinada, vale-transporte, VR e adicional. Também há vagas PJ, MEI, temporárias e por diária. O tipo de contrato aparece no cabeçalho de cada anúncio.`,
+    },
+    {
+      q: `Como me candidato às vagas de ${p} em ${cidade}?`,
+      a: `Cadastre-se grátis no VagasAgora (leva 1 minuto — pode gravar áudio ou vídeo). Depois é só apertar "Candidatar-me" na vaga que interessa. A empresa recebe seu currículo e chama você direto no WhatsApp. Sem taxa, sem intermediário.`,
+    },
+    {
+      q: `Quais bairros de ${cidade} têm mais vagas de ${p}?`,
+      a: `Em ${cidade}, os bairros que mais contratam ${p} costumam ser Centro, Zona Leste, Zona Sul e regiões próximas a estações de metrô/trem. No VagasAgora você filtra por bairro pra achar vaga perto de casa e ver o custo de transporte estimado.`,
+    },
+  ];
+}
+
 export const Route = createFileRoute("/vagas/$slug")({
   loader: async ({ params }) => {
     const { profissao, cidade, profSlug } = parseSlug(params.slug);
@@ -38,13 +66,14 @@ export const Route = createFileRoute("/vagas/$slug")({
   head: ({ params, loaderData }) => {
     const d = loaderData ?? { profissao: "Vagas", cidade: "Brasil", count: 0, vagas: [] as VagaPublica[] };
     const { profissao, cidade, count } = d;
+    const year = new Date().getFullYear();
     const title = count > 0
-      ? `${count} vagas de ${profissao} em ${cidade} hoje — VagasAgora`
-      : `Vagas de ${profissao} em ${cidade} — Cadastre-se grátis | VagasAgora`;
+      ? `${count} vagas de ${profissao} em ${cidade} — ${year} | VagasAgora`
+      : `Vagas de ${profissao} em ${cidade} ${year} — Cadastre-se grátis | VagasAgora`;
     const description = count > 0
-      ? `${count} vagas de ${profissao} abertas em ${cidade} agora. CLT, PJ e meio período. Cadastre seu currículo grátis em 1 minuto por áudio e candidate-se direto pelo WhatsApp.`
-      : `Vagas de ${profissao} em ${cidade}. Cadastre seu currículo grátis em 1 minuto por áudio e seja avisado assim que uma empresa publicar uma vaga.`;
-    const canonical = `https://vagasagora.com.br/vagas/${params.slug}`;
+      ? `${count} vagas de ${profissao} abertas em ${cidade} agora. CLT, PJ, diária e meio período. Cadastre seu currículo grátis em 1 minuto por áudio e candidate-se direto pelo WhatsApp.`
+      : `Vagas de ${profissao} em ${cidade}. Cadastre seu currículo grátis em 1 minuto por áudio e seja avisado assim que uma empresa publicar uma vaga na sua região.`;
+    const canonical = `${SITE_URL}/vagas/${params.slug}`;
 
     const validThrough = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -66,7 +95,7 @@ export const Route = createFileRoute("/vagas/$slug")({
       hiringOrganization: {
         "@type": "Organization",
         name: v.empresa_nome,
-        sameAs: "https://vagasagora.com.br",
+        sameAs: SITE_URL,
       },
       jobLocation: {
         "@type": "Place",
@@ -91,6 +120,8 @@ export const Route = createFileRoute("/vagas/$slug")({
       directApply: true,
     }));
 
+    const faq = buildFAQ(profissao, cidade);
+
     return {
       meta: [
         { title },
@@ -99,10 +130,13 @@ export const Route = createFileRoute("/vagas/$slug")({
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
         { property: "og:url", content: canonical },
+        { property: "og:locale", content: "pt_BR" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
-        { name: "keywords", content: `vagas ${profissao}, emprego ${profissao} ${cidade}, vagas em ${cidade}, ${profissao} CLT, trabalho ${profissao}` },
+        { name: "keywords", content: `vagas ${profissao} ${cidade}, emprego ${profissao} ${cidade}, ${profissao} CLT ${cidade}, trabalho ${profissao} ${cidade}, vagas hoje ${cidade}, ${profissao} sem experiência` },
+        { name: "geo.region", content: "BR" },
+        { name: "geo.placename", content: cidade },
       ],
       links: [{ rel: "canonical", href: canonical }],
       scripts: [
@@ -116,10 +150,22 @@ export const Route = createFileRoute("/vagas/$slug")({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "https://vagasagora.com.br/" },
-              { "@type": "ListItem", position: 2, name: "Vagas", item: "https://vagasagora.com.br/categorias" },
+              { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+              { "@type": "ListItem", position: 2, name: "Vagas", item: `${SITE_URL}/categorias` },
               { "@type": "ListItem", position: 3, name: `${profissao} em ${cidade}`, item: canonical },
             ],
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faq.map((f) => ({
+              "@type": "Question",
+              name: f.q,
+              acceptedAnswer: { "@type": "Answer", text: f.a },
+            })),
           }),
         },
       ],
@@ -128,10 +174,23 @@ export const Route = createFileRoute("/vagas/$slug")({
   component: VagasPage,
 });
 
+type FiltroTipo = "todos" | "urgente" | "recentes";
 
 function VagasPage() {
   const data = Route.useLoaderData();
   const { profissao, cidade, vagas, count } = data ?? { profissao: "Vagas", cidade: "Brasil", vagas: [] as VagaPublica[], count: 0 };
+  const [filtro, setFiltro] = useState<FiltroTipo>("todos");
+
+  const vagasFiltradas = vagas.filter((v: VagaPublica) => {
+    if (filtro === "urgente") return v.urgente;
+    if (filtro === "recentes") {
+      const dia = 24 * 60 * 60 * 1000;
+      return Date.now() - new Date(v.created_at).getTime() < 3 * dia;
+    }
+    return true;
+  });
+
+  const faq = buildFAQ(profissao, cidade);
 
   return (
     <div className="min-h-screen bg-background">
@@ -145,6 +204,12 @@ function VagasPage() {
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-6">
+        <nav aria-label="Breadcrumb" className="mb-2 text-xs text-muted-foreground">
+          <Link to="/" className="hover:text-foreground">Início</Link> ·{" "}
+          <Link to="/categorias" className="hover:text-foreground">Vagas</Link> ·{" "}
+          <span className="text-foreground">{profissao} em {cidade}</span>
+        </nav>
+
         <h1 className="text-3xl font-extrabold leading-tight">
           {count > 0 ? <>{count} vagas de <span className="text-accent">{profissao}</span> em {cidade}</> : <>Vagas de <span className="text-accent">{profissao}</span> em {cidade}</>}
         </h1>
@@ -161,13 +226,21 @@ function VagasPage() {
 
         <AdSlot placement="vagas_lista_topo" format="banner" className="mt-6" />
 
-
-
         {vagas.length > 0 && (
           <>
-            <h2 className="mt-8 mb-3 text-lg font-bold">Vagas em destaque</h2>
+            <div className="mt-8 mb-3 flex items-center justify-between">
+              <h2 className="text-lg font-bold">Vagas em destaque</h2>
+              <div className="flex gap-1 rounded-full bg-secondary p-1 text-xs font-bold">
+                {(["todos", "urgente", "recentes"] as FiltroTipo[]).map((f) => (
+                  <button key={f} onClick={() => setFiltro(f)}
+                    className={`rounded-full px-3 py-1 transition ${filtro === f ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                    {f === "todos" ? "Todas" : f === "urgente" ? "🔥 Urgentes" : "🆕 Hoje"}
+                  </button>
+                ))}
+              </div>
+            </div>
             <ul className="space-y-3">
-              {vagas.map((v: VagaPublica) => (
+              {vagasFiltradas.map((v: VagaPublica) => (
                 <li key={v.id} className="rounded-2xl border-2 border-border bg-card p-4 shadow-soft">
                   <div className="mb-1 flex items-start justify-between gap-2">
                     <h3 className="font-extrabold leading-tight">{v.titulo}</h3>
@@ -193,9 +266,16 @@ function VagasPage() {
                   <VagaActions vaga={v} />
                 </li>
               ))}
+              {vagasFiltradas.length === 0 && (
+                <li className="rounded-2xl border-2 border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
+                  Nenhuma vaga com esse filtro. Tente outra opção.
+                </li>
+              )}
             </ul>
           </>
         )}
+
+        {/* SEO section — texto único por profissão×cidade */}
         <section className="mt-10 rounded-3xl bg-secondary p-6">
           <h2 className="text-lg font-extrabold">Como funciona VagasAgora em {cidade}?</h2>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -214,11 +294,36 @@ function VagasPage() {
           </div>
           <h3 className="mt-5 font-bold">Outras profissões em {cidade}</h3>
           <div className="mt-2 flex flex-wrap gap-2">
-            {PROFISSOES.slice(0, 6).map((p) => (
+            {PROFISSOES.slice(0, 8).map((p) => (
               <Link key={p.id} to="/vagas/$slug" params={{ slug: `${p.slug}-em-${cidade.toLowerCase().replace(/\s+/g, "-")}` }}
                 className="rounded-full bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-accent hover:text-accent-foreground">
                 {p.emoji} {p.nome}
               </Link>
+            ))}
+          </div>
+          <h3 className="mt-5 font-bold">{profissao} em outras cidades</h3>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {CIDADES.slice(0, 10).filter((c) => c !== cidade).map((c) => (
+              <Link key={c} to="/vagas/$slug" params={{ slug: `${profissao.toLowerCase().replace(/\s+/g, "-")}-em-${c.toLowerCase().replace(/\s+/g, "-")}` }}
+                className="rounded-full bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-accent hover:text-accent-foreground">
+                {profissao} em {c}
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* FAQ — renderiza o mesmo conteúdo do JSON-LD FAQPage */}
+        <section className="mt-8">
+          <h2 className="text-lg font-extrabold">Perguntas frequentes sobre vagas de {profissao} em {cidade}</h2>
+          <div className="mt-3 space-y-2">
+            {faq.map((f, i) => (
+              <details key={i} className="group rounded-2xl border border-border bg-card p-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-2 font-bold">
+                  <span>{f.q}</span>
+                  <ChevronDown className="h-4 w-4 shrink-0 transition group-open:rotate-180" />
+                </summary>
+                <p className="mt-3 text-sm text-muted-foreground">{f.a}</p>
+              </details>
             ))}
           </div>
         </section>
