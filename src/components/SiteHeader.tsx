@@ -138,6 +138,13 @@ export function SiteHeader() {
           ))}
         </nav>
 
+        {/* Busca global desktop */}
+        <div className="hidden flex-1 justify-center px-2 md:flex lg:max-w-xs">
+          <GlobalSearch />
+        </div>
+
+
+
         <div className="hidden items-center gap-2 md:flex">
           {user ? (
             <>
