@@ -168,7 +168,8 @@ function RootComponent() {
     pathname.startsWith("/perfil") ||
     pathname.startsWith("/candidato") ||
     pathname.startsWith("/u/") ||
-    pathname.startsWith("/admin");
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/preview");
 
   return (
     <QueryClientProvider client={queryClient}>
