@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { rateLimit } from "@/lib/rate-limit.server";
 
 // Versão pública do currículo: SEM email, WhatsApp ou endereço.
 // Empresa só vê contato após pagar "revelar contato".
@@ -22,6 +23,7 @@ export const claimCurriculo = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ slug: z.string().trim().min(1).max(100) }).parse(input))
   .handler(async ({ data, context }) => {
     const { userId } = context;
+    rateLimit(`claim-cv:${userId}`, 10, 60_000);
     const { data: cv } = await supabaseAdmin
       .from("curriculos")
       .select("id, user_id, created_at")

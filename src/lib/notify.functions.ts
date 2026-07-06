@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { rateLimit } from "@/lib/rate-limit.server";
 
 // E-mail que recebe os avisos de novos cadastros
 const ADMIN_TO = "contato@vagasagora.com.br";
@@ -23,6 +24,7 @@ const InputSchema = z.object({
 export const notifyNewSignup = createServerFn({ method: "POST" })
   .inputValidator((input) => InputSchema.parse(input))
   .handler(async ({ data }) => {
+    rateLimit(`notify-signup:${data.email.toLowerCase()}`, 5, 60_000);
     const key = process.env.RESEND_API_KEY;
     const label = data.tipo === "empresa" ? "Nova EMPRESA" : "Novo CANDIDATO";
     const subject = `[VagasAgora] ${label}: ${data.nome}`;

@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { rateLimit } from "@/lib/rate-limit.server";
 
 /** Devolve a chave pública VAPID (segura para expor). */
 export const getVapidPublicKey = createServerFn({ method: "GET" }).handler(async () => {
@@ -19,6 +20,7 @@ export const savePushSubscription = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => SaveSchema.parse(input))
   .handler(async ({ data, context }) => {
+    rateLimit(`push-sub:${context.userId}`, 20, 60_000);
     const { error } = await context.supabase.from("push_subscriptions").upsert(
       {
         user_id: context.userId,
