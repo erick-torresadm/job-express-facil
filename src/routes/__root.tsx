@@ -16,6 +16,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { CookieConsent } from "@/components/CookieConsent";
 import { SoundProvider } from "@/components/SoundProvider";
+import { PageViewTracker } from "@/components/PageViewTracker";
 
 function NotFoundComponent() {
   return (
@@ -188,6 +189,7 @@ function RootComponent() {
       <Toaster position="top-right" richColors />
       <CookieConsent />
       <SoundProvider />
+      <PageViewTracker />
     </QueryClientProvider>
   );
 }
