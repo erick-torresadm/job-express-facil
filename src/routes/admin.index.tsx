@@ -226,6 +226,62 @@ function AdminDashboard() {
   );
 }
 
+function ReindexButton() {
+  const run = useServerFn(reindexarTodasVagas);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ total: number; ok: number; falha: number; erros: string[] } | null>(null);
+
+  const handle = async () => {
+    if (!confirm("Reenviar todas as vagas ativas ao Google Indexing API? (limite 180/dia)")) return;
+    setLoading(true);
+    setResult(null);
+    try {
+      const r = await run({ data: { limite: 180 } });
+      setResult(r);
+      toast.success(`Reindexado: ${r.ok} OK, ${r.falha} falhas de ${r.total}`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="rounded-2xl border border-accent/30 bg-gradient-to-r from-accent/10 to-primary/10 p-4">
+      <div className="flex items-start gap-3">
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent text-accent-foreground">
+          <Search className="h-5 w-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-extrabold">Reindexar todas as vagas no Google</p>
+          <p className="text-xs text-muted-foreground">
+            Envia todas as vagas ativas pra Google Indexing API. Use uma vez pra "acelerar" as vagas antigas.
+            Depois, cada vaga nova é enviada automaticamente. Limite diário do Google: 200 URLs.
+          </p>
+          <button
+            onClick={handle}
+            disabled={loading}
+            className="mt-3 inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-accent-foreground disabled:opacity-60"
+          >
+            {loading ? "Enviando…" : "Reindexar agora"}
+          </button>
+          {result && (
+            <div className="mt-3 text-xs">
+              <p className="font-bold">Enviadas: {result.total} · OK: {result.ok} · Falhas: {result.falha}</p>
+              {result.erros.length > 0 && (
+                <ul className="mt-1 space-y-0.5 text-destructive">
+                  {result.erros.map((e, i) => <li key={i}>• {e}</li>)}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 /* ============ helpers de UI ============ */
 function SectionTitle({ icon, title, subtitle }: { icon: React.ReactNode; title: string; subtitle?: string }) {
   return (
