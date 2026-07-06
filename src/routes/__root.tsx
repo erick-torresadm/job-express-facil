@@ -102,6 +102,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Figtree:wght@400;500;600;700;800&display=swap",
       },
+      { rel: "alternate", hrefLang: "pt-BR", href: "https://vagasagora.com.br" },
+      { rel: "alternate", hrefLang: "x-default", href: "https://vagasagora.com.br" },
     ],
     scripts: [
       {
@@ -110,8 +112,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "VagasAgora",
-          url: "https://job-express-facil.lovable.app",
-          logo: "https://job-express-facil.lovable.app/favicon.ico",
+          url: "https://vagasagora.com.br",
+          logo: "https://vagasagora.com.br/favicon.ico",
           sameAs: [],
           areaServed: "BR",
           contactPoint: {
@@ -129,11 +131,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@context": "https://schema.org",
           "@type": "WebSite",
           name: "VagasAgora",
-          url: "https://job-express-facil.lovable.app",
+          url: "https://vagasagora.com.br",
           inLanguage: "pt-BR",
           potentialAction: {
             "@type": "SearchAction",
-            target: "https://job-express-facil.lovable.app/vagas/{search_term_string}",
+            target: "https://vagasagora.com.br/vagas/{search_term_string}",
             "query-input": "required name=search_term_string",
           },
         }),
