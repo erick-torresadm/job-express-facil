@@ -64,7 +64,7 @@ export function AdminShell({ title, children }: { title: string; children: React
             </Link>
           ))}
         </nav>
-        <button onClick={() => signOut().then(() => nav({ to: "/" }))}
+        <button onClick={async () => { await signOut(); nav({ to: "/auth", replace: true }); }}
           className="m-3 inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm font-semibold text-destructive hover:bg-destructive/5">
           <LogOut className="h-4 w-4" /> Sair
         </button>
