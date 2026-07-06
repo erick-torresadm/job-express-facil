@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { AdSlot } from "@/components/AdSlot";
 
 
 export const Route = createFileRoute("/blog/")({
@@ -47,7 +48,10 @@ function BlogIndex() {
           </p>
         </header>
 
-        
+        <div className="mb-8">
+          <AdSlot placement="blog_topo" format="banner" />
+        </div>
+
 
         {isLoading && <p className="text-muted-foreground">Carregando posts…</p>}
 
