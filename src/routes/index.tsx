@@ -8,6 +8,7 @@ import {
   Code2, Stethoscope, GraduationCap,
 } from "lucide-react";
 import { AdSlot } from "@/components/AdSlot";
+import { InstallPWA } from "@/components/InstallPWA";
 
 
 
@@ -47,6 +48,7 @@ function Landing() {
         <AdSlot placement="home_inferior" format="banner" />
       </div>
       <Depoimentos />
+      <InstallPWA />
       <CTA />
 
     </div>
