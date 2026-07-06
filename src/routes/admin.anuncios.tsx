@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, Trash2, Eye, MousePointerClick } from "lucide-react";
+import { Plus, Trash2, Eye, MousePointerClick, Upload, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/AdminShell";
@@ -11,13 +11,13 @@ export const Route = createFileRoute("/admin/anuncios")({
   component: AdminAnuncios,
 });
 
-const PLACEMENTS = [
-  { id: "home_meio", label: "Home — meio da página" },
-  { id: "home_inferior", label: "Home — antes dos depoimentos" },
-  { id: "vagas_lista_topo", label: "Lista de vagas — topo" },
-  { id: "blog_topo", label: "Blog — topo da listagem" },
-  { id: "blog_post_fim", label: "Post do blog — fim do artigo" },
-  { id: "rodape", label: "Rodapé global" },
+const PLACEMENTS: { id: string; label: string; size: string; hint: string }[] = [
+  { id: "home_meio", label: "Home — meio da página", size: "1200 × 300 px", hint: "Banner largo (proporção 4:1). Peso máx. 300 KB. JPG/PNG/WebP." },
+  { id: "home_inferior", label: "Home — antes dos depoimentos", size: "1200 × 300 px", hint: "Banner largo (proporção 4:1). Peso máx. 300 KB." },
+  { id: "vagas_lista_topo", label: "Lista de vagas — topo", size: "970 × 250 px", hint: "Billboard desktop. No mobile é redimensionado. Peso máx. 250 KB." },
+  { id: "blog_topo", label: "Blog — topo da listagem", size: "728 × 90 px", hint: "Leaderboard clássico. Peso máx. 150 KB." },
+  { id: "blog_post_fim", label: "Post do blog — fim do artigo", size: "600 × 500 px", hint: "Bloco quadrado/retangular. Peso máx. 300 KB." },
+  { id: "rodape", label: "Rodapé global", size: "1200 × 120 px", hint: "Faixa fina. Peso máx. 150 KB." },
 ];
 
 type Anuncio = {
@@ -98,6 +98,42 @@ function AdminAnuncios() {
     },
   });
 
+  const [uploading, setUploading] = useState(false);
+  const selectedPlacement = PLACEMENTS.find((p) => p.id === form.placement)!;
+
+  const handleUpload = async (file: File) => {
+    if (!file) return;
+    if (file.size > 500 * 1024) {
+      toast.error("Arquivo maior que 500 KB. Otimize a imagem antes de subir.");
+      return;
+    }
+    if (!/^image\/(png|jpe?g|webp|gif)$/.test(file.type)) {
+      toast.error("Formato inválido. Use JPG, PNG, WebP ou GIF.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id;
+      if (!uid) throw new Error("Sem sessão");
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${uid}/anuncios/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage.from("social-media").upload(path, file, {
+        cacheControl: "31536000",
+        upsert: false,
+        contentType: file.type,
+      });
+      if (error) throw error;
+      const { data: pub } = supabase.storage.from("social-media").getPublicUrl(path);
+      setForm((f) => ({ ...f, imagem_url: pub.publicUrl }));
+      toast.success("Imagem enviada");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Falha no upload");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <AdminShell title="Anúncios">
       <section className="rounded-2xl border border-border bg-card p-5">
@@ -110,7 +146,7 @@ function AdminAnuncios() {
             <span className="font-semibold">Posição</span>
             <select value={form.placement} onChange={(e) => setForm({ ...form, placement: e.target.value })}
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2">
-              {PLACEMENTS.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+              {PLACEMENTS.map((p) => <option key={p.id} value={p.id}>{p.label} — {p.size}</option>)}
             </select>
           </label>
           <label className="text-sm">
@@ -119,6 +155,10 @@ function AdminAnuncios() {
               onChange={(e) => setForm({ ...form, prioridade: Number(e.target.value) })}
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2" />
           </label>
+          <div className="md:col-span-2 rounded-lg border border-dashed border-primary/40 bg-primary/5 p-3 text-xs">
+            <p className="font-bold text-primary">Tamanho recomendado: {selectedPlacement.size}</p>
+            <p className="mt-0.5 text-muted-foreground">{selectedPlacement.hint}</p>
+          </div>
           <label className="text-sm">
             <span className="font-semibold">Título (opcional)</span>
             <input value={form.titulo} onChange={(e) => setForm({ ...form, titulo: e.target.value })}
@@ -130,12 +170,23 @@ function AdminAnuncios() {
               onChange={(e) => setForm({ ...form, link_url: e.target.value })}
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2" />
           </label>
-          <label className="text-sm md:col-span-2">
-            <span className="font-semibold">URL da imagem</span>
-            <input type="url" placeholder="https://..." value={form.imagem_url}
-              onChange={(e) => setForm({ ...form, imagem_url: e.target.value })}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2" />
-          </label>
+          <div className="text-sm md:col-span-2">
+            <span className="font-semibold">Imagem do banner</span>
+            <div className="mt-1 flex flex-col gap-2 sm:flex-row">
+              <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted">
+                {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                {uploading ? "Enviando..." : "Escolher arquivo"}
+                <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden"
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload(f); e.target.value = ""; }} />
+              </label>
+              <input type="url" placeholder="ou cole uma URL https://..." value={form.imagem_url}
+                onChange={(e) => setForm({ ...form, imagem_url: e.target.value })}
+                className="flex-1 rounded-md border border-input bg-background px-3 py-2" />
+            </div>
+            {form.imagem_url && (
+              <img src={form.imagem_url} alt="preview" className="mt-2 max-h-32 rounded-md border border-border object-contain" />
+            )}
+          </div>
           <label className="text-sm md:col-span-2">
             <span className="font-semibold">HTML customizado (opcional — sobrescreve imagem/link)</span>
             <textarea rows={3} value={form.html_custom}
