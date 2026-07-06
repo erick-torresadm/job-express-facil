@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { CandidaturasVaga } from "@/components/CandidaturasVaga";
+import { pingVagaSlug } from "@/lib/google-indexing.functions";
 
 export const Route = createFileRoute("/empresa/minhas-vagas")({
   head: () => ({ meta: [{ title: "Minhas vagas — VagasAgora" }, { name: "robots", content: "noindex" }] }),
@@ -22,6 +23,7 @@ type Vaga = {
   urgente: boolean;
   ativa: boolean;
   created_at: string;
+  profissao_slug: string | null;
 };
 
 function MinhasVagas() {
@@ -33,7 +35,7 @@ function MinhasVagas() {
     if (!user) return;
     supabase
       .from("vagas")
-      .select("id,titulo,empresa_nome,salario,horario,bairro,cidade,urgente,ativa,created_at")
+      .select("id,titulo,empresa_nome,salario,horario,bairro,cidade,urgente,ativa,created_at,profissao_slug")
       .eq("empresa_id", user.id)
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
@@ -43,16 +45,21 @@ function MinhasVagas() {
       });
   }, [user]);
 
+  const slugDe = (v: Vaga) =>
+    `${v.profissao_slug ?? v.titulo.toLowerCase().replace(/\s+/g, "-")}-em-${v.cidade.toLowerCase().replace(/\s+/g, "-")}`;
+
   const toggleAtiva = async (v: Vaga) => {
     const novo = !v.ativa;
     setVagas((prev) => prev.map((x) => (x.id === v.id ? { ...x, ativa: novo } : x)));
     await supabase.from("vagas").update({ ativa: novo }).eq("id", v.id);
+    pingVagaSlug({ data: { slug: slugDe(v), type: novo ? "URL_UPDATED" : "URL_DELETED" } }).catch(() => null);
   };
 
-  const excluir = async (id: string) => {
+  const excluir = async (v: Vaga) => {
     if (!confirm("Excluir esta vaga?")) return;
-    setVagas((prev) => prev.filter((v) => v.id !== id));
-    await supabase.from("vagas").delete().eq("id", id);
+    setVagas((prev) => prev.filter((x) => x.id !== v.id));
+    await supabase.from("vagas").delete().eq("id", v.id);
+    pingVagaSlug({ data: { slug: slugDe(v), type: "URL_DELETED" } }).catch(() => null);
     toast.success("Vaga removida");
   };
 
@@ -107,7 +114,7 @@ function MinhasVagas() {
                     className="grid h-9 w-9 place-items-center rounded-lg border border-border hover:bg-secondary">
                     {v.ativa ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                   </button>
-                  <button onClick={() => excluir(v.id)} title="Excluir"
+                  <button onClick={() => excluir(v)} title="Excluir"
                     className="grid h-9 w-9 place-items-center rounded-lg border border-border text-destructive hover:bg-destructive/10">
                     <Trash2 className="h-4 w-4" />
                   </button>

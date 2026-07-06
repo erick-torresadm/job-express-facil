@@ -10,6 +10,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { notifyAdminsVagaCriada } from "@/lib/admin-notify.functions";
+import { pingVagaSlug } from "@/lib/google-indexing.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/empresa/nova-vaga")({
@@ -134,14 +135,17 @@ function NovaVaga() {
       toast.success("Vaga publicada!");
     }
     // Push aos admins (fire-and-forget)
+    const slug = `${prof?.slug ?? form.profissao.toLowerCase().replace(/\s+/g, "-")}-em-${form.cidade.toLowerCase().replace(/\s+/g, "-")}`;
     notifyAdminsVagaCriada({
       data: {
         titulo: form.titulo,
         empresa: empresaNome,
         cidade: form.cidade,
-        slug: `${prof?.slug ?? form.profissao.toLowerCase().replace(/\s+/g, "-")}-em-${form.cidade.toLowerCase().replace(/\s+/g, "-")}`,
+        slug,
       },
     }).catch(() => null);
+    // Google Indexing API — avisa o Google que uma URL de JobPosting foi publicada
+    pingVagaSlug({ data: { slug, type: "URL_UPDATED" } }).catch(() => null);
     setSaved(true);
   };
 
