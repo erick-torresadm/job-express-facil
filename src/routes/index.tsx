@@ -362,7 +362,7 @@ const WHATS_POOL: Omit<WhatsMsg, "id" | "time">[] = [
   { company: "Capital Invest", role: "Analista Jr", msg: "Processo aberto. Centro empresarial, plano de carreira agressivo", initials: "CI", color: "oklch(0.4 0.05 260)" },
   { company: "Telecom Connect", role: "Consultor de Vendas", msg: "Boa tarde! CLT + comissão média R$ 4.200", initials: "TC", color: "oklch(0.55 0.2 320)" },
   { company: "Beleza & Cia", role: "Vendedor de Cosméticos", msg: "Vaga em shopping perto de você, CLT + bonificação", initials: "BC", color: "oklch(0.65 0.18 350)" },
-  { company: "Aero Linhas SA", role: "Agente de Aeroporto", msg: "Vaga em aeroporto regional, CLT, passagens com desconto ✈️", initials: "AL", color: "oklch(0.5 0.18 15)" },
+  { company: "Aero Linhas SA", role: "Agente de Aeroporto", msg: "Vaga em aeroporto regional, CLT, passagens com desconto", initials: "AL", color: "oklch(0.5 0.18 15)" },
   { company: "AgroFood Nacional", role: "Auxiliar de Produção", msg: "Vaga efetiva, transporte fretado + refeição no local", initials: "AF", color: "oklch(0.55 0.2 25)" },
   { company: "Coop Crédito Sul", role: "Caixa Bancário", msg: "Olá! Vaga CLT cooperativa, PLR + previdência", initials: "CS", color: "oklch(0.55 0.18 145)" },
   { company: "Atende+ Contact", role: "Operador de Telemarketing", msg: "Home office, 6h/dia, comissão + bonificação", initials: "A+", color: "oklch(0.55 0.2 290)" },
