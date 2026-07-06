@@ -73,9 +73,10 @@ export function PushToggle() {
 
       let sub = await reg.pushManager.getSubscription();
       if (!sub) {
+        const key = urlBase64ToUint8Array(publicKey);
         sub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(publicKey),
+          applicationServerKey: key.buffer.slice(key.byteOffset, key.byteOffset + key.byteLength) as ArrayBuffer,
         });
       }
       const json = sub.toJSON();
