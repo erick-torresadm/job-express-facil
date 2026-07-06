@@ -621,6 +621,7 @@ export type Database = {
           empresa_nome: string
           endereco: string | null
           faixa_salarial_sugerida: string | null
+          google_indexed_at: string | null
           horario: string
           id: string
           latitude: number | null
@@ -649,6 +650,7 @@ export type Database = {
           empresa_nome: string
           endereco?: string | null
           faixa_salarial_sugerida?: string | null
+          google_indexed_at?: string | null
           horario: string
           id?: string
           latitude?: number | null
@@ -677,6 +679,7 @@ export type Database = {
           empresa_nome?: string
           endereco?: string | null
           faixa_salarial_sugerida?: string | null
+          google_indexed_at?: string | null
           horario?: string
           id?: string
           latitude?: number | null
