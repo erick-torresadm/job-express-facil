@@ -952,7 +952,7 @@ function ParaQuem() {
               </li>
             ))}
           </ul>
-          <Link to="/auth" className="btn-touch mt-7 inline-flex w-full items-center justify-center gap-2 bg-white text-primary shadow-pop">
+          <Link to="/para-empresas" className="btn-touch mt-7 inline-flex w-full items-center justify-center gap-2 bg-white text-primary shadow-pop">
             Falar com o time comercial <ArrowRight className="h-4 w-4" />
           </Link>
         </motion.div>
