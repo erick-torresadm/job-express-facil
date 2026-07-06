@@ -9,6 +9,7 @@ import {
 } from "@/lib/intel.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { notifyAdminsVagaCriada } from "@/lib/admin-notify.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/empresa/nova-vaga")({
