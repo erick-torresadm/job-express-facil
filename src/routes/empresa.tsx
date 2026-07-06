@@ -56,7 +56,13 @@ function EmpresaLayout() {
           <NotificationBell />
         </header>
         <main className="p-4 lg:p-8">
-          {isRoot && <DashboardKPIs />}
+          {isRoot && (
+            <>
+              <ProAtivoBadge />
+              <DashboardKPIs />
+              <DigestToggle />
+            </>
+          )}
           {isRoot ? <CandidatosList /> : <Outlet />}
         </main>
 
@@ -64,6 +70,78 @@ function EmpresaLayout() {
     </div>
   );
 }
+
+function ProAtivoBadge() {
+  const { user } = useAuth();
+  const [ate, setAte] = useState<string | null>(null);
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("promo_pro_ate").eq("id", user.id).maybeSingle()
+      .then(({ data }) => setAte((data as { promo_pro_ate?: string | null } | null)?.promo_pro_ate ?? null));
+  }, [user]);
+  if (!ate || new Date(ate).getTime() <= Date.now()) return null;
+  return (
+    <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border-2 border-accent/40 bg-gradient-to-r from-accent/10 via-primary/5 to-accent/10 p-4">
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-[10px] font-extrabold uppercase text-accent-foreground">
+        <Gift className="h-3 w-3" /> Pro ativo
+      </span>
+      <p className="text-sm">
+        <strong>Plano Full grátis até {new Date(ate).toLocaleDateString("pt-BR")}</strong> — todos os contatos liberados, IA de match, anti-fraude e prioridade no suporte.
+      </p>
+    </div>
+  );
+}
+
+function DigestToggle() {
+  const { user } = useAuth();
+  const [optOut, setOptOut] = useState<boolean | null>(null);
+  const [saving, setSaving] = useState(false);
+  const salvar = useServerFn(toggleDigestOptOut);
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("digest_opt_out").eq("id", user.id).maybeSingle()
+      .then(({ data }) => setOptOut(!!(data as { digest_opt_out?: boolean } | null)?.digest_opt_out));
+  }, [user]);
+  if (optOut === null) return null;
+  const receber = !optOut;
+  const alternar = async () => {
+    setSaving(true);
+    try {
+      await salvar({ data: { opt_out: receber } });
+      setOptOut(receber);
+      toast.success(receber ? "Você deixou de receber o resumo diário" : "Resumo diário ativado — chega todo dia 09h");
+    } catch {
+      toast.error("Não deu pra salvar. Tenta de novo.");
+    } finally {
+      setSaving(false);
+    }
+  };
+  return (
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4 shadow-soft">
+      <div className="flex items-start gap-3">
+        <div className="grid h-9 w-9 place-items-center rounded-xl bg-primary/10 text-primary">
+          <Mail className="h-4 w-4" />
+        </div>
+        <div>
+          <p className="text-sm font-bold">Resumo diário por email + push</p>
+          <p className="text-xs text-muted-foreground">
+            Todo dia às 9h você recebe: novos candidatos que bateram com suas vagas, top currículos e dicas.
+          </p>
+        </div>
+      </div>
+      <button
+        onClick={alternar}
+        disabled={saving}
+        className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-extrabold transition disabled:opacity-60 ${
+          receber ? "bg-secondary text-foreground hover:bg-secondary/70" : "bg-accent text-accent-foreground shadow-pop"
+        }`}
+      >
+        <Bell className="h-3.5 w-3.5" /> {receber ? "Desativar resumo" : "Ativar resumo diário"}
+      </button>
+    </div>
+  );
+}
+
 
 function NavItem({ to, icon, label, exact, disabled }: { to: string; icon: React.ReactNode; label: string; exact?: boolean; disabled?: boolean }) {
   if (disabled) {
