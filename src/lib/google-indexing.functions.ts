@@ -36,7 +36,7 @@ function pemToArrayBuffer(pem: string): ArrayBuffer {
   return buf.buffer;
 }
 
-async function getAccessToken(): Promise<string> {
+export async function getAccessToken(): Promise<string> {
   const raw = process.env.GOOGLE_INDEXING_SA_JSON;
   if (!raw) throw new Error("GOOGLE_INDEXING_SA_JSON não configurado");
   const sa: ServiceAccount = JSON.parse(raw);
