@@ -56,7 +56,9 @@ function AuthPage() {
 
   useEffect(() => {
     if (!authLoading && user && currentRole) {
-      navigate({ to: currentRole === "empresa" ? "/empresa" : "/cadastro" });
+      const dest =
+        currentRole === "admin" ? "/admin" : currentRole === "empresa" ? "/empresa" : "/cadastro";
+      navigate({ to: dest });
     }
   }, [user, currentRole, authLoading, navigate]);
 
