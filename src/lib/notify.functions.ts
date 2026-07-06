@@ -61,28 +61,32 @@ export const notifyNewSignup = createServerFn({ method: "POST" })
 
     const text = rows.map(([k, v]) => `${k}: ${v}`).join("\n");
 
-    try {
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${key}`,
-        },
-        body: JSON.stringify({
-          from: FROM,
-          to: [ADMIN_TO],
-          subject,
-          html,
-          text,
-          reply_to: data.email,
-        }),
-      });
-      if (!res.ok) {
-        const body = await res.text().catch(() => "");
-        console.error(`[notifyNewSignup] Resend ${res.status}: ${body}`);
+    if (key) {
+      try {
+        const res = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${key}`,
+          },
+          body: JSON.stringify({
+            from: FROM,
+            to: [ADMIN_TO],
+            subject,
+            html,
+            text,
+            reply_to: data.email,
+          }),
+        });
+        if (!res.ok) {
+          const body = await res.text().catch(() => "");
+          console.error(`[notifyNewSignup] Resend ${res.status}: ${body}`);
+        }
+      } catch (err) {
+        console.error("[notifyNewSignup] erro email", err);
       }
-    } catch (err) {
-      console.error("[notifyNewSignup] erro email", err);
+    } else {
+      console.warn("[notifyNewSignup] RESEND_API_KEY ausente — email pulado.");
     }
 
     // Push notification para admins (fire-and-forget)
