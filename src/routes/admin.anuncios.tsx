@@ -159,10 +159,6 @@ function AdminAnuncios() {
             <p className="font-bold text-primary">Tamanho recomendado: {selectedPlacement.size}</p>
             <p className="mt-0.5 text-muted-foreground">{selectedPlacement.hint}</p>
           </div>
-            <input type="number" value={form.prioridade}
-              onChange={(e) => setForm({ ...form, prioridade: Number(e.target.value) })}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2" />
-          </label>
           <label className="text-sm">
             <span className="font-semibold">Título (opcional)</span>
             <input value={form.titulo} onChange={(e) => setForm({ ...form, titulo: e.target.value })}
@@ -174,12 +170,23 @@ function AdminAnuncios() {
               onChange={(e) => setForm({ ...form, link_url: e.target.value })}
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2" />
           </label>
-          <label className="text-sm md:col-span-2">
-            <span className="font-semibold">URL da imagem</span>
-            <input type="url" placeholder="https://..." value={form.imagem_url}
-              onChange={(e) => setForm({ ...form, imagem_url: e.target.value })}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2" />
-          </label>
+          <div className="text-sm md:col-span-2">
+            <span className="font-semibold">Imagem do banner</span>
+            <div className="mt-1 flex flex-col gap-2 sm:flex-row">
+              <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted">
+                {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                {uploading ? "Enviando..." : "Escolher arquivo"}
+                <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden"
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload(f); e.target.value = ""; }} />
+              </label>
+              <input type="url" placeholder="ou cole uma URL https://..." value={form.imagem_url}
+                onChange={(e) => setForm({ ...form, imagem_url: e.target.value })}
+                className="flex-1 rounded-md border border-input bg-background px-3 py-2" />
+            </div>
+            {form.imagem_url && (
+              <img src={form.imagem_url} alt="preview" className="mt-2 max-h-32 rounded-md border border-border object-contain" />
+            )}
+          </div>
           <label className="text-sm md:col-span-2">
             <span className="font-semibold">HTML customizado (opcional — sobrescreve imagem/link)</span>
             <textarea rows={3} value={form.html_custom}
