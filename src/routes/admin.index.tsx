@@ -4,6 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { AdminShell } from "@/components/AdminShell";
 import { PushToggle } from "@/components/PushToggle";
 import { getAdminStats, getVisitStats } from "@/lib/admin.functions";
+import { reindexarTodasVagas } from "@/lib/google-indexing.functions";
+import { useState } from "react";
+import { toast } from "sonner";
 import {
   Users, Briefcase, Send, FileText, ShieldAlert, Megaphone,
   TrendingUp, AlertTriangle, Building2, UserCheck, Eye, MousePointerClick,
