@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import {
   MapPin, Mic, Video, Zap, ShieldCheck, Clock, Building2, HardHat,
   ArrowRight, Star, Check, CheckCheck, Sparkles, MessageCircle, TrendingUp, Users,
-  Briefcase, Award, Rocket, Target,
+  Briefcase, Award, Rocket, Target, ShoppingBag, Headphones, BarChart3, Package,
+  Code2, Stethoscope, GraduationCap,
 } from "lucide-react";
 import { AdSlot } from "@/components/AdSlot";
 
