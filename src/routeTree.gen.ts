@@ -22,6 +22,7 @@ import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as CandidatoRouteImport } from './routes/candidato'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AnuncieRouteImport } from './routes/anuncie'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PreviewIndexRouteImport } from './routes/preview.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -111,6 +112,11 @@ const CadastroRoute = CadastroRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnuncieRoute = AnuncieRouteImport.update({
+  id: '/anuncie',
+  path: '/anuncie',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -241,6 +247,7 @@ const ApiPublicBlogIngestRoute = ApiPublicBlogIngestRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/anuncie': typeof AnuncieRoute
   '/auth': typeof AuthRoute
   '/cadastro': typeof CadastroRoute
   '/candidato': typeof CandidatoRoute
@@ -281,6 +288,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/anuncie': typeof AnuncieRoute
   '/auth': typeof AuthRoute
   '/cadastro': typeof CadastroRoute
   '/candidato': typeof CandidatoRoute
@@ -322,6 +330,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/anuncie': typeof AnuncieRoute
   '/auth': typeof AuthRoute
   '/cadastro': typeof CadastroRoute
   '/candidato': typeof CandidatoRoute
@@ -364,6 +373,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/anuncie'
     | '/auth'
     | '/cadastro'
     | '/candidato'
@@ -404,6 +414,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/anuncie'
     | '/auth'
     | '/cadastro'
     | '/candidato'
@@ -444,6 +455,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/anuncie'
     | '/auth'
     | '/cadastro'
     | '/candidato'
@@ -485,6 +497,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnuncieRoute: typeof AnuncieRoute
   AuthRoute: typeof AuthRoute
   CadastroRoute: typeof CadastroRoute
   CandidatoRoute: typeof CandidatoRoute
@@ -609,6 +622,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/anuncie': {
+      id: '/anuncie'
+      path: '/anuncie'
+      fullPath: '/anuncie'
+      preLoaderRoute: typeof AnuncieRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -822,6 +842,7 @@ const AdminBlogRouteWithChildren = AdminBlogRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnuncieRoute: AnuncieRoute,
   AuthRoute: AuthRoute,
   CadastroRoute: CadastroRoute,
   CandidatoRoute: CandidatoRoute,
