@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { AdminShell } from "@/components/AdminShell";
+import { PushToggle } from "@/components/PushToggle";
 import { getAdminStats, getVisitStats } from "@/lib/admin.functions";
 import {
   Users, Briefcase, Send, FileText, ShieldAlert, Megaphone,
@@ -36,6 +37,9 @@ function AdminDashboard() {
 
   return (
     <AdminShell title="Dashboard">
+      <div className="mb-4">
+        <PushToggle />
+      </div>
       {isLoading || !data ? (
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
