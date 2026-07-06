@@ -4,7 +4,7 @@ import { useRef } from "react";
 import {
   Building2, Check, Sparkles, ShieldCheck, Brain, MapPin, Video, Filter,
   Bell, BarChart3, Lock, Clock, Users, Zap, ArrowRight, Star,
-  TrendingDown, AlertTriangle, ThumbsUp,
+  TrendingDown, AlertTriangle, ThumbsUp, Flame,
 } from "lucide-react";
 
 export const Route = createFileRoute("/para-empresas")({
