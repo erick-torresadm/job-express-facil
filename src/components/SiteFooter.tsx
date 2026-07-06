@@ -34,7 +34,7 @@ export function SiteFooter() {
               Vagas de verdade, perto de você. Grátis pro trabalhador.
             </p>
             <div className="mt-4 flex gap-2">
-              <a href="https://wa.me/5511000000000" aria-label="WhatsApp" className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card hover:bg-secondary">
+              <a href="https://wa.me/5511948333534" aria-label="WhatsApp" className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card hover:bg-secondary">
                 <MessageCircle className="h-4 w-4" />
               </a>
               <a href="https://instagram.com" aria-label="Instagram" className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card hover:bg-secondary">
