@@ -53,7 +53,7 @@ function CandidatoFlow() {
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" /> Voltar ao início
           </Link>
-          <Link to="/" className="font-bold text-sm">VagasAgora</Link>
+          <Link to="/" className="font-display text-base font-extrabold tracking-tight text-foreground">VagasAgora</Link>
         </div>
       </header>
       <main className="mx-auto max-w-md px-4 pb-24 pt-4 lg:max-w-5xl">
