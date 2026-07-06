@@ -34,7 +34,15 @@ interface Props {
   counts: Counts;
 }
 
-const nav = [
+type NavItem = {
+  to: "/candidato" | "/candidato/vagas" | "/candidato/candidaturas" | "/candidato/salvas" | "/candidato/alertas" | "/candidato/curriculo" | "/perfil";
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+  key: string;
+};
+
+const nav: NavItem[] = [
   { to: "/candidato", label: "Painel", icon: LayoutDashboard, exact: true, key: "painel" },
   { to: "/candidato/vagas", label: "Vagas pra você", icon: Search, key: "vagas" },
   { to: "/candidato/candidaturas", label: "Candidaturas", icon: Send, key: "candidaturas" },
@@ -42,7 +50,7 @@ const nav = [
   { to: "/candidato/alertas", label: "Alertas", icon: Bell, key: "alertas" },
   { to: "/candidato/curriculo", label: "Currículo", icon: FileText, key: "curriculo" },
   { to: "/perfil", label: "Perfil", icon: UserIcon, key: "perfil" },
-] as const;
+];
 
 export function AppSidebarCandidato({ perfilNome, perfilInicial, avatarUrl, counts }: Props) {
   const path = useRouterState({ select: (s) => s.location.pathname });
