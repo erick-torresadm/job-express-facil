@@ -24,11 +24,6 @@ export const notifyNewSignup = createServerFn({ method: "POST" })
   .inputValidator((input) => InputSchema.parse(input))
   .handler(async ({ data }) => {
     const key = process.env.RESEND_API_KEY;
-    if (!key) {
-      console.warn("[notifyNewSignup] RESEND_API_KEY ausente — pulando envio.");
-      return { ok: false as const, reason: "no_key" };
-    }
-
     const label = data.tipo === "empresa" ? "Nova EMPRESA" : "Novo CANDIDATO";
     const subject = `[VagasAgora] ${label}: ${data.nome}`;
 
