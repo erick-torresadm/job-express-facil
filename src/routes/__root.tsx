@@ -17,6 +17,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { CookieConsent } from "@/components/CookieConsent";
 import { SoundProvider } from "@/components/SoundProvider";
 import { PageViewTracker } from "@/components/PageViewTracker";
+import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 
 function NotFoundComponent() {
   return (
@@ -185,6 +186,13 @@ function RootComponent() {
     pathname.startsWith("/admin") ||
     pathname.startsWith("/preview");
 
+  // WhatsApp flutuante: só em áreas de empresa (não candidato)
+  const showWhatsApp =
+    pathname === "/para-empresas" ||
+    pathname === "/planos" ||
+    pathname === "/anuncie" ||
+    pathname.startsWith("/empresa");
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col bg-background">
@@ -198,7 +206,8 @@ function RootComponent() {
       <Toaster position="top-right" richColors />
       <CookieConsent />
       <SoundProvider />
-      <PageViewTracker />
+        <PageViewTracker />
+        {showWhatsApp && <WhatsAppFloat />}
     </QueryClientProvider>
   );
 }
