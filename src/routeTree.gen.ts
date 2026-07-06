@@ -30,6 +30,7 @@ import { Route as PreviewIndexRouteImport } from './routes/preview.index'
 import { Route as CandidatoIndexRouteImport } from './routes/candidato.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as VagasPjRouteImport } from './routes/vagas.pj'
 import { Route as VagasCltRouteImport } from './routes/vagas.clt'
 import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
@@ -163,6 +164,11 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VagasPjRoute = VagasPjRouteImport.update({
+  id: '/vagas/pj',
+  path: '/vagas/pj',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VagasCltRoute = VagasCltRouteImport.update({
@@ -350,6 +356,7 @@ export interface FileRoutesByFullPath {
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/vagas/clt': typeof VagasCltRoute
+  '/vagas/pj': typeof VagasPjRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/candidato/': typeof CandidatoIndexRoute
@@ -401,6 +408,7 @@ export interface FileRoutesByTo {
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/vagas/clt': typeof VagasCltRoute
+  '/vagas/pj': typeof VagasPjRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/candidato': typeof CandidatoIndexRoute
@@ -454,6 +462,7 @@ export interface FileRoutesById {
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/vagas/clt': typeof VagasCltRoute
+  '/vagas/pj': typeof VagasPjRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/candidato/': typeof CandidatoIndexRoute
@@ -508,6 +517,7 @@ export interface FileRouteTypes {
     | '/u/$handle'
     | '/vagas/$slug'
     | '/vagas/clt'
+    | '/vagas/pj'
     | '/admin/'
     | '/blog/'
     | '/candidato/'
@@ -559,6 +569,7 @@ export interface FileRouteTypes {
     | '/u/$handle'
     | '/vagas/$slug'
     | '/vagas/clt'
+    | '/vagas/pj'
     | '/admin'
     | '/blog'
     | '/candidato'
@@ -611,6 +622,7 @@ export interface FileRouteTypes {
     | '/u/$handle'
     | '/vagas/$slug'
     | '/vagas/clt'
+    | '/vagas/pj'
     | '/admin/'
     | '/blog/'
     | '/candidato/'
@@ -655,6 +667,7 @@ export interface RootRouteChildren {
   UHandleRoute: typeof UHandleRoute
   VagasSlugRoute: typeof VagasSlugRoute
   VagasCltRoute: typeof VagasCltRoute
+  VagasPjRoute: typeof VagasPjRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   PreviewIndexRoute: typeof PreviewIndexRoute
@@ -813,6 +826,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vagas/pj': {
+      id: '/vagas/pj'
+      path: '/vagas/pj'
+      fullPath: '/vagas/pj'
+      preLoaderRoute: typeof VagasPjRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vagas/clt': {
@@ -1104,6 +1124,7 @@ const rootRouteChildren: RootRouteChildren = {
   UHandleRoute: UHandleRoute,
   VagasSlugRoute: VagasSlugRoute,
   VagasCltRoute: VagasCltRoute,
+  VagasPjRoute: VagasPjRoute,
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   PreviewIndexRoute: PreviewIndexRoute,
