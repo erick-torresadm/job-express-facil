@@ -378,6 +378,31 @@ function FragmentRow({ f, o, n }: { f: string; o: string; n: string }) {
 
 /* ============ PLANOS (preview) ============ */
 function Planos() {
+  const promo = isPromoAtiva();
+  const planos = [
+    {
+      nome: "Free", preco: "R$ 0", precoOriginal: undefined as string | undefined, sub: "para experimentar",
+      items: ["10 contatos liberados", "1 vaga ativa", "Suporte por e-mail"],
+      destaque: false,
+    },
+    {
+      nome: "Básico",
+      preco: promo ? "R$ 0" : "R$ 99",
+      precoOriginal: promo ? "R$ 99" : undefined,
+      sub: promo ? "grátis por 2 anos" : "por mês · ou R$ 950/ano",
+      items: ["100 contatos/mês", "5 vagas ativas", "Página personalizada", "Notificações em tempo real"],
+      destaque: !promo, badge: promo ? undefined : "MAIS POPULAR",
+    },
+    {
+      nome: "Full",
+      preco: promo ? "R$ 0" : "R$ 299",
+      precoOriginal: promo ? "R$ 299" : undefined,
+      sub: promo ? "grátis por 2 anos" : "por mês · ou R$ 2.870/ano",
+      items: ["Contatos ilimitados", "Vagas ilimitadas", "Match automático por IA", "Anti-fraude + salário sugerido", "Suporte prioritário"],
+      destaque: promo, badge: promo ? "PROMOÇÃO DE LANÇAMENTO" : undefined,
+    },
+  ];
+
   return (
     <section className="bg-secondary/40 py-14 sm:py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4">
@@ -387,10 +412,14 @@ function Planos() {
         >
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">Planos</p>
           <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.02em] sm:text-4xl md:text-5xl">
-            Uma mensalidade. <span className="text-muted-foreground">Contratações ilimitadas.</span>
+            {promo ? <>Tudo grátis. <span className="text-muted-foreground">Por 2 anos inteiros.</span></> : <>Uma mensalidade. <span className="text-muted-foreground">Contratações ilimitadas.</span></>}
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Comece com <strong className="text-foreground">10 contatos grátis</strong>. Depois, escolha o plano que faz sentido pro tamanho do seu time.
+            {promo ? (
+              <>Enquanto a <strong className="text-foreground">promoção de lançamento</strong> estiver ativa (até 06/01/2027), toda empresa que se cadastrar ganha o plano <strong className="text-foreground">Full completo por 2 anos</strong>. Sem cartão, sem pegadinha.</>
+            ) : (
+              <>Comece com <strong className="text-foreground">10 contatos grátis</strong>. Depois, escolha o plano que faz sentido pro tamanho do seu time.</>
+            )}
           </p>
         </motion.div>
 
@@ -401,15 +430,15 @@ function Planos() {
           className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded-2xl border-2 border-accent/40 bg-gradient-to-r from-accent/10 via-primary/5 to-accent/10 px-4 py-3 text-center text-xs font-bold text-foreground sm:text-sm"
         >
           <span className="inline-flex items-center gap-1.5 text-accent">
-            <Flame className="h-4 w-4" /> Oferta de lançamento
+            <Flame className="h-4 w-4" /> {promo ? "Promoção de lançamento" : "Oferta de lançamento"}
           </span>
           <span className="hidden sm:inline opacity-40">•</span>
           <span>
-            Restam apenas <span className="rounded bg-accent/20 px-2 py-0.5 text-accent">7 vagas</span> nesse preço
+            {promo ? <>Grátis por <span className="rounded bg-accent/20 px-2 py-0.5 text-accent">2 anos</span> pra quem entrar até 06/01/2027</> : <>Restam apenas <span className="rounded bg-accent/20 px-2 py-0.5 text-accent">7 vagas</span> nesse preço</>}
           </span>
           <span className="hidden sm:inline opacity-40">•</span>
           <span className="inline-flex items-center gap-1.5">
-            <Clock className="h-3.5 w-3.5" /> Reajuste em breve
+            <Clock className="h-3.5 w-3.5" /> {promo ? "Termina 06/01/2027" : "Reajuste em breve"}
           </span>
         </motion.div>
 
@@ -418,23 +447,7 @@ function Planos() {
           variants={{ show: { transition: { staggerChildren: 0.1 } } }}
           className="mt-12 grid gap-5 md:grid-cols-3"
         >
-          {[
-            {
-              nome: "Free", preco: "R$ 0", sub: "para experimentar",
-              items: ["10 contatos liberados", "1 vaga ativa", "Suporte por e-mail"],
-              destaque: false,
-            },
-            {
-              nome: "Básico", preco: "R$ 99", sub: "por mês · ou R$ 950/ano",
-              items: ["100 contatos/mês", "5 vagas ativas", "Página personalizada", "Notificações em tempo real"],
-              destaque: true, badge: "MAIS POPULAR",
-            },
-            {
-              nome: "Full", preco: "R$ 299", sub: "por mês · ou R$ 2.870/ano",
-              items: ["Contatos ilimitados", "Vagas ilimitadas", "Match automático por IA", "Anti-fraude + salário sugerido", "Suporte prioritário"],
-              destaque: false,
-            },
-          ].map((p) => (
+          {planos.map((p) => (
             <motion.div
               key={p.nome} variants={fadeUp} whileHover={{ y: -4 }}
               className={`relative rounded-3xl border-2 p-6 shadow-soft transition-all sm:p-7 ${
@@ -444,13 +457,16 @@ function Planos() {
               }`}
             >
               {p.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-[10px] font-extrabold uppercase text-accent-foreground">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-accent px-3 py-1 text-[10px] font-extrabold uppercase text-accent-foreground">
                   {p.badge}
                 </span>
               )}
               <h3 className="text-lg font-extrabold">{p.nome}</h3>
               <div className="mt-3 flex items-baseline gap-2">
                 <span className="text-4xl font-extrabold tracking-tight sm:text-5xl">{p.preco}</span>
+                {p.precoOriginal && (
+                  <span className={`text-sm font-bold line-through ${p.destaque ? "opacity-70" : "text-muted-foreground"}`}>{p.precoOriginal}</span>
+                )}
               </div>
               <p className={`text-xs ${p.destaque ? "opacity-80" : "text-muted-foreground"}`}>{p.sub}</p>
               <ul className="mt-5 space-y-2.5 text-sm">
@@ -469,7 +485,7 @@ function Planos() {
                     : "bg-foreground text-background hover:opacity-90"
                 }`}
               >
-                Assinar {p.nome} <ArrowRight className="h-4 w-4" />
+                {promo ? "Ativar grátis" : `Assinar ${p.nome}`} <ArrowRight className="h-4 w-4" />
               </Link>
             </motion.div>
           ))}
@@ -480,12 +496,15 @@ function Planos() {
           variants={fadeUp}
           className="mt-8 text-center text-sm text-muted-foreground"
         >
-          Pagando anual você economiza <strong className="text-accent">20%</strong>. Pix, cartão ou boleto. Sem fidelidade.
+          {promo
+            ? <>Depois da promoção, os planos voltam ao valor normal — mas quem ativou agora <strong className="text-accent">mantém grátis por 2 anos</strong>.</>
+            : <>Pagando anual você economiza <strong className="text-accent">20%</strong>. Pix, cartão ou boleto. Sem fidelidade.</>}
         </motion.p>
       </div>
     </section>
   );
 }
+
 
 /* ============ RESULTADOS ============ */
 function Resultados() {
