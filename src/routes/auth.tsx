@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import type { Role } from "@/hooks/use-auth";
+import { notifyNewSignup } from "@/lib/notify.functions";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
