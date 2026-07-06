@@ -114,7 +114,7 @@ function MinhasVagas() {
                     className="grid h-9 w-9 place-items-center rounded-lg border border-border hover:bg-secondary">
                     {v.ativa ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                   </button>
-                  <button onClick={() => excluir(v.id)} title="Excluir"
+                  <button onClick={() => excluir(v)} title="Excluir"
                     className="grid h-9 w-9 place-items-center rounded-lg border border-border text-destructive hover:bg-destructive/10">
                     <Trash2 className="h-4 w-4" />
                   </button>
