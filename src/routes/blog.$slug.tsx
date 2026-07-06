@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Calendar, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { AdSlot } from "@/components/AdSlot";
+
 
 async function fetchPost(slug: string) {
   const { data, error } = await supabase
@@ -143,7 +143,7 @@ function PostPage() {
 
           <div className="prose-vagas mt-6">{renderMarkdown(post.conteudo)}</div>
 
-          <AdSlot placement="blog_post_fim" format="banner" className="mt-10" />
+          
 
 
 
