@@ -123,15 +123,24 @@ export const Route = createFileRoute("/api/public/cron/gerar-post")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        // Auth: header `x-cron-secret` must match server-only CRON_SECRET.
-        // Never accept the Supabase publishable/anon key here — it is shipped
-        // to every browser and would let anyone spam AI-generated posts.
-        const expected = process.env.CRON_SECRET;
+        // Auth: header `x-cron-secret` must match the rotating secret stored
+        // in `private.app_secrets` (name = 'cron_secret'). The secret is
+        // never committed to source control; pg_cron reads the same row when
+        // firing the schedule. Never accept the Supabase publishable/anon
+        // key here — it is shipped to every browser.
         const sent = request.headers.get("x-cron-secret") ?? "";
-        if (!expected || sent.length !== expected.length) {
+        if (!sent) return new Response("Unauthorized", { status: 401 });
+
+        const { data: secretRow, error: secretErr } = await supabaseAdmin
+          .schema("private" as never)
+          .from("app_secrets" as never)
+          .select("value")
+          .eq("name", "cron_secret")
+          .maybeSingle<{ value: string }>();
+        const expected = secretRow?.value ?? "";
+        if (secretErr || !expected || sent.length !== expected.length) {
           return new Response("Unauthorized", { status: 401 });
         }
-        // constant-time-ish compare
         let diff = 0;
         for (let i = 0; i < expected.length; i++) {
           diff |= expected.charCodeAt(i) ^ sent.charCodeAt(i);
