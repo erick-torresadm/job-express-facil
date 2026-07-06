@@ -206,6 +206,28 @@ function NovaVaga() {
             <input value={form.cidade} onChange={(e) => upd("cidade", e.target.value)} className="input-base" />
           </Field>
         </div>
+
+        <Field label="Regime de contratação">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {([
+              { v: "clt", l: "CLT", d: "Carteira assinada" },
+              { v: "pj", l: "PJ", d: "Autônomo/MEI" },
+              { v: "estagio", l: "Estágio", d: "Universitário" },
+              { v: "outros", l: "Outros", d: "Diária/Freela" },
+            ] as const).map((o) => (
+              <button key={o.v} type="button" onClick={() => upd("regime", o.v)}
+                className={`rounded-xl border-2 p-2.5 text-left transition ${
+                  form.regime === o.v
+                    ? "border-primary bg-primary/10"
+                    : "border-border bg-background hover:border-primary/40"
+                }`}>
+                <p className="text-sm font-bold">{o.l}</p>
+                <p className="text-[10px] text-muted-foreground">{o.d}</p>
+              </button>
+            ))}
+          </div>
+        </Field>
+
         <Field label="Endereço completo (opcional, melhora cálculo de distância)">
           <input value={form.endereco} onChange={(e) => upd("endereco", e.target.value)} placeholder="Rua, número — bairro" className="input-base" />
         </Field>
