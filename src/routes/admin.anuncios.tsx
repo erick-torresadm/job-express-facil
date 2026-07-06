@@ -11,13 +11,13 @@ export const Route = createFileRoute("/admin/anuncios")({
   component: AdminAnuncios,
 });
 
-const PLACEMENTS = [
-  { id: "home_meio", label: "Home — meio da página" },
-  { id: "home_inferior", label: "Home — antes dos depoimentos" },
-  { id: "vagas_lista_topo", label: "Lista de vagas — topo" },
-  { id: "blog_topo", label: "Blog — topo da listagem" },
-  { id: "blog_post_fim", label: "Post do blog — fim do artigo" },
-  { id: "rodape", label: "Rodapé global" },
+const PLACEMENTS: { id: string; label: string; size: string; hint: string }[] = [
+  { id: "home_meio", label: "Home — meio da página", size: "1200 × 300 px", hint: "Banner largo (proporção 4:1). Peso máx. 300 KB. JPG/PNG/WebP." },
+  { id: "home_inferior", label: "Home — antes dos depoimentos", size: "1200 × 300 px", hint: "Banner largo (proporção 4:1). Peso máx. 300 KB." },
+  { id: "vagas_lista_topo", label: "Lista de vagas — topo", size: "970 × 250 px", hint: "Billboard desktop. No mobile é redimensionado. Peso máx. 250 KB." },
+  { id: "blog_topo", label: "Blog — topo da listagem", size: "728 × 90 px", hint: "Leaderboard clássico. Peso máx. 150 KB." },
+  { id: "blog_post_fim", label: "Post do blog — fim do artigo", size: "600 × 500 px", hint: "Bloco quadrado/retangular. Peso máx. 300 KB." },
+  { id: "rodape", label: "Rodapé global", size: "1200 × 120 px", hint: "Faixa fina. Peso máx. 150 KB." },
 ];
 
 type Anuncio = {
