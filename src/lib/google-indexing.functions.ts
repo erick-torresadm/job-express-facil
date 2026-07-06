@@ -152,40 +152,42 @@ export const reindexarTodasVagas = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!role) throw new Error("Acesso negado: apenas administradores.");
 
-    // Puxa vagas ativas
+    // Puxa vagas ativas priorizando: nunca enviadas > mais antigas
     const { data: vagas, error } = await supabaseAdmin
       .from("vagas")
-      .select("id,titulo,cidade,profissao_slug,created_at")
+      .select("id,titulo,cidade,profissao_slug,google_indexed_at")
       .eq("ativa", true)
-      .order("created_at", { ascending: false })
-      .limit(500);
+      .order("google_indexed_at", { ascending: true, nullsFirst: true })
+      .limit(data.limite);
     if (error) throw new Error(error.message);
-
-    // Dedupe por slug (URL)
-    const urls = new Map<string, string>();
-    for (const v of vagas ?? []) {
-      const slug = `${v.profissao_slug ?? v.titulo.toLowerCase().replace(/\s+/g, "-")}-em-${v.cidade.toLowerCase().replace(/\s+/g, "-")}`;
-      const url = `${SITE_URL}/vagas/${slug}`;
-      if (!urls.has(url)) urls.set(url, slug);
-      if (urls.size >= data.limite) break;
-    }
 
     const token = await getAccessToken();
     let ok = 0;
     let falha = 0;
     const erros: string[] = [];
-    for (const url of urls.keys()) {
+    const enviadasIds: string[] = [];
+    for (const v of vagas ?? []) {
+      const slug = `${v.profissao_slug ?? v.titulo.toLowerCase().replace(/\s+/g, "-")}-em-${v.cidade.toLowerCase().replace(/\s+/g, "-")}`;
+      const url = `${SITE_URL}/vagas/${slug}`;
       try {
         await publish(url, "URL_UPDATED", token);
         ok++;
+        enviadasIds.push(v.id);
       } catch (err) {
         falha++;
         const msg = err instanceof Error ? err.message : String(err);
         if (erros.length < 5) erros.push(`${url}: ${msg}`);
+        if (msg.includes("429") || msg.includes("quotaExceeded")) break;
       }
-      // pausa curta pra respeitar rate limit (600 req/min)
-      await new Promise((r) => setTimeout(r, 120));
+      await new Promise((r) => setTimeout(r, 200));
     }
 
-    return { total: urls.size, ok, falha, erros };
+    if (enviadasIds.length > 0) {
+      await supabaseAdmin
+        .from("vagas")
+        .update({ google_indexed_at: new Date().toISOString() })
+        .in("id", enviadasIds);
+    }
+
+    return { total: vagas?.length ?? 0, ok, falha, erros };
   });
