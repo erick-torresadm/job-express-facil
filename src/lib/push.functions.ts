@@ -20,6 +20,7 @@ export const savePushSubscription = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => SaveSchema.parse(input))
   .handler(async ({ data, context }) => {
+    rateLimit(`push-sub:${context.userId}`, 20, 60_000);
     const { error } = await context.supabase.from("push_subscriptions").upsert(
       {
         user_id: context.userId,
