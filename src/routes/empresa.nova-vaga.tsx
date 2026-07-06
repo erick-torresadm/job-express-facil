@@ -101,6 +101,7 @@ function NovaVaga() {
 
     const { error } = await supabase.from("vagas").insert({
       empresa_id: user.id,
+      regime: form.regime,
       titulo: form.titulo,
       empresa_nome: empresaNome,
       salario: form.salario,
