@@ -146,11 +146,19 @@ function AdminAnuncios() {
             <span className="font-semibold">Posição</span>
             <select value={form.placement} onChange={(e) => setForm({ ...form, placement: e.target.value })}
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2">
-              {PLACEMENTS.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+              {PLACEMENTS.map((p) => <option key={p.id} value={p.id}>{p.label} — {p.size}</option>)}
             </select>
           </label>
           <label className="text-sm">
             <span className="font-semibold">Prioridade</span>
+            <input type="number" value={form.prioridade}
+              onChange={(e) => setForm({ ...form, prioridade: Number(e.target.value) })}
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2" />
+          </label>
+          <div className="md:col-span-2 rounded-lg border border-dashed border-primary/40 bg-primary/5 p-3 text-xs">
+            <p className="font-bold text-primary">Tamanho recomendado: {selectedPlacement.size}</p>
+            <p className="mt-0.5 text-muted-foreground">{selectedPlacement.hint}</p>
+          </div>
             <input type="number" value={form.prioridade}
               onChange={(e) => setForm({ ...form, prioridade: Number(e.target.value) })}
               className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2" />
