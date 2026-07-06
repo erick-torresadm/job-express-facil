@@ -1,12 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Check, Sparkles, Loader2, X, CreditCard, QrCode, Lock, Minus, Flame, Clock } from "lucide-react";
+import { Check, Sparkles, Loader2, X, CreditCard, QrCode, Lock, Minus, Flame, Clock, Gift } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { criarAssinaturaAsaas, criarAssinaturaCartao } from "@/lib/asaas.functions";
+import { ativarPromoPro } from "@/lib/promo.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { PromoLancamentoBanner } from "@/components/PromoLancamentoBanner";
+import { PromoLancamentoBanner, isPromoAtiva } from "@/components/PromoLancamentoBanner";
+
 
 export const Route = createFileRoute("/planos")({
   head: () => ({
