@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import {
   MapPin, Mic, Video, Zap, ShieldCheck, Clock, Building2, HardHat,
   ArrowRight, Star, Check, CheckCheck, Sparkles, MessageCircle, TrendingUp, Users,
-  Briefcase, Award, Rocket, Target,
+  Briefcase, Award, Rocket, Target, ShoppingBag, Headphones, BarChart3, Package,
+  Code2, Stethoscope, GraduationCap,
 } from "lucide-react";
 import { AdSlot } from "@/components/AdSlot";
 
@@ -344,31 +345,31 @@ type WhatsMsg = {
 };
 
 const WHATS_POOL: Omit<WhatsMsg, "id" | "time">[] = [
-  { company: "Rede Varejo Plus", role: "Vendedor CLT", msg: "Olá Ana! Seu perfil bateu com nossa vaga. Topa uma entrevista amanhã? 🛍️", initials: "RV", color: "oklch(0.6 0.2 25)" },
-  { company: "Banco Cooperativo BR", role: "Assistente Administrativo", msg: "Boa tarde! Vimos seu currículo. Vaga CLT + benefícios completos 🏦", initials: "BC", color: "oklch(0.6 0.18 60)" },
-  { company: "AutoMobi Frotas", role: "Atendente de Loja", msg: "Tem disponibilidade pra entrevista terça? Plano de carreira estruturado 🚗", initials: "AM", color: "oklch(0.62 0.18 145)" },
-  { company: "Entrega Já Brasil", role: "Analista de Operações Jr", msg: "Oi! Adoramos seu perfil. Home office + auxílio. Bora conversar? 💚", initials: "EJ", color: "oklch(0.6 0.2 15)" },
-  { company: "Indústria Boa Mesa", role: "Auxiliar de Logística", msg: "Vaga efetiva na unidade do interior. PLR + vale-alimentação 🍺", initials: "BM", color: "oklch(0.5 0.18 30)" },
-  { company: "Cosmética Verde", role: "Consultora de Vendas", msg: "Olá! Seleção aberta na sua região. Carreira sólida + comissão 🌿", initials: "CV", color: "oklch(0.6 0.16 150)" },
-  { company: "Moda Urbana SA", role: "Operador de Caixa", msg: "Boa tarde! Vaga CLT, escala 6x1, treinamento pago 👕", initials: "MU", color: "oklch(0.62 0.16 290)" },
-  { company: "Hospital Vida Nova", role: "Recepcionista", msg: "Vaga noturna, CLT + plano de saúde completo 🏥", initials: "VN", color: "oklch(0.65 0.13 200)" },
-  { company: "Energia Brasil SA", role: "Auxiliar Administrativo", msg: "Processo seletivo aberto. Estabilidade + benefícios completos ⛽", initials: "EB", color: "oklch(0.55 0.18 145)" },
-  { company: "Seguros Confiança", role: "Atendente SAC", msg: "Oi! Vaga híbrida, CLT + bônus por performance 📞", initials: "SC", color: "oklch(0.5 0.2 15)" },
-  { company: "SuperMega Atacado", role: "Repositor", msg: "Vaga efetiva 44h, vale-refeição + cesta básica 🛒", initials: "SM", color: "oklch(0.55 0.2 250)" },
-  { company: "Farmácia Popular+", role: "Atendente de Farmácia", msg: "Boa tarde! CLT, escala fixa, plano de saúde 💊", initials: "FP", color: "oklch(0.62 0.18 145)" },
-  { company: "Fintech Crescer", role: "Estágio em Produto", msg: "Olá! Estágio remoto, R$ 2.500 + VR + VA 💜", initials: "FC", color: "oklch(0.55 0.2 320)" },
-  { company: "Marketplace Onda", role: "Analista de Customer Exp", msg: "Vaga efetiva, modelo híbrido, stock options 📦", initials: "MO", color: "oklch(0.7 0.16 75)" },
-  { company: "PayTech Brasil", role: "Executivo Comercial", msg: "Olá! Carteira pronta, comissão sem teto + carro 💚", initials: "PT", color: "oklch(0.6 0.18 145)" },
-  { company: "Capital Invest", role: "Analista Jr", msg: "Processo aberto. Centro empresarial, plano de carreira agressivo 📈", initials: "CI", color: "oklch(0.4 0.05 260)" },
-  { company: "Telecom Connect", role: "Consultor de Vendas", msg: "Boa tarde! CLT + comissão média R$ 4.200 📱", initials: "TC", color: "oklch(0.55 0.2 320)" },
-  { company: "Beleza & Cia", role: "Vendedor de Cosméticos", msg: "Vaga em shopping perto de você, CLT + bonificação 💄", initials: "BC", color: "oklch(0.65 0.18 350)" },
-  { company: "Aero Linhas SA", role: "Agente de Aeroporto", msg: "Vaga em aeroporto regional, CLT, passagens com desconto ✈️", initials: "AL", color: "oklch(0.5 0.18 15)" },
-  { company: "AgroFood Nacional", role: "Auxiliar de Produção", msg: "Vaga efetiva, transporte fretado + refeição no local 🥩", initials: "AF", color: "oklch(0.55 0.2 25)" },
-  { company: "Coop Crédito Sul", role: "Caixa Bancário", msg: "Olá! Vaga CLT cooperativa, PLR + previdência 🏦", initials: "CS", color: "oklch(0.55 0.18 145)" },
-  { company: "Atende+ Contact", role: "Operador de Telemarketing", msg: "Home office, 6h/dia, comissão + bonificação 🎧", initials: "A+", color: "oklch(0.55 0.2 290)" },
-  { company: "Florestal Brasil", role: "Técnico em Segurança", msg: "Vaga industrial, regime 12x36, alojamento incluso 🌲", initials: "FB", color: "oklch(0.55 0.16 150)" },
-  { company: "Veste Bem Lojas", role: "Assistente de Loja", msg: "Boa tarde! Vaga CLT + plano de carreira no varejo 👗", initials: "VB", color: "oklch(0.55 0.2 15)" },
-  { company: "Banco Digital Pro", role: "Especialista de Atendimento", msg: "Olá! Vaga 100% remota, CLT + RSU + benefícios 💜", initials: "BD", color: "oklch(0.55 0.2 320)" },
+  { company: "Rede Varejo Plus", role: "Vendedor CLT", msg: "Olá Ana! Seu perfil bateu com nossa vaga. Topa uma entrevista amanhã?", initials: "RV", color: "oklch(0.6 0.2 25)" },
+  { company: "Banco Cooperativo BR", role: "Assistente Administrativo", msg: "Boa tarde! Vimos seu currículo. Vaga CLT + benefícios completos", initials: "BC", color: "oklch(0.6 0.18 60)" },
+  { company: "AutoMobi Frotas", role: "Atendente de Loja", msg: "Tem disponibilidade pra entrevista terça? Plano de carreira estruturado", initials: "AM", color: "oklch(0.62 0.18 145)" },
+  { company: "Entrega Já Brasil", role: "Analista de Operações Jr", msg: "Oi! Adoramos seu perfil. Home office + auxílio. Bora conversar?", initials: "EJ", color: "oklch(0.6 0.2 15)" },
+  { company: "Indústria Boa Mesa", role: "Auxiliar de Logística", msg: "Vaga efetiva na unidade do interior. PLR + vale-alimentação", initials: "BM", color: "oklch(0.5 0.18 30)" },
+  { company: "Cosmética Verde", role: "Consultora de Vendas", msg: "Olá! Seleção aberta na sua região. Carreira sólida + comissão", initials: "CV", color: "oklch(0.6 0.16 150)" },
+  { company: "Moda Urbana SA", role: "Operador de Caixa", msg: "Boa tarde! Vaga CLT, escala 6x1, treinamento pago", initials: "MU", color: "oklch(0.62 0.16 290)" },
+  { company: "Hospital Vida Nova", role: "Recepcionista", msg: "Vaga noturna, CLT + plano de saúde completo", initials: "VN", color: "oklch(0.65 0.13 200)" },
+  { company: "Energia Brasil SA", role: "Auxiliar Administrativo", msg: "Processo seletivo aberto. Estabilidade + benefícios completos", initials: "EB", color: "oklch(0.55 0.18 145)" },
+  { company: "Seguros Confiança", role: "Atendente SAC", msg: "Oi! Vaga híbrida, CLT + bônus por performance", initials: "SC", color: "oklch(0.5 0.2 15)" },
+  { company: "SuperMega Atacado", role: "Repositor", msg: "Vaga efetiva 44h, vale-refeição + cesta básica", initials: "SM", color: "oklch(0.55 0.2 250)" },
+  { company: "Farmácia Popular+", role: "Atendente de Farmácia", msg: "Boa tarde! CLT, escala fixa, plano de saúde", initials: "FP", color: "oklch(0.62 0.18 145)" },
+  { company: "Fintech Crescer", role: "Estágio em Produto", msg: "Olá! Estágio remoto, R$ 2.500 + VR + VA", initials: "FC", color: "oklch(0.55 0.2 320)" },
+  { company: "Marketplace Onda", role: "Analista de Customer Exp", msg: "Vaga efetiva, modelo híbrido, stock options", initials: "MO", color: "oklch(0.7 0.16 75)" },
+  { company: "PayTech Brasil", role: "Executivo Comercial", msg: "Olá! Carteira pronta, comissão sem teto + carro", initials: "PT", color: "oklch(0.6 0.18 145)" },
+  { company: "Capital Invest", role: "Analista Jr", msg: "Processo aberto. Centro empresarial, plano de carreira agressivo", initials: "CI", color: "oklch(0.4 0.05 260)" },
+  { company: "Telecom Connect", role: "Consultor de Vendas", msg: "Boa tarde! CLT + comissão média R$ 4.200", initials: "TC", color: "oklch(0.55 0.2 320)" },
+  { company: "Beleza & Cia", role: "Vendedor de Cosméticos", msg: "Vaga em shopping perto de você, CLT + bonificação", initials: "BC", color: "oklch(0.65 0.18 350)" },
+  { company: "Aero Linhas SA", role: "Agente de Aeroporto", msg: "Vaga em aeroporto regional, CLT, passagens com desconto", initials: "AL", color: "oklch(0.5 0.18 15)" },
+  { company: "AgroFood Nacional", role: "Auxiliar de Produção", msg: "Vaga efetiva, transporte fretado + refeição no local", initials: "AF", color: "oklch(0.55 0.2 25)" },
+  { company: "Coop Crédito Sul", role: "Caixa Bancário", msg: "Olá! Vaga CLT cooperativa, PLR + previdência", initials: "CS", color: "oklch(0.55 0.18 145)" },
+  { company: "Atende+ Contact", role: "Operador de Telemarketing", msg: "Home office, 6h/dia, comissão + bonificação", initials: "A+", color: "oklch(0.55 0.2 290)" },
+  { company: "Florestal Brasil", role: "Técnico em Segurança", msg: "Vaga industrial, regime 12x36, alojamento incluso", initials: "FB", color: "oklch(0.55 0.16 150)" },
+  { company: "Veste Bem Lojas", role: "Assistente de Loja", msg: "Boa tarde! Vaga CLT + plano de carreira no varejo", initials: "VB", color: "oklch(0.55 0.2 15)" },
+  { company: "Banco Digital Pro", role: "Especialista de Atendimento", msg: "Olá! Vaga 100% remota, CLT + RSU + benefícios", initials: "BD", color: "oklch(0.55 0.2 320)" },
 ];
 
 function WhatsappFeed() {
@@ -828,14 +829,14 @@ function Como() {
 
 function Profissoes() {
   const list = [
-    { e: "💼", n: "Administrativo", v: "1.842 vagas" },
-    { e: "🛍️", n: "Vendas & Varejo", v: "2.310 vagas" },
-    { e: "🎧", n: "Atendimento", v: "1.207 vagas" },
-    { e: "📊", n: "Financeiro", v: "684 vagas" },
-    { e: "📦", n: "Logística", v: "1.495 vagas" },
-    { e: "💻", n: "Tecnologia", v: "923 vagas" },
-    { e: "🏥", n: "Saúde", v: "812 vagas" },
-    { e: "🎓", n: "Estágio & Trainee", v: "476 vagas" },
+    { icon: Briefcase, n: "Administrativo", v: "1.842 vagas" },
+    { icon: ShoppingBag, n: "Vendas & Varejo", v: "2.310 vagas" },
+    { icon: Headphones, n: "Atendimento", v: "1.207 vagas" },
+    { icon: BarChart3, n: "Financeiro", v: "684 vagas" },
+    { icon: Package, n: "Logística", v: "1.495 vagas" },
+    { icon: Code2, n: "Tecnologia", v: "923 vagas" },
+    { icon: Stethoscope, n: "Saúde", v: "812 vagas" },
+    { icon: GraduationCap, n: "Estágio & Trainee", v: "476 vagas" },
   ];
   return (
     <section className="bg-secondary/40 py-14 sm:py-20 md:py-28">
@@ -869,7 +870,9 @@ function Profissoes() {
                 to="/cadastro"
                 className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-all hover:-translate-y-1 hover:border-accent hover:shadow-pop"
               >
-                <span className="text-3xl transition group-hover:scale-110">{p.e}</span>
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-accent/10 text-accent transition group-hover:scale-110 group-hover:bg-accent group-hover:text-accent-foreground">
+                  <p.icon className="h-5 w-5" strokeWidth={1.75} />
+                </span>
                 <div className="flex-1 min-w-0">
                   <p className="truncate font-bold">{p.n}</p>
                   <p className="text-xs text-muted-foreground">{p.v}</p>

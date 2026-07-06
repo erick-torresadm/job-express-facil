@@ -224,7 +224,7 @@ function NovaVaga() {
         <label className="flex cursor-pointer items-start gap-3 rounded-xl border-2 border-warning/40 bg-warning/5 p-4">
           <input type="checkbox" checked={form.urgente} onChange={(e) => upd("urgente", e.target.checked)} className="mt-1 h-5 w-5 accent-warning" />
           <div>
-            <p className="font-bold">⚡ Marcar como URGENTE</p>
+            <p className="inline-flex items-center gap-1.5 font-bold"><Zap className="h-4 w-4 text-warning" /> Marcar como URGENTE</p>
             <p className="text-xs text-muted-foreground">Destaque no topo da listagem e prioridade na notificação.</p>
           </div>
         </label>
