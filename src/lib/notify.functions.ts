@@ -85,13 +85,45 @@ export const notifyNewSignup = createServerFn({ method: "POST" })
       if (!res.ok) {
         const body = await res.text().catch(() => "");
         console.error(`[notifyNewSignup] Resend ${res.status}: ${body}`);
-        return { ok: false as const, reason: `resend_${res.status}` };
       }
-      return { ok: true as const };
     } catch (err) {
-      console.error("[notifyNewSignup] erro", err);
-      return { ok: false as const, reason: "network" };
+      console.error("[notifyNewSignup] erro email", err);
     }
+
+    // Push notification para admins (fire-and-forget)
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: adminRoles } = await supabaseAdmin
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "admin");
+      const adminIds = (adminRoles ?? []).map((r) => r.user_id);
+      if (adminIds.length > 0) {
+        const { data: subs } = await supabaseAdmin
+          .from("push_subscriptions")
+          .select("endpoint, p256dh, auth")
+          .in("user_id", adminIds);
+        if (subs && subs.length > 0) {
+          const { sendPushBatch } = await import("./push.server");
+          const result = await sendPushBatch(subs, {
+            title: label,
+            body: `${data.nome}${data.empresa ? ` · ${data.empresa}` : ""}`,
+            url: "/admin/usuarios",
+            tag: `signup-${data.tipo}`,
+          });
+          if (result.invalidEndpoints.length > 0) {
+            await supabaseAdmin
+              .from("push_subscriptions")
+              .delete()
+              .in("endpoint", result.invalidEndpoints);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("[notifyNewSignup] erro push", err);
+    }
+
+    return { ok: true as const };
   });
 
 function escapeHtml(s: string): string {
