@@ -23,6 +23,7 @@ type Vaga = {
   urgente: boolean;
   ativa: boolean;
   created_at: string;
+  profissao_slug: string | null;
 };
 
 function MinhasVagas() {
