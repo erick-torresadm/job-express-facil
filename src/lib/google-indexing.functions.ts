@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { SITE_URL } from "./site";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 // ─────────────────────────────────────────────────────────────
 // Google Indexing API — pings for JobPosting URLs
