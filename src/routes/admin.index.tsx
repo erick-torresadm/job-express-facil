@@ -194,6 +194,10 @@ function AdminDashboard() {
                   <ExternalLink className="h-4 w-4 text-muted-foreground" />
                 </a>
               </div>
+
+              <div className="mt-4">
+                <ReindexButton />
+              </div>
             </>
           )}
 
