@@ -390,6 +390,25 @@ function Planos() {
           </p>
         </motion.div>
 
+        {/* Banner de escassez / oferta de lançamento */}
+        <motion.div
+          initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}
+          variants={fadeUp}
+          className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded-2xl border-2 border-accent/40 bg-gradient-to-r from-accent/10 via-primary/5 to-accent/10 px-4 py-3 text-center text-xs font-bold text-foreground sm:text-sm"
+        >
+          <span className="inline-flex items-center gap-1.5 text-accent">
+            <Flame className="h-4 w-4" /> Oferta de lançamento
+          </span>
+          <span className="hidden sm:inline opacity-40">•</span>
+          <span>
+            Restam apenas <span className="rounded bg-accent/20 px-2 py-0.5 text-accent">7 vagas</span> nesse preço
+          </span>
+          <span className="hidden sm:inline opacity-40">•</span>
+          <span className="inline-flex items-center gap-1.5">
+            <Clock className="h-3.5 w-3.5" /> Reajuste em breve
+          </span>
+        </motion.div>
+
         <motion.div
           initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}
           variants={{ show: { transition: { staggerChildren: 0.1 } } }}
