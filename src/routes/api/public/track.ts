@@ -62,7 +62,7 @@ export const Route = createFileRoute("/api/public/track")({
           user_id: parsed.data.user_id ?? null,
         });
 
-        return new Response("ok", { status: 204 });
+        return new Response(null, { status: 204 });
       },
     },
   },
