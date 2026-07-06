@@ -46,6 +46,7 @@ import { Route as ApiPublicAsaasWebhookRouteImport } from './routes/api/public/a
 import { Route as AdminBlogNovoRouteImport } from './routes/admin.blog.novo'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
 import { Route as ApiPublicCronGerarPostRouteImport } from './routes/api/public/cron.gerar-post'
+import { Route as ApiPublicBlogIngestRouteImport } from './routes/api/public/blog.ingest'
 
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
@@ -232,6 +233,11 @@ const ApiPublicCronGerarPostRoute = ApiPublicCronGerarPostRouteImport.update({
   path: '/api/public/cron/gerar-post',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicBlogIngestRoute = ApiPublicBlogIngestRouteImport.update({
+  id: '/api/public/blog/ingest',
+  path: '/api/public/blog/ingest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -270,6 +276,7 @@ export interface FileRoutesByFullPath {
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
+  '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
 }
 export interface FileRoutesByTo {
@@ -309,6 +316,7 @@ export interface FileRoutesByTo {
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
+  '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
 }
 export interface FileRoutesById {
@@ -349,6 +357,7 @@ export interface FileRoutesById {
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
+  '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
 }
 export interface FileRouteTypes {
@@ -390,6 +399,7 @@ export interface FileRouteTypes {
     | '/admin/blog/$id'
     | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
+    | '/api/public/blog/ingest'
     | '/api/public/cron/gerar-post'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -429,6 +439,7 @@ export interface FileRouteTypes {
     | '/admin/blog/$id'
     | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
+    | '/api/public/blog/ingest'
     | '/api/public/cron/gerar-post'
   id:
     | '__root__'
@@ -468,6 +479,7 @@ export interface FileRouteTypes {
     | '/admin/blog/$id'
     | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
+    | '/api/public/blog/ingest'
     | '/api/public/cron/gerar-post'
   fileRoutesById: FileRoutesById
 }
@@ -502,6 +514,7 @@ export interface RootRouteChildren {
   BlogIndexRoute: typeof BlogIndexRoute
   PreviewIndexRoute: typeof PreviewIndexRoute
   ApiPublicAsaasWebhookRoute: typeof ApiPublicAsaasWebhookRoute
+  ApiPublicBlogIngestRoute: typeof ApiPublicBlogIngestRoute
   ApiPublicCronGerarPostRoute: typeof ApiPublicCronGerarPostRoute
 }
 
@@ -766,6 +779,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronGerarPostRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/blog/ingest': {
+      id: '/api/public/blog/ingest'
+      path: '/api/public/blog/ingest'
+      fullPath: '/api/public/blog/ingest'
+      preLoaderRoute: typeof ApiPublicBlogIngestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -831,6 +851,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   PreviewIndexRoute: PreviewIndexRoute,
   ApiPublicAsaasWebhookRoute: ApiPublicAsaasWebhookRoute,
+  ApiPublicBlogIngestRoute: ApiPublicBlogIngestRoute,
   ApiPublicCronGerarPostRoute: ApiPublicCronGerarPostRoute,
 }
 export const routeTree = rootRouteImport
