@@ -478,6 +478,7 @@ export type Database = {
           handle: string | null
           id: string
           logo_url: string | null
+          promo_pro_ate: string | null
           slug_publico: string | null
           sobre: string | null
           updated_at: string
@@ -498,6 +499,7 @@ export type Database = {
           handle?: string | null
           id: string
           logo_url?: string | null
+          promo_pro_ate?: string | null
           slug_publico?: string | null
           sobre?: string | null
           updated_at?: string
@@ -518,6 +520,7 @@ export type Database = {
           handle?: string | null
           id?: string
           logo_url?: string | null
+          promo_pro_ate?: string | null
           slug_publico?: string | null
           sobre?: string | null
           updated_at?: string
@@ -743,7 +746,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_pro_ativo: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "candidato" | "empresa" | "admin"
