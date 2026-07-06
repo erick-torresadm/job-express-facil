@@ -36,6 +36,9 @@ function AdminDashboard() {
 
   return (
     <AdminShell title="Dashboard">
+      <div className="mb-4">
+        <PushToggle />
+      </div>
       {isLoading || !data ? (
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
