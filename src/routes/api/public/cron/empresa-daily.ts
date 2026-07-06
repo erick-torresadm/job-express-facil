@@ -89,10 +89,17 @@ export const Route = createFileRoute("/api/public/cron/empresa-daily")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const secret = request.headers.get("x-cron-secret");
-        if (!secret || secret !== process.env.CRON_SECRET) {
+        // Aceita duas formas de autorização:
+        // 1) header x-cron-secret == CRON_SECRET (para chamadas manuais)
+        // 2) header apikey == SUPABASE anon/publishable key (padrão pg_cron via pg_net)
+        const cronSecret = request.headers.get("x-cron-secret");
+        const apiKey = request.headers.get("apikey");
+        const okSecret = cronSecret && cronSecret === process.env.CRON_SECRET;
+        const okApiKey = apiKey && apiKey === process.env.SUPABASE_PUBLISHABLE_KEY;
+        if (!okSecret && !okApiKey) {
           return new Response("Unauthorized", { status: 401 });
         }
+
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const hoje = new Date().toISOString().slice(0, 10);
