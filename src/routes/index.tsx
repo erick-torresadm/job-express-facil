@@ -870,7 +870,9 @@ function Profissoes() {
                 to="/cadastro"
                 className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-all hover:-translate-y-1 hover:border-accent hover:shadow-pop"
               >
-                <span className="text-3xl transition group-hover:scale-110">{p.e}</span>
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-accent/10 text-accent transition group-hover:scale-110 group-hover:bg-accent group-hover:text-accent-foreground">
+                  <p.icon className="h-5 w-5" strokeWidth={1.75} />
+                </span>
                 <div className="flex-1 min-w-0">
                   <p className="truncate font-bold">{p.n}</p>
                   <p className="text-xs text-muted-foreground">{p.v}</p>
