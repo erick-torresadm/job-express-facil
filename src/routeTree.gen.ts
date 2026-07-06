@@ -25,6 +25,7 @@ import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnuncieRouteImport } from './routes/anuncie'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VagasIndexRouteImport } from './routes/vagas.index'
 import { Route as PreviewIndexRouteImport } from './routes/preview.index'
 import { Route as CandidatoIndexRouteImport } from './routes/candidato.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -136,6 +137,11 @@ const AnuncieRoute = AnuncieRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VagasIndexRoute = VagasIndexRouteImport.update({
+  id: '/vagas/',
+  path: '/vagas/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PreviewIndexRoute = PreviewIndexRouteImport.update({
@@ -341,6 +347,7 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/candidato/': typeof CandidatoIndexRoute
   '/preview/': typeof PreviewIndexRoute
+  '/vagas/': typeof VagasIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
@@ -390,6 +397,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/candidato': typeof CandidatoIndexRoute
   '/preview': typeof PreviewIndexRoute
+  '/vagas': typeof VagasIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
@@ -441,6 +449,7 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/candidato/': typeof CandidatoIndexRoute
   '/preview/': typeof PreviewIndexRoute
+  '/vagas/': typeof VagasIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
@@ -493,6 +502,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/candidato/'
     | '/preview/'
+    | '/vagas/'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
@@ -542,6 +552,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/candidato'
     | '/preview'
+    | '/vagas'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
@@ -592,6 +603,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/candidato/'
     | '/preview/'
+    | '/vagas/'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
@@ -633,6 +645,7 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   PreviewIndexRoute: typeof PreviewIndexRoute
+  VagasIndexRoute: typeof VagasIndexRoute
   ApiPublicAsaasWebhookRoute: typeof ApiPublicAsaasWebhookRoute
   ApiPublicTrackRoute: typeof ApiPublicTrackRoute
   ApiPublicBlogIngestRoute: typeof ApiPublicBlogIngestRoute
@@ -752,6 +765,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vagas/': {
+      id: '/vagas/'
+      path: '/vagas'
+      fullPath: '/vagas/'
+      preLoaderRoute: typeof VagasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/preview/': {
@@ -1066,6 +1086,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   PreviewIndexRoute: PreviewIndexRoute,
+  VagasIndexRoute: VagasIndexRoute,
   ApiPublicAsaasWebhookRoute: ApiPublicAsaasWebhookRoute,
   ApiPublicTrackRoute: ApiPublicTrackRoute,
   ApiPublicBlogIngestRoute: ApiPublicBlogIngestRoute,
