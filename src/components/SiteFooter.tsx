@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, MessageCircle, Mail } from "lucide-react";
-import { AdSlot } from "@/components/AdSlot";
+
 
 
 const profissoes = [
@@ -15,9 +15,6 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
   return (
     <footer className="mt-12 border-t border-border bg-secondary/40">
-      <div className="mx-auto max-w-6xl px-4 pt-6">
-        <AdSlot placement="rodape" format="banner" />
-      </div>
       <div className="mx-auto max-w-6xl px-4 py-10">
 
         <div className="grid gap-8 md:grid-cols-4">
