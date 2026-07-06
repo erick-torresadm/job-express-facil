@@ -1,84 +1,121 @@
-O sistema já tem 90% da estrutura pronta (auth, dashboards, blog+IA, admin, sitemap, verificação, planos, Asaas). O que falta é **fechar o funil** (candidato ↔ empresa) e **injetar SEO/GEO/LLM agressivo em cada rota**. Divido em 3 fases pra você aprovar de uma vez ou ir por partes.
+## Direção travada
 
----
+- **Paleta Ocean**: `#0c2340` (deep) · `#1a4a6e` (surface) · `#2d8a9e` (primary) · `#5cbdb9` (accent) — aplicada como tokens semânticos em `src/styles.css` (light + dark), sem trocar as cores do resto do site.
+- **Tipografia**: Sora nos títulos, Manrope no corpo (via `<link>` no `__root.tsx`, seguindo a regra do stack; nada de `@import` de URL em `styles.css`).
+- **Layout**: Sidebar persistente com mini-collapse (ícones), usando `shadcn/ui sidebar` — nada de tirar o usuário do site em nenhum momento.
 
-## Fase 1 — Fechar o funil (o essencial pra funcionar)
+## Arquitetura da nova área do candidato
 
-Objetivo: candidato encontra vaga → aplica → empresa recebe → conversa no WhatsApp. Hoje as peças existem mas não conversam bem.
+Uma rota-mãe protegida com layout próprio + rotas filhas para cada seção — hoje tudo está numa única tela de tabs, o que dificulta bookmark, back button e navegação lateral.
 
-- **Busca global** no header (`SiteHeader`): input com autocomplete profissão × cidade que leva pra `/vagas/:profissao-em-:cidade`.
-- **Botão "Candidatar-se" real** na página `/vagas/$slug`: cria linha em `candidaturas`, dispara notificação pra empresa, abre WhatsApp com mensagem pré-preenchida ("Olá, vi sua vaga de X no VagasAgora…").
-- **Lista de candidatos por vaga** na área empresa (`empresa.minhas-vagas`): a empresa vê quem aplicou, foto, currículo em áudio/vídeo, botão "Chamar no WhatsApp" (revela contato + registra em `revelacoes` pra billing).
-- **Filtros na listagem de vagas**: faixa salarial, CLT/PJ/temporário, sem experiência, hoje/semana.
-- **Favoritos + Alertas** funcionando ponta-a-ponta: coração na vaga salva em `favoritos`, botão "Criar alerta" salva em `alertas`, trigger já existe pra notificar (`notify_alertas_nova_vaga`).
-- **Notificações no bell**: já existe `NotificationBell`, garantir que abre painel, marca como lida, navega.
+```
+src/routes/
+  _candidato.tsx                   (layout: sidebar + header + <Outlet />)
+  _candidato.index.tsx             → /candidato          (Painel/Home)
+  _candidato.vagas.tsx             → /candidato/vagas    (Vagas recomendadas p/ você)
+  _candidato.candidaturas.tsx      → /candidato/candidaturas
+  _candidato.salvas.tsx            → /candidato/salvas
+  _candidato.alertas.tsx           → /candidato/alertas
+  _candidato.curriculo.tsx         → /candidato/curriculo
+  _candidato.perfil.tsx            → /candidato/perfil
+```
 
----
+O arquivo atual `src/routes/candidato.tsx` vira um redirect leve para `/candidato` (mantém links antigos) e some depois.
 
-## Fase 2 — SEO agressivo, GEO, LLM
+### Sidebar (AppSidebarCandidato)
 
-Objetivo: quando alguém digitar "pedreiro em Osasco", "vagas CLT São Paulo", "cozinheiro sem experiência RJ" → VagasAgora aparece.
+- Logo VagasAgora no topo · seções agrupadas: **Painel · Vagas · Minhas candidaturas · Salvas · Alertas · Currículo · Perfil**.
+- Rota ativa via `useRouterState`; badge de contagem em Candidaturas/Salvas/Alertas.
+- Colapsa para tira de ícones em desktop (`collapsible="icon"`), vira `Sheet` off-canvas em mobile.
+- Rodapé: avatar + nome + botão “Sair”. **Nunca** links externos.
 
-### Programmatic SEO (páginas facetadas com conteúdo real)
-- Cada página `/vagas/:profissao-em-:cidade` (hoje ~288 URLs no sitemap) precisa:
-  - **H1 semântico**: "Vagas de Pedreiro em Osasco — 2026"
-  - **Parágrafo introdutório único gerado por template** com salário médio, bairros que mais contratam, requisitos típicos.
-  - **FAQ dobrável** (3-5 perguntas: "Quanto ganha um pedreiro em Osasco?", "Precisa de experiência?", "É CLT?") → renderiza `FAQPage` JSON-LD.
-  - **Breadcrumb** com JSON-LD `BreadcrumbList`.
-  - **Links internos** pra profissões relacionadas e cidades vizinhas (evita órfãos, distribui PageRank).
+### Header do layout
 
-### Google for Jobs (crítico — hoje não temos)
-- JSON-LD `JobPosting` em cada `/vagas/$slug` real com título, descrição, salário, localização, tipo (CLT/PJ), data de publicação, validade. Isso faz aparecer no **card azul de vagas do Google**.
-- `datePosted` e `validThrough` corretos.
+- `SidebarTrigger` sempre visível + breadcrumb da seção atual + busca rápida de vagas (dispara `/candidato/vagas?q=`) + sino de notificações.
 
-### Head metadata rico em todas as rotas públicas
-- Cada rota (`/blog`, `/blog/$slug`, `/categorias`, `/profissionais/…`, `/vagas/…`, `/como-funciona`, `/para-empresas`, `/planos`) com `title`, `description`, `og:title`, `og:description`, `og:url`, `canonical`, e — no leaf — `og:image` derivado do conteúdo.
-- Fix atual: sitemap aponta pra `https://vagasagora.com.br` mas o site vive em `job-express-facil.lovable.app` — alinhar (usar `job-express-facil.lovable.app` até você comprar o domínio).
+## Página “Painel” (`/candidato`)
 
-### GEO (search geográfico local)
-- Schema.org `Place` + `addressLocality` nas páginas de cidade.
-- `hreflang="pt-BR"` no root.
-- Página `/vagas-em/:cidade` (índice por cidade agregando todas as profissões daquela cidade) — hoje só temos profissão×cidade, falta o corte só-cidade.
+Substitui a tela atual de KPIs pobres por um resumo acionável:
 
-### LLM/GEO (pra ChatGPT/Perplexity/Gemini indexarem)
-- Enriquecer `/llms.txt` já existente com bullet points objetivos das principais rotas.
-- Adicionar `/llms-full.txt` com conteúdo canônico (o que o modelo cita quando alguém pergunta "melhor site de vaga CLT no Brasil").
-- **FAQ estruturada** com perguntas que gente pergunta pra ChatGPT: "Onde achar vaga de motorista sem experiência?", "Melhor site de emprego popular Brasil?" — respostas mencionando VagasAgora explicitamente.
-- `robots.txt` já libera GPTBot/ClaudeBot/PerplexityBot? Confirmar e adicionar se faltar.
+1. **Boas-vindas compacta** com avatar, nome e progresso do CV (barra Manrope) — se CV incompleto, CTA “Completar em 1 min”.
+2. **3 métricas grandes** (Candidaturas ativas · Salvas · Alertas), cada uma clicável levando à seção.
+3. **Card “Continue candidatando”** com as 3 últimas vagas vistas (do histórico) — botão “Candidatar em 1 clique”.
+4. **Card “Novas para você”**: 5 vagas recomendadas por profissão/cidade do perfil, mesmo componente reusado em `/candidato/vagas`.
+5. **Timeline “Última atividade”**: 5 eventos (candidatura enviada, status mudou, alerta disparado) — realtime já existe em `candidaturas`.
 
-### Blog turbinado
-- O cron IA já gera 5 posts/dia. Adicionar:
-  - JSON-LD `Article` + `author` + `datePublished`.
-  - `og:image` gerado por IA (imagem de capa) por post.
-  - Links internos automáticos do post pra `/vagas/:profissao-em-:cidade` quando o post menciona uma profissão.
+## Página “Vagas para você” (`/candidato/vagas`)
 
----
+Foco em **visualização fácil**, sem cara de IA:
 
-## Fase 3 — Compliance, Trust, polimento
+- Barra de filtros sticky: cidade, profissão, modelo (CLT/PJ/diária), faixa salarial, distância. Chips removíveis abaixo.
+- **VagaCard** redesenhado (componente novo `src/components/VagaCard.tsx`):
+  - Coluna esquerda: logo/inicial da empresa (avatar Ocean).
+  - Centro: título Sora bold + empresa · bairro/cidade + salário destacado em `--primary` + tags (CLT, presencial, urgente) em pílulas neutras.
+  - Direita: botão sólido **Candidatar** + ícone coração para salvar + selo “Nova” se `created_at < 24h`.
+  - Estado "já candidatada" mostra pílula verde em vez do botão.
+- Grid responsivo: 1 coluna mobile, 2 em `md`, 3 em `xl`. Skeleton com shimmer enquanto carrega.
+- Empty state com ilustração leve (SVG inline) + CTA “Ativar alerta”.
 
-- **Política de Privacidade** (`/privacidade`) e **Termos** (`/termos`) já existem — revisar pra mencionar LGPD, cookies, dados de terceiros (Asaas, Supabase), direito de exclusão.
-- **Página `/diretrizes`** (guidelines para empresas: sem discriminação, sem exigir foto pra vaga operacional, salário claro, etc).
-- **Página `/ia`** explicando que o blog é assistido por IA (transparência exigida por Google e boa pra confiança).
-- **Cookie banner** já existe (`CookieConsent`) — revisar texto pra LGPD.
-- **Selo "empresa verificada"** já existe (`VerifiedBadge`) — destacar mais no card de vaga.
+## Minhas candidaturas (`/candidato/candidaturas`)
 
----
+- Filtro por status (Enviada · Vista · Em análise · Finalizada) como segmented control.
+- Cards com PipelineBar mais legível (4 passos rotulados, não só barras coloridas).
+- Ação secundária “Ver conversa” quando houver mensagem da empresa (usa notificações já existentes).
 
-## Fase 4 — Teste ponta-a-ponta (Playwright)
+## Salvas, Alertas, Currículo, Perfil
 
-Rodo dois roteiros no navegador headless e te mostro screenshots:
+- **Salvas**: mesmo `VagaCard`; remove com swipe/ícone; badge “Encerrada” quando `ativa=false`.
+- **Alertas**: form em card destacado no topo; lista compacta com toggle e delete inline.
+- **Currículo**: preview do CV público + botões “Editar dados”, “Regravar áudio”, “Copiar link público”, “Baixar PDF”.
+- **Perfil**: absorve o que hoje está em `/perfil` (avatar, handle, dados básicos, endereço, notificações push toggle) — usuário nunca precisa sair do painel.
 
-1. **Candidato**: cadastra → grava currículo áudio → busca "pedreiro em SP" → filtra CLT → favorita → aplica → confirma WhatsApp abriu.
-2. **Empresa**: cadastra → verifica CNPJ → cria vaga com IA → vê candidato aparecer → clica revelar WhatsApp → confere que Asaas registrou billing.
+## Design system (tokens novos em `src/styles.css`)
 
-Qualquer bug encontrado nesses fluxos vira ticket que resolvo antes de fechar.
+Adiciono um bloco `@theme inline` só para o painel do candidato, escopo `.theme-ocean`, aplicado no `<div>` raiz do layout `_candidato.tsx`. Isso **não altera** o home nem o admin.
 
----
+```css
+.theme-ocean {
+  --background: oklch(0.985 0.005 220);
+  --foreground: oklch(0.18 0.04 240);
+  --card: oklch(1 0 0);
+  --primary: oklch(0.58 0.09 210);       /* #2d8a9e */
+  --primary-foreground: oklch(0.98 0 0);
+  --accent: oklch(0.78 0.09 190);        /* #5cbdb9 */
+  --sidebar: oklch(0.22 0.05 240);       /* #0c2340 */
+  --sidebar-foreground: oklch(0.95 0.01 220);
+  --sidebar-primary: oklch(0.78 0.09 190);
+  --ring: oklch(0.58 0.09 210);
+}
+```
 
-## Como você quer que eu proceda
+Fontes carregadas via `<link>` no `head()` do `__root.tsx`; `--font-sans: "Manrope"` e `--font-display: "Sora"` em `@theme`.
 
-**Recomendação minha:** aprovar as 4 fases de uma vez, eu executo sequencial e reporto no fim de cada uma. É bastante código, mas nada exótico — o backend/modelos já suportam tudo isso.
+## Motion (sutil, sem excesso)
 
-Se preferir por partes, me diz por onde começar (minha ordem sugerida: **Fase 1 → Fase 2 → Fase 4 → Fase 3**, porque as fases 1+2 destravam receita e as 3+4 são polimento).
+- Fade + slide-up de 8px nos cards de vaga usando `framer-motion` já instalado (stagger 40ms).
+- Sidebar transiciona width com `transition-[width]` nativo do shadcn.
+- Zero animação em ícones/hover extravagante — "sem cara de IA" significa comedido.
 
-Antes de começar, uma confirmação só: o domínio real vai ser **vagasagora.com.br** (o sitemap está apontando pra lá) ou continuamos no **job-express-facil.lovable.app** por enquanto? Isso decide o que gravar em `canonical` e `og:url`.
+## Componentes novos
+
+- `src/components/candidato/AppSidebarCandidato.tsx`
+- `src/components/candidato/PainelHeader.tsx`
+- `src/components/VagaCard.tsx` (reutilizável em Home, Vagas do painel e Salvas)
+- `src/components/candidato/StatTile.tsx` (métrica clicável)
+- `src/components/candidato/ProgressoCV.tsx`
+
+## O que sai / consolida
+
+- `src/routes/candidato.tsx` (arquivo único de 435 linhas) é dividido; vira redirect.
+- `/perfil` continua acessível mas o painel embute a mesma UI, evitando "sair" da área.
+- Tabs internas antigas são removidas — cada seção tem URL própria (compartilhável, back button funciona).
+
+## Segurança e dados
+
+- Todas as rotas `_candidato.*` protegidas pelo mesmo guard atual (`useAuth` redireciona para `/auth`).
+- Nenhuma mudança em RLS, tabelas ou funções server-side; só leitura de `profiles`, `candidaturas`, `favoritos`, `alertas`, `curriculos`, `vagas` como já é hoje.
+
+## Fora de escopo
+
+- Painel do admin e da empresa (não mexemos).
+- Novo backend/features (mensagens, chat, entrevistas) — só refino visual e navegação.
