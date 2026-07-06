@@ -126,7 +126,14 @@ function StepProfissao({ onPick }: { onPick: (id: string) => void }) {
         <h1 className="text-2xl font-extrabold">O que você faz?</h1>
         <Narrator text={instr} />
       </div>
-      <p className="mb-5 text-sm text-muted-foreground">Digite a sua profissão ou use uma sugestão.</p>
+      <p className="mb-3 text-sm text-muted-foreground">Digite a sua profissão ou use uma sugestão.</p>
+      <div className="mb-5 flex items-center justify-between gap-2 rounded-2xl border border-dashed border-border bg-secondary/40 px-4 py-2.5 text-xs sm:text-sm">
+        <span className="text-muted-foreground">Só quer olhar as vagas primeiro?</span>
+        <Link to="/vagas" className="inline-flex items-center gap-1 font-bold text-primary hover:underline">
+          <SkipForward className="h-3.5 w-3.5" /> Pular e ver vagas
+        </Link>
+      </div>
+
 
       <div className="mb-4">
         <input
