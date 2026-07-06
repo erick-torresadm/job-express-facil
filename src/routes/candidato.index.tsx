@@ -25,8 +25,9 @@ function PainelHome() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: prof }, { count: c }, { count: f }, { count: a }, { count: ativas }] = await Promise.all([
-        supabase.from("profiles").select("full_name,cidade").eq("id", user.id).maybeSingle(),
+      const [{ data: prof }, { data: cv }, { count: c }, { count: f }, { count: a }, { count: ativas }] = await Promise.all([
+        supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
+        supabase.from("curriculos").select("cidade").eq("user_id", user.id).maybeSingle(),
         supabase.from("candidaturas").select("id", { count: "exact", head: true }).eq("candidato_id", user.id),
         supabase.from("favoritos").select("id", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("alertas").select("id", { count: "exact", head: true }).eq("user_id", user.id),
@@ -35,12 +36,11 @@ function PainelHome() {
           .in("status", ["enviado", "visto", "em_analise"]),
       ]);
       setNome((prof?.full_name as string | null)?.split(" ")[0] ?? "");
-      const cid = (prof as { cidade?: string | null } | null)?.cidade ?? null;
+      const cid = (cv as { cidade?: string | null } | null)?.cidade ?? null;
       setCidade(cid);
       setStats({ candidaturas: c ?? 0, salvas: f ?? 0, alertas: a ?? 0 });
       setAtivasCand(ativas ?? 0);
 
-      // vagas recomendadas — por cidade do candidato, senão as mais recentes
       let q = supabase.from("vagas")
         .select("id,titulo,empresa_nome,bairro,cidade,salario,profissao_slug,urgente,created_at")
         .eq("ativa", true)
@@ -51,7 +51,6 @@ function PainelHome() {
       if (cid) q = q.ilike("cidade", cid);
       const { data: rows } = await q;
       let recs = (rows ?? []) as VagaCardData[];
-      // fallback se não achou nada com a cidade
       if (recs.length === 0 && cid) {
         const { data: r2 } = await supabase.from("vagas")
           .select("id,titulo,empresa_nome,bairro,cidade,salario,profissao_slug,urgente,created_at")
