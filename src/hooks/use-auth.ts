@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
 
-export type Role = "candidato" | "empresa";
+export type Role = "candidato" | "empresa" | "admin";
 
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
@@ -34,13 +34,21 @@ export function useAuth() {
   }, []);
 
   const loadRole = async (uid: string) => {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid).maybeSingle();
-    setRole((data?.role as Role) ?? null);
+    // Um usuário pode ter múltiplos papéis (ex.: admin + empresa).
+    // Escolhemos o de maior prioridade: admin > empresa > candidato.
+    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+    const roles = (data ?? []).map((r) => r.role as Role);
+    const chosen: Role | null = roles.includes("admin")
+      ? "admin"
+      : roles.includes("empresa")
+        ? "empresa"
+        : roles.includes("candidato")
+          ? "candidato"
+          : null;
+    setRole(chosen);
   };
 
   // Sign-out hygiene: cancela queries em voo → limpa cache → encerra sessão.
-  // Assim nenhum request autenticado dispara com token já revogado (evita 401 storm
-  // e impede que dados protegidos cacheados apareçam depois do logout).
   const signOut = async () => {
     try {
       await queryClient.cancelQueries();
@@ -53,4 +61,3 @@ export function useAuth() {
 
   return { session, user, role, loading, signOut };
 }
-
