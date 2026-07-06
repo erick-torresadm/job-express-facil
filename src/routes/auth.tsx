@@ -98,10 +98,7 @@ function AuthPage() {
     <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background px-4 py-10">
       <div className="mx-auto w-full max-w-md">
         <Link to="/" className="mb-6 inline-flex items-center gap-2">
-          <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-foreground shadow-pop">
-            <Briefcase className="h-5 w-5" />
-          </div>
-          <span className="text-xl font-bold tracking-tight">VagasAgora</span>
+          <span className="font-display text-2xl font-extrabold tracking-tight text-foreground">VagasAgora</span>
         </Link>
 
         <div className="rounded-3xl border-2 border-border bg-card p-6 shadow-soft">
