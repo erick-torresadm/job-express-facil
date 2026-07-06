@@ -628,6 +628,7 @@ export type Database = {
           perguntas_triagem: Json
           profissao: string
           profissao_slug: string
+          regime: Database["public"]["Enums"]["vaga_regime"]
           requisitos: Json
           risco_fraude: number
           risco_motivo: string | null
@@ -655,6 +656,7 @@ export type Database = {
           perguntas_triagem?: Json
           profissao: string
           profissao_slug: string
+          regime?: Database["public"]["Enums"]["vaga_regime"]
           requisitos?: Json
           risco_fraude?: number
           risco_motivo?: string | null
@@ -682,6 +684,7 @@ export type Database = {
           perguntas_triagem?: Json
           profissao?: string
           profissao_slug?: string
+          regime?: Database["public"]["Enums"]["vaga_regime"]
           requisitos?: Json
           risco_fraude?: number
           risco_motivo?: string | null
@@ -745,6 +748,7 @@ export type Database = {
       candidatura_status: "enviado" | "visto" | "em_analise" | "finalizado"
       plano_ciclo: "mensal" | "anual"
       plano_tipo: "basico" | "full"
+      vaga_regime: "clt" | "pj" | "estagio" | "outros"
       verificacao_status: "pendente" | "aprovado" | "rejeitado"
     }
     CompositeTypes: {
@@ -878,6 +882,7 @@ export const Constants = {
       candidatura_status: ["enviado", "visto", "em_analise", "finalizado"],
       plano_ciclo: ["mensal", "anual"],
       plano_tipo: ["basico", "full"],
+      vaga_regime: ["clt", "pj", "estagio", "outros"],
       verificacao_status: ["pendente", "aprovado", "rejeitado"],
     },
   },
