@@ -18,6 +18,7 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { SoundProvider } from "@/components/SoundProvider";
 import { PageViewTracker } from "@/components/PageViewTracker";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
+import { PromoLancamentoBanner } from "@/components/PromoLancamentoBanner";
 
 function NotFoundComponent() {
   return (
