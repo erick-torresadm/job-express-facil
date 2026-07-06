@@ -370,6 +370,45 @@ export type Database = {
         }
         Relationships: []
       }
+      page_views: {
+        Row: {
+          country: string | null
+          created_at: string
+          id: number
+          is_bot: boolean
+          path: string
+          referrer: string | null
+          referrer_host: string | null
+          session_id: string
+          ua_device: string | null
+          user_id: string | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          id?: number
+          is_bot?: boolean
+          path: string
+          referrer?: string | null
+          referrer_host?: string | null
+          session_id: string
+          ua_device?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          id?: number
+          is_bot?: boolean
+          path?: string
+          referrer?: string | null
+          referrer_host?: string | null
+          session_id?: string
+          ua_device?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           autor: string
