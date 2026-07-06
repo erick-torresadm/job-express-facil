@@ -92,6 +92,11 @@ function PlanosPage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-5xl px-4 pb-4">
+        <PromoLancamentoBanner />
+      </section>
+
+
       <section className="mx-auto grid max-w-5xl gap-6 px-4 pb-12 lg:grid-cols-3">
         <PlanoCard
           nome="Free"
