@@ -197,6 +197,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col bg-background">
+        {!hideChrome && <PromoLancamentoBanner compact />}
         {!hideChrome && <SiteHeader />}
         {!hideChrome && <TrendingMenu />}
         <div className="flex-1">
