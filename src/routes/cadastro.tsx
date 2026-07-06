@@ -991,7 +991,7 @@ function StepPerfil({ profissao, local, midia, texto, contato }: {
 
 
 
-      <h2 className="mt-8 mb-3 text-lg font-extrabold">Turbine seu perfil 🚀</h2>
+      <h2 className="mt-8 mb-3 text-lg font-extrabold">Turbine seu perfil</h2>
 
       <div className="space-y-3">
         <Upsell
