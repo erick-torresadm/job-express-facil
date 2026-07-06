@@ -81,18 +81,51 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   return brandedErrorResponse();
 }
 
+// Headers de segurança aplicados em TODA resposta (defesa contra clickjacking,
+// MIME sniffing, vazamento de referrer, mixed content). Aplicados só quando
+// ainda não estão presentes, para não sobrescrever ajustes feitos handler-a-handler.
+const SECURITY_HEADERS: Array<[string, string]> = [
+  // Clickjacking — nenhum site pode carregar o app em <iframe>.
+  ["X-Frame-Options", "DENY"],
+  ["Content-Security-Policy", "frame-ancestors 'none'"],
+  // MIME sniffing.
+  ["X-Content-Type-Options", "nosniff"],
+  // Vaza só a origem no cross-origin, path completo no same-origin.
+  ["Referrer-Policy", "strict-origin-when-cross-origin"],
+  // Força HTTPS por 2 anos (Cloudflare já serve TLS; reforça no browser).
+  ["Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload"],
+  // Bloqueia APIs sensíveis do browser que o app não usa.
+  ["Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"],
+  // Isola o processo — mitiga Spectre-like cross-origin leaks.
+  ["Cross-Origin-Opener-Policy", "same-origin"],
+];
+
+function withSecurityHeaders(response: Response): Response {
+  const headers = new Headers(response.headers);
+  for (const [name, value] of SECURITY_HEADERS) {
+    if (!headers.has(name)) headers.set(name, value);
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const redirect = canonicalRouteRedirect(request);
-      if (redirect) return redirect;
+      if (redirect) return withSecurityHeaders(redirect);
 
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      const normalized = await normalizeCatastrophicSsrResponse(response);
+      return withSecurityHeaders(normalized);
     } catch (error) {
       console.error(error);
-      return brandedErrorResponse();
+      return withSecurityHeaders(brandedErrorResponse());
     }
   },
 };
+

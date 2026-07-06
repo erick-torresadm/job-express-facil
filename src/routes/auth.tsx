@@ -71,16 +71,22 @@ function AuthPage() {
         if (error) throw error;
       }
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Erro desconhecido";
-      setErr(
-        msg.includes("Invalid login") ? "E-mail ou senha incorretos." :
-        msg.includes("already registered") || msg.includes("already been registered") ? "Este e-mail já tem conta. Faça login." :
-        msg
-      );
+      const msg = e instanceof Error ? e.message : "";
+      // Mensagens genéricas — não revelam se o e-mail existe/está cadastrado
+      // (previne enumeração de usuários).
+      if (mode === "signup") {
+        // Independente de e-mail já existir ou não, mesma resposta.
+        setErr("Não foi possível concluir o cadastro. Verifique os dados e tente novamente. Se o e-mail já estiver cadastrado, use a opção Entrar.");
+      } else if (msg.includes("Email not confirmed")) {
+        setErr("Confirme seu e-mail antes de entrar.");
+      } else {
+        setErr("E-mail ou senha inválidos.");
+      }
     } finally {
       setLoading(false);
     }
   };
+
 
   const google = async () => {
     setErr(null);

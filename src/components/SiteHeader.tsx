@@ -25,7 +25,7 @@ export function SiteHeader() {
   const handleSignOut = async () => {
     await signOut();
     setOpen(false);
-    navigate({ to: "/" });
+    navigate({ to: "/auth", replace: true });
   };
 
   if (!isHome) {
