@@ -103,7 +103,7 @@ function PlanosPage() {
           nome="Básico" destaque
           preco={ciclo === "mensal" ? `R$ ${brl(PRECO_BASICO)}` : `R$ ${brl(PRECO_BASICO * 12 * (1 - DESCONTO_ANUAL))}`}
           subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
-          comparativo="Portais tradicionais: a partir de ~R$ 59,90/mês"
+          comparativo="Portais tradicionais: a partir de ~R$ 149,90/mês"
           features={[
             "Tudo do Free, mais:",
             "100 contatos liberados/mês",
@@ -117,7 +117,7 @@ function PlanosPage() {
           nome="Full"
           preco={ciclo === "mensal" ? `R$ ${brl(PRECO_FULL)}` : `R$ ${brl(PRECO_FULL * 12 * (1 - DESCONTO_ANUAL))}`}
           subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
-          comparativo="Planos destaque do mercado: ~R$ 109,90/mês"
+          comparativo="Planos destaque do mercado: ~R$ 399/mês"
           features={[
             "Tudo do Básico, mais:",
             "Contatos ilimitados",
