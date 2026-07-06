@@ -26,6 +26,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnuncieRouteImport } from './routes/anuncie'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PreviewIndexRouteImport } from './routes/preview.index'
+import { Route as CandidatoIndexRouteImport } from './routes/candidato.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
@@ -136,6 +137,11 @@ const PreviewIndexRoute = PreviewIndexRouteImport.update({
   id: '/preview/',
   path: '/preview/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CandidatoIndexRoute = CandidatoIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CandidatoRoute,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
@@ -268,7 +274,7 @@ export interface FileRoutesByFullPath {
   '/anuncie': typeof AnuncieRoute
   '/auth': typeof AuthRoute
   '/cadastro': typeof CadastroRoute
-  '/candidato': typeof CandidatoRoute
+  '/candidato': typeof CandidatoRouteWithChildren
   '/categorias': typeof CategoriasRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
@@ -298,6 +304,7 @@ export interface FileRoutesByFullPath {
   '/vagas/$slug': typeof VagasSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/candidato/': typeof CandidatoIndexRoute
   '/preview/': typeof PreviewIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
@@ -312,7 +319,6 @@ export interface FileRoutesByTo {
   '/anuncie': typeof AnuncieRoute
   '/auth': typeof AuthRoute
   '/cadastro': typeof CadastroRoute
-  '/candidato': typeof CandidatoRoute
   '/categorias': typeof CategoriasRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
@@ -342,6 +348,7 @@ export interface FileRoutesByTo {
   '/vagas/$slug': typeof VagasSlugRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
+  '/candidato': typeof CandidatoIndexRoute
   '/preview': typeof PreviewIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
@@ -357,7 +364,7 @@ export interface FileRoutesById {
   '/anuncie': typeof AnuncieRoute
   '/auth': typeof AuthRoute
   '/cadastro': typeof CadastroRoute
-  '/candidato': typeof CandidatoRoute
+  '/candidato': typeof CandidatoRouteWithChildren
   '/categorias': typeof CategoriasRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
@@ -387,6 +394,7 @@ export interface FileRoutesById {
   '/vagas/$slug': typeof VagasSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/candidato/': typeof CandidatoIndexRoute
   '/preview/': typeof PreviewIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
@@ -433,6 +441,7 @@ export interface FileRouteTypes {
     | '/vagas/$slug'
     | '/admin/'
     | '/blog/'
+    | '/candidato/'
     | '/preview/'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
@@ -447,7 +456,6 @@ export interface FileRouteTypes {
     | '/anuncie'
     | '/auth'
     | '/cadastro'
-    | '/candidato'
     | '/categorias'
     | '/como-funciona'
     | '/contato'
@@ -477,6 +485,7 @@ export interface FileRouteTypes {
     | '/vagas/$slug'
     | '/admin'
     | '/blog'
+    | '/candidato'
     | '/preview'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
@@ -521,6 +530,7 @@ export interface FileRouteTypes {
     | '/vagas/$slug'
     | '/admin/'
     | '/blog/'
+    | '/candidato/'
     | '/preview/'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
@@ -536,7 +546,7 @@ export interface RootRouteChildren {
   AnuncieRoute: typeof AnuncieRoute
   AuthRoute: typeof AuthRoute
   CadastroRoute: typeof CadastroRoute
-  CandidatoRoute: typeof CandidatoRoute
+  CandidatoRoute: typeof CandidatoRouteWithChildren
   CategoriasRoute: typeof CategoriasRoute
   ComoFuncionaRoute: typeof ComoFuncionaRoute
   ContatoRoute: typeof ContatoRoute
@@ -690,6 +700,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/preview/'
       preLoaderRoute: typeof PreviewIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/candidato/': {
+      id: '/candidato/'
+      path: '/'
+      fullPath: '/candidato/'
+      preLoaderRoute: typeof CandidatoIndexRouteImport
+      parentRoute: typeof CandidatoRoute
     }
     '/blog/': {
       id: '/blog/'
@@ -869,6 +886,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface CandidatoRouteChildren {
+  CandidatoIndexRoute: typeof CandidatoIndexRoute
+}
+
+const CandidatoRouteChildren: CandidatoRouteChildren = {
+  CandidatoIndexRoute: CandidatoIndexRoute,
+}
+
+const CandidatoRouteWithChildren = CandidatoRoute._addFileChildren(
+  CandidatoRouteChildren,
+)
+
 interface EmpresaRouteChildren {
   EmpresaMinhasVagasRoute: typeof EmpresaMinhasVagasRoute
   EmpresaNovaVagaRoute: typeof EmpresaNovaVagaRoute
@@ -905,7 +934,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnuncieRoute: AnuncieRoute,
   AuthRoute: AuthRoute,
   CadastroRoute: CadastroRoute,
-  CandidatoRoute: CandidatoRoute,
+  CandidatoRoute: CandidatoRouteWithChildren,
   CategoriasRoute: CategoriasRoute,
   ComoFuncionaRoute: ComoFuncionaRoute,
   ContatoRoute: ContatoRoute,
