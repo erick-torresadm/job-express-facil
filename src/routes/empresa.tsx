@@ -1,11 +1,15 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Building2, Users, PlusSquare, BarChart3, Briefcase, Globe, ShieldCheck, TrendingUp, ShieldAlert, Link2 } from "lucide-react";
+import { Building2, Users, PlusSquare, BarChart3, Briefcase, Globe, ShieldCheck, TrendingUp, ShieldAlert, Link2, Gift, Bell, Mail } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/use-auth";
 import { getRevelacoesInfo, getEmpresaDashboard } from "@/lib/empresa.functions";
+import { toggleDigestOptOut } from "@/lib/promo.functions";
 import { CandidatosList } from "@/components/CandidatosList";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
 
 
 
