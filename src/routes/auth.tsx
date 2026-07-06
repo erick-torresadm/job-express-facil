@@ -213,12 +213,25 @@ function AuthPage() {
             </Field>
 
             {err && <p className="rounded-lg bg-destructive/10 p-3 text-sm font-medium text-destructive">{err}</p>}
+            {info && <p className="rounded-lg bg-primary/10 p-3 text-sm font-medium text-primary">{info}</p>}
 
             <button disabled={loading} type="submit"
               className="btn-touch shadow-pop flex w-full items-center justify-center gap-2 bg-primary text-primary-foreground disabled:opacity-60">
               {loading && <Loader2 className="h-5 w-5 animate-spin" />}
               {mode === "login" ? "Entrar" : "Criar minha conta"}
             </button>
+
+            {mode === "login" && (
+              <button
+                type="button"
+                onClick={handleReset}
+                disabled={resetLoading}
+                className="flex w-full items-center justify-center gap-2 text-sm font-semibold text-primary hover:underline disabled:opacity-60"
+              >
+                {resetLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+                Esqueci minha senha
+              </button>
+            )}
           </form>
 
           <div className="my-5 flex items-center gap-3">
