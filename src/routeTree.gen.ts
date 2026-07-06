@@ -39,6 +39,7 @@ import { Route as EmpresaNovaVagaRouteImport } from './routes/empresa.nova-vaga'
 import { Route as EmpresaMinhasVagasRouteImport } from './routes/empresa.minhas-vagas'
 import { Route as CvSlugRouteImport } from './routes/cv.$slug'
 import { Route as CandidatoVagasRouteImport } from './routes/candidato.vagas'
+import { Route as CandidatoSalvasRouteImport } from './routes/candidato.salvas'
 import { Route as CandidatoCandidaturasRouteImport } from './routes/candidato.candidaturas'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
@@ -205,6 +206,11 @@ const CandidatoVagasRoute = CandidatoVagasRouteImport.update({
   path: '/vagas',
   getParentRoute: () => CandidatoRoute,
 } as any)
+const CandidatoSalvasRoute = CandidatoSalvasRouteImport.update({
+  id: '/salvas',
+  path: '/salvas',
+  getParentRoute: () => CandidatoRoute,
+} as any)
 const CandidatoCandidaturasRoute = CandidatoCandidaturasRouteImport.update({
   id: '/candidaturas',
   path: '/candidaturas',
@@ -306,6 +312,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/c/$slug': typeof CSlugRoute
   '/candidato/candidaturas': typeof CandidatoCandidaturasRoute
+  '/candidato/salvas': typeof CandidatoSalvasRoute
   '/candidato/vagas': typeof CandidatoVagasRoute
   '/cv/$slug': typeof CvSlugRoute
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
@@ -352,6 +359,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/c/$slug': typeof CSlugRoute
   '/candidato/candidaturas': typeof CandidatoCandidaturasRoute
+  '/candidato/salvas': typeof CandidatoSalvasRoute
   '/candidato/vagas': typeof CandidatoVagasRoute
   '/cv/$slug': typeof CvSlugRoute
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
@@ -400,6 +408,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/c/$slug': typeof CSlugRoute
   '/candidato/candidaturas': typeof CandidatoCandidaturasRoute
+  '/candidato/salvas': typeof CandidatoSalvasRoute
   '/candidato/vagas': typeof CandidatoVagasRoute
   '/cv/$slug': typeof CvSlugRoute
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
@@ -449,6 +458,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/c/$slug'
     | '/candidato/candidaturas'
+    | '/candidato/salvas'
     | '/candidato/vagas'
     | '/cv/$slug'
     | '/empresa/minhas-vagas'
@@ -495,6 +505,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/c/$slug'
     | '/candidato/candidaturas'
+    | '/candidato/salvas'
     | '/candidato/vagas'
     | '/cv/$slug'
     | '/empresa/minhas-vagas'
@@ -542,6 +553,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/c/$slug'
     | '/candidato/candidaturas'
+    | '/candidato/salvas'
     | '/candidato/vagas'
     | '/cv/$slug'
     | '/empresa/minhas-vagas'
@@ -816,6 +828,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CandidatoVagasRouteImport
       parentRoute: typeof CandidatoRoute
     }
+    '/candidato/salvas': {
+      id: '/candidato/salvas'
+      path: '/salvas'
+      fullPath: '/candidato/salvas'
+      preLoaderRoute: typeof CandidatoSalvasRouteImport
+      parentRoute: typeof CandidatoRoute
+    }
     '/candidato/candidaturas': {
       id: '/candidato/candidaturas'
       path: '/candidaturas'
@@ -926,12 +945,14 @@ declare module '@tanstack/react-router' {
 
 interface CandidatoRouteChildren {
   CandidatoCandidaturasRoute: typeof CandidatoCandidaturasRoute
+  CandidatoSalvasRoute: typeof CandidatoSalvasRoute
   CandidatoVagasRoute: typeof CandidatoVagasRoute
   CandidatoIndexRoute: typeof CandidatoIndexRoute
 }
 
 const CandidatoRouteChildren: CandidatoRouteChildren = {
   CandidatoCandidaturasRoute: CandidatoCandidaturasRoute,
+  CandidatoSalvasRoute: CandidatoSalvasRoute,
   CandidatoVagasRoute: CandidatoVagasRoute,
   CandidatoIndexRoute: CandidatoIndexRoute,
 }
