@@ -16,6 +16,8 @@ import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as ParaEmpresasRouteImport } from './routes/para-empresas'
+import { Route as FreelasRouteImport } from './routes/freelas'
+import { Route as FreelancerRouteImport } from './routes/freelancer'
 import { Route as EmpresaRouteImport } from './routes/empresa'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
@@ -27,6 +29,8 @@ import { Route as AnuncieRouteImport } from './routes/anuncie'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VagasIndexRouteImport } from './routes/vagas.index'
 import { Route as PreviewIndexRouteImport } from './routes/preview.index'
+import { Route as FreelasIndexRouteImport } from './routes/freelas.index'
+import { Route as FreelancerIndexRouteImport } from './routes/freelancer.index'
 import { Route as CandidatoIndexRouteImport } from './routes/candidato.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -37,6 +41,9 @@ import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
 import { Route as ProfissionaisSlugRouteImport } from './routes/profissionais.$slug'
 import { Route as PreviewStyleRouteImport } from './routes/preview.$style'
+import { Route as FreelancerPortfolioRouteImport } from './routes/freelancer.portfolio'
+import { Route as FreelancerPerfilRouteImport } from './routes/freelancer.perfil'
+import { Route as FreelancerOrcamentosRouteImport } from './routes/freelancer.orcamentos'
 import { Route as EmpresaVerificacaoRouteImport } from './routes/empresa.verificacao'
 import { Route as EmpresaPaginaRouteImport } from './routes/empresa.pagina'
 import { Route as EmpresaNovaVagaRouteImport } from './routes/empresa.nova-vaga'
@@ -54,6 +61,7 @@ import { Route as AdminVagasRouteImport } from './routes/admin.vagas'
 import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
 import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminAnunciosRouteImport } from './routes/admin.anuncios'
+import { Route as FreelasPHandleRouteImport } from './routes/freelas.p.$handle'
 import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 import { Route as ApiPublicAsaasWebhookRouteImport } from './routes/api/public/asaas-webhook'
 import { Route as AdminBlogNovoRouteImport } from './routes/admin.blog.novo'
@@ -98,6 +106,16 @@ const PerfilRoute = PerfilRouteImport.update({
 const ParaEmpresasRoute = ParaEmpresasRouteImport.update({
   id: '/para-empresas',
   path: '/para-empresas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FreelasRoute = FreelasRouteImport.update({
+  id: '/freelas',
+  path: '/freelas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FreelancerRoute = FreelancerRouteImport.update({
+  id: '/freelancer',
+  path: '/freelancer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmpresaRoute = EmpresaRouteImport.update({
@@ -155,6 +173,16 @@ const PreviewIndexRoute = PreviewIndexRouteImport.update({
   path: '/preview/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FreelasIndexRoute = FreelasIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => FreelasRoute,
+} as any)
+const FreelancerIndexRoute = FreelancerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => FreelancerRoute,
+} as any)
 const CandidatoIndexRoute = CandidatoIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -204,6 +232,21 @@ const PreviewStyleRoute = PreviewStyleRouteImport.update({
   id: '/preview/$style',
   path: '/preview/$style',
   getParentRoute: () => rootRouteImport,
+} as any)
+const FreelancerPortfolioRoute = FreelancerPortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => FreelancerRoute,
+} as any)
+const FreelancerPerfilRoute = FreelancerPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => FreelancerRoute,
+} as any)
+const FreelancerOrcamentosRoute = FreelancerOrcamentosRouteImport.update({
+  id: '/orcamentos',
+  path: '/orcamentos',
+  getParentRoute: () => FreelancerRoute,
 } as any)
 const EmpresaVerificacaoRoute = EmpresaVerificacaoRouteImport.update({
   id: '/verificacao',
@@ -290,6 +333,11 @@ const AdminAnunciosRoute = AdminAnunciosRouteImport.update({
   path: '/admin/anuncios',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FreelasPHandleRoute = FreelasPHandleRouteImport.update({
+  id: '/p/$handle',
+  path: '/p/$handle',
+  getParentRoute: () => FreelasRoute,
+} as any)
 const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
   id: '/api/public/track',
   path: '/api/public/track',
@@ -354,6 +402,8 @@ export interface FileRoutesByFullPath {
   '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
+  '/freelancer': typeof FreelancerRouteWithChildren
+  '/freelas': typeof FreelasRouteWithChildren
   '/para-empresas': typeof ParaEmpresasRoute
   '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
@@ -378,6 +428,9 @@ export interface FileRoutesByFullPath {
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
   '/empresa/verificacao': typeof EmpresaVerificacaoRoute
+  '/freelancer/orcamentos': typeof FreelancerOrcamentosRoute
+  '/freelancer/perfil': typeof FreelancerPerfilRoute
+  '/freelancer/portfolio': typeof FreelancerPortfolioRoute
   '/preview/$style': typeof PreviewStyleRoute
   '/profissionais/$slug': typeof ProfissionaisSlugRoute
   '/u/$handle': typeof UHandleRoute
@@ -388,12 +441,15 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/candidato/': typeof CandidatoIndexRoute
+  '/freelancer/': typeof FreelancerIndexRoute
+  '/freelas/': typeof FreelasIndexRoute
   '/preview/': typeof PreviewIndexRoute
   '/vagas/': typeof VagasIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/freelas/p/$handle': typeof FreelasPHandleRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -434,6 +490,9 @@ export interface FileRoutesByTo {
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
   '/empresa/verificacao': typeof EmpresaVerificacaoRoute
+  '/freelancer/orcamentos': typeof FreelancerOrcamentosRoute
+  '/freelancer/perfil': typeof FreelancerPerfilRoute
+  '/freelancer/portfolio': typeof FreelancerPortfolioRoute
   '/preview/$style': typeof PreviewStyleRoute
   '/profissionais/$slug': typeof ProfissionaisSlugRoute
   '/u/$handle': typeof UHandleRoute
@@ -444,12 +503,15 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/candidato': typeof CandidatoIndexRoute
+  '/freelancer': typeof FreelancerIndexRoute
+  '/freelas': typeof FreelasIndexRoute
   '/preview': typeof PreviewIndexRoute
   '/vagas': typeof VagasIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/freelas/p/$handle': typeof FreelasPHandleRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -468,6 +530,8 @@ export interface FileRoutesById {
   '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
+  '/freelancer': typeof FreelancerRouteWithChildren
+  '/freelas': typeof FreelasRouteWithChildren
   '/para-empresas': typeof ParaEmpresasRoute
   '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
@@ -492,6 +556,9 @@ export interface FileRoutesById {
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
   '/empresa/verificacao': typeof EmpresaVerificacaoRoute
+  '/freelancer/orcamentos': typeof FreelancerOrcamentosRoute
+  '/freelancer/perfil': typeof FreelancerPerfilRoute
+  '/freelancer/portfolio': typeof FreelancerPortfolioRoute
   '/preview/$style': typeof PreviewStyleRoute
   '/profissionais/$slug': typeof ProfissionaisSlugRoute
   '/u/$handle': typeof UHandleRoute
@@ -502,12 +569,15 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/candidato/': typeof CandidatoIndexRoute
+  '/freelancer/': typeof FreelancerIndexRoute
+  '/freelas/': typeof FreelasIndexRoute
   '/preview/': typeof PreviewIndexRoute
   '/vagas/': typeof VagasIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/freelas/p/$handle': typeof FreelasPHandleRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
@@ -527,6 +597,8 @@ export interface FileRouteTypes {
     | '/como-funciona'
     | '/contato'
     | '/empresa'
+    | '/freelancer'
+    | '/freelas'
     | '/para-empresas'
     | '/perfil'
     | '/planos'
@@ -551,6 +623,9 @@ export interface FileRouteTypes {
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
     | '/empresa/verificacao'
+    | '/freelancer/orcamentos'
+    | '/freelancer/perfil'
+    | '/freelancer/portfolio'
     | '/preview/$style'
     | '/profissionais/$slug'
     | '/u/$handle'
@@ -561,12 +636,15 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/blog/'
     | '/candidato/'
+    | '/freelancer/'
+    | '/freelas/'
     | '/preview/'
     | '/vagas/'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
     | '/api/public/track'
+    | '/freelas/p/$handle'
     | '/api/public/blog/ingest'
     | '/api/public/cron/empresa-daily'
     | '/api/public/cron/gerar-post'
@@ -607,6 +685,9 @@ export interface FileRouteTypes {
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
     | '/empresa/verificacao'
+    | '/freelancer/orcamentos'
+    | '/freelancer/perfil'
+    | '/freelancer/portfolio'
     | '/preview/$style'
     | '/profissionais/$slug'
     | '/u/$handle'
@@ -617,12 +698,15 @@ export interface FileRouteTypes {
     | '/admin'
     | '/blog'
     | '/candidato'
+    | '/freelancer'
+    | '/freelas'
     | '/preview'
     | '/vagas'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
     | '/api/public/track'
+    | '/freelas/p/$handle'
     | '/api/public/blog/ingest'
     | '/api/public/cron/empresa-daily'
     | '/api/public/cron/gerar-post'
@@ -640,6 +724,8 @@ export interface FileRouteTypes {
     | '/como-funciona'
     | '/contato'
     | '/empresa'
+    | '/freelancer'
+    | '/freelas'
     | '/para-empresas'
     | '/perfil'
     | '/planos'
@@ -664,6 +750,9 @@ export interface FileRouteTypes {
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
     | '/empresa/verificacao'
+    | '/freelancer/orcamentos'
+    | '/freelancer/perfil'
+    | '/freelancer/portfolio'
     | '/preview/$style'
     | '/profissionais/$slug'
     | '/u/$handle'
@@ -674,12 +763,15 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/blog/'
     | '/candidato/'
+    | '/freelancer/'
+    | '/freelas/'
     | '/preview/'
     | '/vagas/'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
     | '/api/public/track'
+    | '/freelas/p/$handle'
     | '/api/public/blog/ingest'
     | '/api/public/cron/empresa-daily'
     | '/api/public/cron/gerar-post'
@@ -698,6 +790,8 @@ export interface RootRouteChildren {
   ComoFuncionaRoute: typeof ComoFuncionaRoute
   ContatoRoute: typeof ContatoRoute
   EmpresaRoute: typeof EmpresaRouteWithChildren
+  FreelancerRoute: typeof FreelancerRouteWithChildren
+  FreelasRoute: typeof FreelasRouteWithChildren
   ParaEmpresasRoute: typeof ParaEmpresasRoute
   PerfilRoute: typeof PerfilRoute
   PlanosRoute: typeof PlanosRoute
@@ -785,6 +879,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ParaEmpresasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/freelas': {
+      id: '/freelas'
+      path: '/freelas'
+      fullPath: '/freelas'
+      preLoaderRoute: typeof FreelasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/freelancer': {
+      id: '/freelancer'
+      path: '/freelancer'
+      fullPath: '/freelancer'
+      preLoaderRoute: typeof FreelancerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/empresa': {
       id: '/empresa'
       path: '/empresa'
@@ -862,6 +970,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PreviewIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/freelas/': {
+      id: '/freelas/'
+      path: '/'
+      fullPath: '/freelas/'
+      preLoaderRoute: typeof FreelasIndexRouteImport
+      parentRoute: typeof FreelasRoute
+    }
+    '/freelancer/': {
+      id: '/freelancer/'
+      path: '/'
+      fullPath: '/freelancer/'
+      preLoaderRoute: typeof FreelancerIndexRouteImport
+      parentRoute: typeof FreelancerRoute
+    }
     '/candidato/': {
       id: '/candidato/'
       path: '/'
@@ -931,6 +1053,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/preview/$style'
       preLoaderRoute: typeof PreviewStyleRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/freelancer/portfolio': {
+      id: '/freelancer/portfolio'
+      path: '/portfolio'
+      fullPath: '/freelancer/portfolio'
+      preLoaderRoute: typeof FreelancerPortfolioRouteImport
+      parentRoute: typeof FreelancerRoute
+    }
+    '/freelancer/perfil': {
+      id: '/freelancer/perfil'
+      path: '/perfil'
+      fullPath: '/freelancer/perfil'
+      preLoaderRoute: typeof FreelancerPerfilRouteImport
+      parentRoute: typeof FreelancerRoute
+    }
+    '/freelancer/orcamentos': {
+      id: '/freelancer/orcamentos'
+      path: '/orcamentos'
+      fullPath: '/freelancer/orcamentos'
+      preLoaderRoute: typeof FreelancerOrcamentosRouteImport
+      parentRoute: typeof FreelancerRoute
     }
     '/empresa/verificacao': {
       id: '/empresa/verificacao'
@@ -1051,6 +1194,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAnunciosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/freelas/p/$handle': {
+      id: '/freelas/p/$handle'
+      path: '/p/$handle'
+      fullPath: '/freelas/p/$handle'
+      preLoaderRoute: typeof FreelasPHandleRouteImport
+      parentRoute: typeof FreelasRoute
+    }
     '/api/public/track': {
       id: '/api/public/track'
       path: '/api/public/track'
@@ -1163,6 +1313,37 @@ const EmpresaRouteChildren: EmpresaRouteChildren = {
 const EmpresaRouteWithChildren =
   EmpresaRoute._addFileChildren(EmpresaRouteChildren)
 
+interface FreelancerRouteChildren {
+  FreelancerOrcamentosRoute: typeof FreelancerOrcamentosRoute
+  FreelancerPerfilRoute: typeof FreelancerPerfilRoute
+  FreelancerPortfolioRoute: typeof FreelancerPortfolioRoute
+  FreelancerIndexRoute: typeof FreelancerIndexRoute
+}
+
+const FreelancerRouteChildren: FreelancerRouteChildren = {
+  FreelancerOrcamentosRoute: FreelancerOrcamentosRoute,
+  FreelancerPerfilRoute: FreelancerPerfilRoute,
+  FreelancerPortfolioRoute: FreelancerPortfolioRoute,
+  FreelancerIndexRoute: FreelancerIndexRoute,
+}
+
+const FreelancerRouteWithChildren = FreelancerRoute._addFileChildren(
+  FreelancerRouteChildren,
+)
+
+interface FreelasRouteChildren {
+  FreelasIndexRoute: typeof FreelasIndexRoute
+  FreelasPHandleRoute: typeof FreelasPHandleRoute
+}
+
+const FreelasRouteChildren: FreelasRouteChildren = {
+  FreelasIndexRoute: FreelasIndexRoute,
+  FreelasPHandleRoute: FreelasPHandleRoute,
+}
+
+const FreelasRouteWithChildren =
+  FreelasRoute._addFileChildren(FreelasRouteChildren)
+
 interface AdminBlogRouteChildren {
   AdminBlogIdRoute: typeof AdminBlogIdRoute
   AdminBlogNovoRoute: typeof AdminBlogNovoRoute
@@ -1187,6 +1368,8 @@ const rootRouteChildren: RootRouteChildren = {
   ComoFuncionaRoute: ComoFuncionaRoute,
   ContatoRoute: ContatoRoute,
   EmpresaRoute: EmpresaRouteWithChildren,
+  FreelancerRoute: FreelancerRouteWithChildren,
+  FreelasRoute: FreelasRouteWithChildren,
   ParaEmpresasRoute: ParaEmpresasRoute,
   PerfilRoute: PerfilRoute,
   PlanosRoute: PlanosRoute,
