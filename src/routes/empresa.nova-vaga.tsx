@@ -30,6 +30,7 @@ function NovaVaga() {
     cidade: "São Paulo",
     endereco: "",
     profissao: PROFISSOES[0].nome,
+    regime: "clt" as "clt" | "pj" | "estagio" | "outros",
     urgente: false,
     descricao: "",
     requisitos: [] as string[],
