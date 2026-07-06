@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Send, Heart, Bell, ArrowRight, Sparkles, TrendingUp, MapPin } from "lucide-react";
+import { Send, Heart, Bell, ArrowRight, Sparkles, TrendingUp, MapPin, Gift, CheckCircle2, Circle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { VagaCard, type VagaCardData } from "@/components/VagaCard";
@@ -21,13 +21,17 @@ function PainelHome() {
   const [cidade, setCidade] = useState<string | null>(null);
   const [vagas, setVagas] = useState<VagaCardData[] | null>(null);
   const [ativasCand, setAtivasCand] = useState<number>(0);
+  const [promoAte, setPromoAte] = useState<string | null>(null);
+  const [checklist, setChecklist] = useState<{ midia: boolean; whatsapp: boolean; cidade: boolean; sobre: boolean }>({
+    midia: false, whatsapp: false, cidade: false, sobre: false,
+  });
 
   useEffect(() => {
     if (!user) return;
     (async () => {
       const [{ data: prof }, { data: cv }, { count: c }, { count: f }, { count: a }, { count: ativas }] = await Promise.all([
-        supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
-        supabase.from("curriculos").select("cidade").eq("user_id", user.id).maybeSingle(),
+        supabase.from("profiles").select("full_name, whatsapp, promo_pro_ate").eq("id", user.id).maybeSingle(),
+        supabase.from("curriculos").select("cidade, video_url, audio_url, sobre").eq("user_id", user.id).maybeSingle(),
         supabase.from("candidaturas").select("id", { count: "exact", head: true }).eq("candidato_id", user.id),
         supabase.from("favoritos").select("id", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("alertas").select("id", { count: "exact", head: true }).eq("user_id", user.id),
@@ -35,11 +39,20 @@ function PainelHome() {
           .eq("candidato_id", user.id)
           .in("status", ["enviado", "visto", "em_analise"]),
       ]);
-      setNome((prof?.full_name as string | null)?.split(" ")[0] ?? "");
-      const cid = (cv as { cidade?: string | null } | null)?.cidade ?? null;
+      const profileRow = prof as { full_name?: string | null; whatsapp?: string | null; promo_pro_ate?: string | null } | null;
+      const cvRow = cv as { cidade?: string | null; video_url?: string | null; audio_url?: string | null; sobre?: string | null } | null;
+      setNome(profileRow?.full_name?.split(" ")[0] ?? "");
+      setPromoAte(profileRow?.promo_pro_ate ?? null);
+      const cid = cvRow?.cidade ?? null;
       setCidade(cid);
       setStats({ candidaturas: c ?? 0, salvas: f ?? 0, alertas: a ?? 0 });
       setAtivasCand(ativas ?? 0);
+      setChecklist({
+        midia: !!(cvRow?.video_url || cvRow?.audio_url),
+        whatsapp: !!profileRow?.whatsapp,
+        cidade: !!cid,
+        sobre: !!(cvRow?.sobre && cvRow.sobre.length > 30),
+      });
 
       let q = supabase.from("vagas")
         .select("id,titulo,empresa_nome,bairro,cidade,salario,profissao_slug,urgente,created_at")
@@ -61,6 +74,7 @@ function PainelHome() {
       setVagas(recs);
     })();
   }, [user]);
+
 
   if (!user) return null;
 
@@ -90,6 +104,50 @@ function PainelHome() {
         </div>
       </section>
 
+      {/* Badge Pro + Checklist de força do perfil */}
+      <section className="grid gap-3 md:grid-cols-2">
+        {promoAte && new Date(promoAte).getTime() > Date.now() && (
+          <div className="rounded-3xl border-2 border-accent/40 bg-gradient-to-br from-accent/10 via-primary/5 to-accent/10 p-5 shadow-soft">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-[10px] font-extrabold uppercase text-accent-foreground">
+              <Gift className="h-3 w-3" /> Pro ativo
+            </span>
+            <p className="mt-3 text-sm font-bold">Você tem Pro grátis até {new Date(promoAte).toLocaleDateString("pt-BR")}</p>
+            <p className="text-xs text-muted-foreground">Todos os recursos liberados — vagas em destaque, alertas ilimitados e prioridade nas candidaturas.</p>
+          </div>
+        )}
+        <div className="rounded-3xl border border-border bg-card p-5 shadow-soft">
+          <p className="text-xs font-bold uppercase text-muted-foreground">Força do seu perfil</p>
+          {(() => {
+            const items = [
+              { done: checklist.midia, label: "Gravar áudio ou vídeo de apresentação", to: "/candidato/curriculo" as const },
+              { done: checklist.sobre, label: "Escrever sobre você (mín. 30 chars)", to: "/candidato/curriculo" as const },
+              { done: checklist.whatsapp, label: "Confirmar WhatsApp", to: "/perfil" as const },
+              { done: checklist.cidade, label: "Definir cidade", to: "/candidato/curriculo" as const },
+            ];
+            const done = items.filter((i) => i.done).length;
+            const pct = Math.round((done / items.length) * 100);
+            return (
+              <>
+                <div className="mt-2 flex items-center gap-3">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary">
+                    <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                  <span className="text-xs font-extrabold">{pct}%</span>
+                </div>
+                <ul className="mt-3 space-y-1.5 text-xs">
+                  {items.map((i) => (
+                    <li key={i.label} className="flex items-center gap-2">
+                      {i.done ? <CheckCircle2 className="h-3.5 w-3.5 text-accent" /> : <Circle className="h-3.5 w-3.5 text-muted-foreground" />}
+                      {i.done ? <span className="text-muted-foreground line-through">{i.label}</span> : <Link to={i.to} className="hover:underline">{i.label}</Link>}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            );
+          })()}
+        </div>
+      </section>
+
       {/* Métricas */}
       <section className="grid grid-cols-3 gap-3">
         <StatTile to="/candidato/candidaturas" icon={<Send className="h-4 w-4" />}
@@ -99,6 +157,7 @@ function PainelHome() {
         <StatTile to="/candidato/alertas" icon={<Bell className="h-4 w-4" />}
           label="Alertas ativos" value={stats.alertas} />
       </section>
+
 
       {/* Vagas recomendadas */}
       <section>

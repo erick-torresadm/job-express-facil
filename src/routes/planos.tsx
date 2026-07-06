@@ -1,12 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Check, Sparkles, Loader2, X, CreditCard, QrCode, Lock, Minus, Flame, Clock } from "lucide-react";
+import { Check, Sparkles, Loader2, X, CreditCard, QrCode, Lock, Minus, Flame, Clock, Gift } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { criarAssinaturaAsaas, criarAssinaturaCartao } from "@/lib/asaas.functions";
+import { ativarPromoPro } from "@/lib/promo.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { PromoLancamentoBanner } from "@/components/PromoLancamentoBanner";
+import { PromoLancamentoBanner, isPromoAtiva } from "@/components/PromoLancamentoBanner";
+
 
 export const Route = createFileRoute("/planos")({
   head: () => ({
@@ -42,6 +44,29 @@ function useCountdown(targetMs: number) {
 function PlanosPage() {
   const [ciclo, setCiclo] = useState<"mensal" | "anual">("mensal");
   const [checkout, setCheckout] = useState<null | { plano: "basico" | "full" }>(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const promo = isPromoAtiva();
+  const ativarPromo = useServerFn(ativarPromoPro);
+  const [ativandoPromo, setAtivandoPromo] = useState(false);
+
+  const handleAtivarPromo = async () => {
+    if (!user) {
+      toast.info("Crie sua conta grátis para ativar o Pro");
+      navigate({ to: "/cadastro" });
+      return;
+    }
+    setAtivandoPromo(true);
+    try {
+      await ativarPromo();
+      toast.success("Pro ativado! Você tem 2 anos grátis 🎉");
+      navigate({ to: "/empresa" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao ativar promoção");
+    } finally {
+      setAtivandoPromo(false);
+    }
+  };
 
   // Escassez: oferta acaba no fim do dia (horário do navegador)
   const fimDoDia = (() => {
@@ -52,6 +77,10 @@ function PlanosPage() {
   const { h, m, s } = useCountdown(fimDoDia);
   const vagasRestantes = 7; // gatilho de escassez visual
 
+  const precoBasico = ciclo === "mensal" ? PRECO_BASICO : PRECO_BASICO * 12 * (1 - DESCONTO_ANUAL);
+  const precoFull = ciclo === "mensal" ? PRECO_FULL : PRECO_FULL * 12 * (1 - DESCONTO_ANUAL);
+  const subCiclo = ciclo === "mensal" ? "por mês" : "por ano";
+
   return (
     <div className="min-h-screen bg-secondary">
       <header className="border-b bg-background">
@@ -61,25 +90,41 @@ function PlanosPage() {
         </div>
       </header>
 
-      {/* Banner de escassez */}
+      {/* Banner de escassez / promo */}
       <div className="bg-gradient-to-r from-accent via-primary to-accent text-primary-foreground">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 py-2 text-xs font-bold">
-          <span className="inline-flex items-center gap-1"><Flame className="h-3.5 w-3.5" /> Oferta de lançamento — 25% off vs. concorrência</span>
-          <span className="hidden sm:inline opacity-60">•</span>
-          <span className="inline-flex items-center gap-1">
-            <Clock className="h-3.5 w-3.5" /> Termina em {String(h).padStart(2, "0")}:{String(m).padStart(2, "0")}:{String(s).padStart(2, "0")}
-          </span>
-          <span className="hidden sm:inline opacity-60">•</span>
-          <span>Restam apenas <span className="rounded bg-background/20 px-1.5 py-0.5">{vagasRestantes} vagas</span> nesse preço</span>
+          {promo ? (
+            <>
+              <span className="inline-flex items-center gap-1"><Gift className="h-3.5 w-3.5" /> Promoção de lançamento — TUDO grátis por 2 anos</span>
+              <span className="hidden sm:inline opacity-60">•</span>
+              <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> Até 06/01/2027</span>
+            </>
+          ) : (
+            <>
+              <span className="inline-flex items-center gap-1"><Flame className="h-3.5 w-3.5" /> Oferta de lançamento — 25% off vs. concorrência</span>
+              <span className="hidden sm:inline opacity-60">•</span>
+              <span className="inline-flex items-center gap-1">
+                <Clock className="h-3.5 w-3.5" /> Termina em {String(h).padStart(2, "0")}:{String(m).padStart(2, "0")}:{String(s).padStart(2, "0")}
+              </span>
+              <span className="hidden sm:inline opacity-60">•</span>
+              <span>Restam apenas <span className="rounded bg-background/20 px-1.5 py-0.5">{vagasRestantes} vagas</span> nesse preço</span>
+            </>
+          )}
         </div>
       </div>
 
       <section className="mx-auto max-w-6xl px-4 py-12 text-center">
         <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 px-3 py-1 text-xs font-bold text-accent-foreground">
-          <Sparkles className="h-3 w-3" /> Até 25% mais barato que os principais portais de emprego do Brasil
+          <Sparkles className="h-3 w-3" /> {promo ? "Promoção de lançamento: Pro grátis por 2 anos" : "Até 25% mais barato que os principais portais de emprego do Brasil"}
         </span>
-        <h1 className="mt-4 text-4xl font-extrabold lg:text-5xl">Contrate sem perder tempo</h1>
-        <p className="mt-3 text-muted-foreground">Comece com 15 contatos grátis. Sem fidelidade — cancele quando quiser.</p>
+        <h1 className="mt-4 text-4xl font-extrabold lg:text-5xl">
+          {promo ? "Comece grátis. Sem cartão. Sem prazo curto." : "Contrate sem perder tempo"}
+        </h1>
+        <p className="mt-3 text-muted-foreground">
+          {promo
+            ? "Todo mundo que se cadastrar até 06/01/2027 ganha o plano Full completo por 2 anos. Ativação em 1 clique."
+            : "Comece com 15 contatos grátis. Sem fidelidade — cancele quando quiser."}
+        </p>
 
         <div className="mt-6 inline-flex rounded-full bg-card p-1 shadow-soft">
           {(["mensal", "anual"] as const).map((c) => (
@@ -106,10 +151,12 @@ function PlanosPage() {
           cta="Começar grátis" onClick="link-auth"
         />
         <PlanoCard
-          nome="Básico" destaque
-          preco={ciclo === "mensal" ? `R$ ${brl(PRECO_BASICO)}` : `R$ ${brl(PRECO_BASICO * 12 * (1 - DESCONTO_ANUAL))}`}
-          subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
-          comparativo="Portais tradicionais: a partir de ~R$ 149,90/mês"
+          nome="Básico" destaque={!promo}
+          preco={promo ? "R$ 0" : `R$ ${brl(precoBasico)}`}
+          precoRiscado={promo ? `R$ ${brl(precoBasico)}` : undefined}
+          subtitulo={promo ? "grátis por 2 anos" : subCiclo}
+          promoTag={promo}
+          comparativo={promo ? undefined : "Portais tradicionais: a partir de ~R$ 149,90/mês"}
           features={[
             "Tudo do Free, mais:",
             "100 contatos liberados/mês",
@@ -117,13 +164,17 @@ function PlanosPage() {
             "Página personalizada (logo + cor)",
             "Selo Empresa Verificada",
           ]}
-          cta="Assinar Básico" onClick={() => setCheckout({ plano: "basico" })}
+          cta={promo ? "Ativar Pro grátis" : "Assinar Básico"}
+          onClick={promo ? handleAtivarPromo : () => setCheckout({ plano: "basico" })}
+          loading={promo && ativandoPromo}
         />
         <PlanoCard
-          nome="Full"
-          preco={ciclo === "mensal" ? `R$ ${brl(PRECO_FULL)}` : `R$ ${brl(PRECO_FULL * 12 * (1 - DESCONTO_ANUAL))}`}
-          subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
-          comparativo="Planos destaque do mercado: ~R$ 399/mês"
+          nome="Full" destaque={promo}
+          preco={promo ? "R$ 0" : `R$ ${brl(precoFull)}`}
+          precoRiscado={promo ? `R$ ${brl(precoFull)}` : undefined}
+          subtitulo={promo ? "grátis por 2 anos" : subCiclo}
+          promoTag={promo}
+          comparativo={promo ? undefined : "Planos destaque do mercado: ~R$ 399/mês"}
           features={[
             "Tudo do Básico, mais:",
             "Contatos ilimitados",
@@ -132,9 +183,12 @@ function PlanosPage() {
             "Detecção de fraude + salário sugerido",
             "Suporte prioritário",
           ]}
-          cta="Assinar Full" onClick={() => setCheckout({ plano: "full" })}
+          cta={promo ? "Ativar Full grátis" : "Assinar Full"}
+          onClick={promo ? handleAtivarPromo : () => setCheckout({ plano: "full" })}
+          loading={promo && ativandoPromo}
         />
       </section>
+
 
       {/* Tabela comparativa */}
       <section className="mx-auto max-w-6xl px-4 pb-12">
@@ -208,29 +262,39 @@ function Cell({ value, highlight }: { value: boolean | "full" | "limitado"; high
 }
 
 
-function PlanoCard({ nome, preco, subtitulo, features, cta, onClick, destaque, comparativo }: {
-  nome: string; preco: string; subtitulo: string;
+function PlanoCard({ nome, preco, precoRiscado, subtitulo, features, cta, onClick, destaque, comparativo, promoTag, loading }: {
+  nome: string; preco: string; precoRiscado?: string; subtitulo: string;
   features: string[]; cta: string;
   onClick: "link-auth" | (() => void);
   destaque?: boolean;
   comparativo?: string;
+  promoTag?: boolean;
+  loading?: boolean;
 }) {
   const isLink = onClick === "link-auth";
-  const btnCls = `mt-6 inline-flex w-full items-center justify-center rounded-xl py-3 text-sm font-bold ${
+  const btnCls = `mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold disabled:opacity-70 ${
     destaque ? "bg-primary text-primary-foreground hover:opacity-90" : "bg-secondary text-foreground hover:bg-accent/20"
   }`;
   return (
     <article className={`relative rounded-3xl border bg-card p-6 ${destaque ? "border-primary shadow-lg ring-2 ring-primary/30" : "border-border"}`}>
       {destaque && (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-[10px] font-extrabold uppercase text-primary-foreground">
-          Mais popular
+          {promoTag ? "Grátis 2 anos" : "Mais popular"}
         </span>
       )}
       <h3 className="text-xl font-extrabold">{nome}</h3>
-      <div className="mt-4 flex items-baseline gap-1">
+      <div className="mt-4 flex items-baseline gap-2">
         <span className="text-4xl font-extrabold">{preco}</span>
+        {precoRiscado && (
+          <span className="text-sm font-bold text-muted-foreground line-through">{precoRiscado}</span>
+        )}
         <span className="text-sm text-muted-foreground">{subtitulo}</span>
       </div>
+      {promoTag && (
+        <p className="mt-1 inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-bold text-accent-foreground">
+          <Gift className="h-3 w-3" /> Promoção de lançamento
+        </p>
+      )}
       {comparativo && (
         <p className="mt-1 text-[11px] font-bold text-accent-foreground">↓ {comparativo}</p>
       )}
@@ -244,11 +308,14 @@ function PlanoCard({ nome, preco, subtitulo, features, cta, onClick, destaque, c
       {isLink ? (
         <Link to="/auth" className={btnCls}>{cta}</Link>
       ) : (
-        <button onClick={onClick} className={btnCls}>{cta}</button>
+        <button onClick={onClick} disabled={loading} className={btnCls}>
+          {loading && <Loader2 className="h-4 w-4 animate-spin" />} {cta}
+        </button>
       )}
     </article>
   );
 }
+
 
 type Metodo = "cartao" | "pix";
 

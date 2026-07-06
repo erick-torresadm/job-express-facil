@@ -62,6 +62,7 @@ import { Route as ApiPublicPushRenewRouteImport } from './routes/api/public/push
 import { Route as ApiPublicCronReindexVagasRouteImport } from './routes/api/public/cron/reindex-vagas'
 import { Route as ApiPublicCronReindexGoogleRouteImport } from './routes/api/public/cron.reindex-google'
 import { Route as ApiPublicCronGerarPostRouteImport } from './routes/api/public/cron.gerar-post'
+import { Route as ApiPublicCronEmpresaDailyRouteImport } from './routes/api/public/cron/empresa-daily'
 import { Route as ApiPublicBlogIngestRouteImport } from './routes/api/public/blog.ingest'
 
 const TermosRoute = TermosRouteImport.update({
@@ -331,6 +332,12 @@ const ApiPublicCronGerarPostRoute = ApiPublicCronGerarPostRouteImport.update({
   path: '/api/public/cron/gerar-post',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCronEmpresaDailyRoute =
+  ApiPublicCronEmpresaDailyRouteImport.update({
+    id: '/api/public/cron/empresa-daily',
+    path: '/api/public/cron/empresa-daily',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicBlogIngestRoute = ApiPublicBlogIngestRouteImport.update({
   id: '/api/public/blog/ingest',
   path: '/api/public/blog/ingest',
@@ -388,6 +395,7 @@ export interface FileRoutesByFullPath {
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
+  '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
   '/api/public/cron/reindex-google': typeof ApiPublicCronReindexGoogleRoute
   '/api/public/cron/reindex-vagas': typeof ApiPublicCronReindexVagasRoute
@@ -443,6 +451,7 @@ export interface FileRoutesByTo {
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
+  '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
   '/api/public/cron/reindex-google': typeof ApiPublicCronReindexGoogleRoute
   '/api/public/cron/reindex-vagas': typeof ApiPublicCronReindexVagasRoute
@@ -500,6 +509,7 @@ export interface FileRoutesById {
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
+  '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
   '/api/public/cron/reindex-google': typeof ApiPublicCronReindexGoogleRoute
   '/api/public/cron/reindex-vagas': typeof ApiPublicCronReindexVagasRoute
@@ -558,6 +568,7 @@ export interface FileRouteTypes {
     | '/api/public/asaas-webhook'
     | '/api/public/track'
     | '/api/public/blog/ingest'
+    | '/api/public/cron/empresa-daily'
     | '/api/public/cron/gerar-post'
     | '/api/public/cron/reindex-google'
     | '/api/public/cron/reindex-vagas'
@@ -613,6 +624,7 @@ export interface FileRouteTypes {
     | '/api/public/asaas-webhook'
     | '/api/public/track'
     | '/api/public/blog/ingest'
+    | '/api/public/cron/empresa-daily'
     | '/api/public/cron/gerar-post'
     | '/api/public/cron/reindex-google'
     | '/api/public/cron/reindex-vagas'
@@ -669,6 +681,7 @@ export interface FileRouteTypes {
     | '/api/public/asaas-webhook'
     | '/api/public/track'
     | '/api/public/blog/ingest'
+    | '/api/public/cron/empresa-daily'
     | '/api/public/cron/gerar-post'
     | '/api/public/cron/reindex-google'
     | '/api/public/cron/reindex-vagas'
@@ -714,6 +727,7 @@ export interface RootRouteChildren {
   ApiPublicAsaasWebhookRoute: typeof ApiPublicAsaasWebhookRoute
   ApiPublicTrackRoute: typeof ApiPublicTrackRoute
   ApiPublicBlogIngestRoute: typeof ApiPublicBlogIngestRoute
+  ApiPublicCronEmpresaDailyRoute: typeof ApiPublicCronEmpresaDailyRoute
   ApiPublicCronGerarPostRoute: typeof ApiPublicCronGerarPostRoute
   ApiPublicCronReindexGoogleRoute: typeof ApiPublicCronReindexGoogleRoute
   ApiPublicCronReindexVagasRoute: typeof ApiPublicCronReindexVagasRoute
@@ -1093,6 +1107,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronGerarPostRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/empresa-daily': {
+      id: '/api/public/cron/empresa-daily'
+      path: '/api/public/cron/empresa-daily'
+      fullPath: '/api/public/cron/empresa-daily'
+      preLoaderRoute: typeof ApiPublicCronEmpresaDailyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/blog/ingest': {
       id: '/api/public/blog/ingest'
       path: '/api/public/blog/ingest'
@@ -1195,6 +1216,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicAsaasWebhookRoute: ApiPublicAsaasWebhookRoute,
   ApiPublicTrackRoute: ApiPublicTrackRoute,
   ApiPublicBlogIngestRoute: ApiPublicBlogIngestRoute,
+  ApiPublicCronEmpresaDailyRoute: ApiPublicCronEmpresaDailyRoute,
   ApiPublicCronGerarPostRoute: ApiPublicCronGerarPostRoute,
   ApiPublicCronReindexGoogleRoute: ApiPublicCronReindexGoogleRoute,
   ApiPublicCronReindexVagasRoute: ApiPublicCronReindexVagasRoute,
@@ -1203,13 +1225,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

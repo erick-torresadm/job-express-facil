@@ -290,6 +290,30 @@ export type Database = {
         }
         Relationships: []
       }
+      empresa_daily_digest: {
+        Row: {
+          empresa_id: string
+          id: string
+          kind: string
+          sent_at: string
+          sent_day: string
+        }
+        Insert: {
+          empresa_id: string
+          id?: string
+          kind: string
+          sent_at?: string
+          sent_day?: string
+        }
+        Update: {
+          empresa_id?: string
+          id?: string
+          kind?: string
+          sent_at?: string
+          sent_day?: string
+        }
+        Relationships: []
+      }
       favoritos: {
         Row: {
           created_at: string
@@ -474,6 +498,7 @@ export type Database = {
           cover_url: string | null
           cpf_cnpj: string | null
           created_at: string
+          digest_opt_out: boolean
           full_name: string | null
           handle: string | null
           id: string
@@ -495,6 +520,7 @@ export type Database = {
           cover_url?: string | null
           cpf_cnpj?: string | null
           created_at?: string
+          digest_opt_out?: boolean
           full_name?: string | null
           handle?: string | null
           id: string
@@ -516,6 +542,7 @@ export type Database = {
           cover_url?: string | null
           cpf_cnpj?: string | null
           created_at?: string
+          digest_opt_out?: boolean
           full_name?: string | null
           handle?: string | null
           id?: string

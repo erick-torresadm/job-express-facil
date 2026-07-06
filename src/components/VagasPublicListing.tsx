@@ -113,6 +113,22 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
         <p className="mt-1 max-w-2xl text-sm text-muted-foreground sm:text-base">{subtitulo}</p>
       </header>
 
+      {/* CTA persistente — cadastro rápido */}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-accent/30 bg-gradient-to-r from-accent/10 via-primary/5 to-accent/10 p-4">
+        <div className="flex items-start gap-3">
+          <Zap className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
+          <div>
+            <p className="text-sm font-bold">Quer receber as vagas certas no WhatsApp?</p>
+            <p className="text-xs text-muted-foreground">Crie seu perfil em 60s (áudio ou vídeo) e ganhe Pro grátis por 2 anos.</p>
+          </div>
+        </div>
+        <Link to="/cadastro" className="shrink-0 rounded-xl bg-accent px-4 py-2 text-xs font-extrabold text-accent-foreground shadow-pop transition hover:scale-[1.02]">
+          Criar perfil grátis →
+        </Link>
+      </div>
+
+
+
       {/* Tabs (regime) */}
       <nav className="scrollbar-none -mx-4 mb-4 flex gap-2 overflow-x-auto px-4">
         {TABS.map((t) => {
