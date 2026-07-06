@@ -77,6 +77,25 @@ export const Route = createFileRoute("/api/public/cron/reindex-vagas")({
             .in("id", enviadasIds);
         }
 
+        // Notifica admins via push (PWA) com o resultado
+        try {
+          const { notifyAdminsPush } = await import("@/lib/admin-push.server");
+          const titulo = quotaExceeded
+            ? "⚠️ Reindex Google: cota atingida"
+            : falha > 0
+              ? `⚠️ Reindex Google: ${ok} ok, ${falha} falhas`
+              : `✅ Reindex Google: ${ok} vagas enviadas`;
+          const mensagem = `Total analisado: ${vagas?.length ?? 0} • Sucesso: ${ok} • Falhas: ${falha}${quotaExceeded ? " • Cota diária esgotada" : ""}`;
+          await notifyAdminsPush({
+            title: titulo,
+            body: mensagem,
+            url: "/admin",
+            tag: "cron-reindex-vagas",
+          });
+        } catch (err) {
+          console.error("[cron reindex] push admin falhou", err);
+        }
+
         return new Response(
           JSON.stringify({
             timestamp: new Date().toISOString(),
