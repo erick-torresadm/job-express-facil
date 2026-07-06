@@ -10,6 +10,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { notifyAdminsVagaCriada } from "@/lib/admin-notify.functions";
+import { pingVagaSlug } from "@/lib/google-indexing.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/empresa/nova-vaga")({
