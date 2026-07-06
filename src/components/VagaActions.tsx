@@ -135,7 +135,9 @@ function ApplyModal({ vaga, empresaId, userId, onClose, onDone }: {
       });
       if (error) throw error;
       toast.success(`Candidatura enviada! (${(usadasHoje ?? 0) + 1}/${limite} hoje)`);
-      toast.success("Candidatura enviada!");
+      notifyAdminsCandidatura({
+        data: { vagaTitulo: vaga.titulo, candidato: cv.nome ?? null },
+      }).catch(() => null);
       onDone();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Erro ao enviar");
