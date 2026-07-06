@@ -13,12 +13,12 @@ export const Route = createFileRoute("/freelancer")({
   component: FreelancerLayout,
 });
 
-const NAV: { to: string; label: string; icon: any; exact?: boolean }[] = [
+const NAV = [
   { to: "/freelancer", label: "Painel", icon: LayoutDashboard, exact: true },
-  { to: "/freelancer/perfil", label: "Meu perfil", icon: User },
-  { to: "/freelancer/portfolio", label: "Portfólio", icon: Briefcase },
-  { to: "/freelancer/orcamentos", label: "Orçamentos", icon: MessageSquare },
-];
+  { to: "/freelancer/perfil", label: "Meu perfil", icon: User, exact: false },
+  { to: "/freelancer/portfolio", label: "Portfólio", icon: Briefcase, exact: false },
+  { to: "/freelancer/orcamentos", label: "Orçamentos", icon: MessageSquare, exact: false },
+] as const;
 
 function FreelancerLayout() {
   const { user, loading } = useAuth();

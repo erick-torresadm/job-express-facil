@@ -95,9 +95,9 @@ function ProjetoModal({ projeto, onClose }: { projeto: any; onClose: () => void 
           cliente_nome: form.cliente_nome || null,
           ano: form.ano ? Number(form.ano) : null,
           link_externo: form.link_externo || null,
-          tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
+          tags: form.tags.split(",").map((t: string) => t.trim()).filter(Boolean),
           capa_url: form.capa_url || null,
-          imagens: form.imagens.split("\n").map((u) => u.trim()).filter(Boolean),
+          imagens: form.imagens.split("\n").map((u: string) => u.trim()).filter(Boolean),
           publicado: form.publicado,
         },
       }),
@@ -120,19 +120,19 @@ function ProjetoModal({ projeto, onClose }: { projeto: any; onClose: () => void 
         className="max-h-[90vh] w-full max-w-2xl space-y-3 overflow-y-auto rounded-3xl bg-background p-6 shadow-pop"
       >
         <h2 className="font-display text-xl font-bold">{form.id ? "Editar projeto" : "Novo projeto"}</h2>
-        <Input label="Título *" value={form.titulo} onChange={(v) => setForm({ ...form, titulo: v })} required />
-        <Input label="Slug (opcional, gerado auto)" value={form.slug} onChange={(v) => setForm({ ...form, slug: v.toLowerCase().replace(/[^a-z0-9-]/g, "") })} />
+        <Input label="Título *" value={form.titulo} onChange={(v: string) => setForm({ ...form, titulo: v })} required />
+        <Input label="Slug (opcional, gerado auto)" value={form.slug} onChange={(v: string) => setForm({ ...form, slug: v.toLowerCase().replace(/[^a-z0-9-]/g, "") })} />
         <div>
           <label className="mb-1 block text-xs font-semibold text-muted-foreground">Descrição</label>
           <textarea rows={4} value={form.descricao} onChange={(e) => setForm({ ...form, descricao: e.target.value })} className="w-full rounded-xl border border-border bg-background p-3 text-sm" />
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <Input label="Cliente" value={form.cliente_nome} onChange={(v) => setForm({ ...form, cliente_nome: v })} />
-          <Input label="Ano" type="number" value={form.ano} onChange={(v) => setForm({ ...form, ano: v })} />
+          <Input label="Cliente" value={form.cliente_nome} onChange={(v: string) => setForm({ ...form, cliente_nome: v })} />
+          <Input label="Ano" type="number" value={form.ano} onChange={(v: string) => setForm({ ...form, ano: v })} />
         </div>
-        <Input label="Link externo" value={form.link_externo} onChange={(v) => setForm({ ...form, link_externo: v })} placeholder="https://…" />
-        <Input label="Tags (vírgula)" value={form.tags} onChange={(v) => setForm({ ...form, tags: v })} />
-        <Input label="URL da capa" value={form.capa_url} onChange={(v) => setForm({ ...form, capa_url: v })} placeholder="https://…" />
+        <Input label="Link externo" value={form.link_externo} onChange={(v: string) => setForm({ ...form, link_externo: v })} placeholder="https://…" />
+        <Input label="Tags (vírgula)" value={form.tags} onChange={(v: string) => setForm({ ...form, tags: v })} />
+        <Input label="URL da capa" value={form.capa_url} onChange={(v: string) => setForm({ ...form, capa_url: v })} placeholder="https://…" />
         <div>
           <label className="mb-1 block text-xs font-semibold text-muted-foreground">URLs das imagens (uma por linha)</label>
           <textarea rows={3} value={form.imagens} onChange={(e) => setForm({ ...form, imagens: e.target.value })} placeholder="https://…" className="w-full rounded-xl border border-border bg-background p-3 text-sm" />
