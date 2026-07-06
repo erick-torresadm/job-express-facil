@@ -59,6 +59,7 @@ import { Route as ApiPublicAsaasWebhookRouteImport } from './routes/api/public/a
 import { Route as AdminBlogNovoRouteImport } from './routes/admin.blog.novo'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
 import { Route as ApiPublicPushRenewRouteImport } from './routes/api/public/push.renew'
+import { Route as ApiPublicCronReindexVagasRouteImport } from './routes/api/public/cron/reindex-vagas'
 import { Route as ApiPublicCronReindexGoogleRouteImport } from './routes/api/public/cron.reindex-google'
 import { Route as ApiPublicCronGerarPostRouteImport } from './routes/api/public/cron.gerar-post'
 import { Route as ApiPublicBlogIngestRouteImport } from './routes/api/public/blog.ingest'
@@ -313,6 +314,12 @@ const ApiPublicPushRenewRoute = ApiPublicPushRenewRouteImport.update({
   path: '/api/public/push/renew',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCronReindexVagasRoute =
+  ApiPublicCronReindexVagasRouteImport.update({
+    id: '/api/public/cron/reindex-vagas',
+    path: '/api/public/cron/reindex-vagas',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicCronReindexGoogleRoute =
   ApiPublicCronReindexGoogleRouteImport.update({
     id: '/api/public/cron/reindex-google',
@@ -383,6 +390,7 @@ export interface FileRoutesByFullPath {
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
   '/api/public/cron/reindex-google': typeof ApiPublicCronReindexGoogleRoute
+  '/api/public/cron/reindex-vagas': typeof ApiPublicCronReindexVagasRoute
   '/api/public/push/renew': typeof ApiPublicPushRenewRoute
 }
 export interface FileRoutesByTo {
@@ -437,6 +445,7 @@ export interface FileRoutesByTo {
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
   '/api/public/cron/reindex-google': typeof ApiPublicCronReindexGoogleRoute
+  '/api/public/cron/reindex-vagas': typeof ApiPublicCronReindexVagasRoute
   '/api/public/push/renew': typeof ApiPublicPushRenewRoute
 }
 export interface FileRoutesById {
@@ -493,6 +502,7 @@ export interface FileRoutesById {
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
   '/api/public/cron/reindex-google': typeof ApiPublicCronReindexGoogleRoute
+  '/api/public/cron/reindex-vagas': typeof ApiPublicCronReindexVagasRoute
   '/api/public/push/renew': typeof ApiPublicPushRenewRoute
 }
 export interface FileRouteTypes {
@@ -550,6 +560,7 @@ export interface FileRouteTypes {
     | '/api/public/blog/ingest'
     | '/api/public/cron/gerar-post'
     | '/api/public/cron/reindex-google'
+    | '/api/public/cron/reindex-vagas'
     | '/api/public/push/renew'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -604,6 +615,7 @@ export interface FileRouteTypes {
     | '/api/public/blog/ingest'
     | '/api/public/cron/gerar-post'
     | '/api/public/cron/reindex-google'
+    | '/api/public/cron/reindex-vagas'
     | '/api/public/push/renew'
   id:
     | '__root__'
@@ -659,6 +671,7 @@ export interface FileRouteTypes {
     | '/api/public/blog/ingest'
     | '/api/public/cron/gerar-post'
     | '/api/public/cron/reindex-google'
+    | '/api/public/cron/reindex-vagas'
     | '/api/public/push/renew'
   fileRoutesById: FileRoutesById
 }
@@ -703,6 +716,7 @@ export interface RootRouteChildren {
   ApiPublicBlogIngestRoute: typeof ApiPublicBlogIngestRoute
   ApiPublicCronGerarPostRoute: typeof ApiPublicCronGerarPostRoute
   ApiPublicCronReindexGoogleRoute: typeof ApiPublicCronReindexGoogleRoute
+  ApiPublicCronReindexVagasRoute: typeof ApiPublicCronReindexVagasRoute
   ApiPublicPushRenewRoute: typeof ApiPublicPushRenewRoute
 }
 
@@ -1058,6 +1072,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPushRenewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/reindex-vagas': {
+      id: '/api/public/cron/reindex-vagas'
+      path: '/api/public/cron/reindex-vagas'
+      fullPath: '/api/public/cron/reindex-vagas'
+      preLoaderRoute: typeof ApiPublicCronReindexVagasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/cron/reindex-google': {
       id: '/api/public/cron/reindex-google'
       path: '/api/public/cron/reindex-google'
@@ -1176,6 +1197,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicBlogIngestRoute: ApiPublicBlogIngestRoute,
   ApiPublicCronGerarPostRoute: ApiPublicCronGerarPostRoute,
   ApiPublicCronReindexGoogleRoute: ApiPublicCronReindexGoogleRoute,
+  ApiPublicCronReindexVagasRoute: ApiPublicCronReindexVagasRoute,
   ApiPublicPushRenewRoute: ApiPublicPushRenewRoute,
 }
 export const routeTree = rootRouteImport
