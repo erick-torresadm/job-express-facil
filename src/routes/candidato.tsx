@@ -94,10 +94,7 @@ function CandidatoLayout() {
           </header>
 
           <main className="mx-auto w-full max-w-6xl px-3 py-4 sm:px-5 sm:py-6">
-            <Outlet
-              // @ts-expect-error passamos contexto pelos route context abaixo
-              context={{ userId: user.id, cvSlug, perfil, reload }}
-            />
+            <Outlet />
           </main>
         </SidebarInset>
       </SidebarProvider>
@@ -105,9 +102,3 @@ function CandidatoLayout() {
   );
 }
 
-export type CandidatoCtx = {
-  userId: string;
-  cvSlug: string | null;
-  perfil: Perfil | null;
-  reload: () => void;
-};
