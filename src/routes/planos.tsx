@@ -11,17 +11,17 @@ export const Route = createFileRoute("/planos")({
   head: () => ({
     meta: [
       { title: "Planos para empresas — VagasAgora" },
-      { name: "description", content: "A partir de R$ 44,90/mês. Até 25% mais barato que os principais portais de emprego. 15 contatos grátis para começar." },
+      { name: "description", content: "A partir de R$ 99/mês. Mais barato que os principais portais de emprego. 15 contatos grátis para começar." },
       { property: "og:title", content: "Planos para empresas — VagasAgora" },
-      { property: "og:description", content: "R$ 44,90/mês no Básico ou R$ 82,40/mês no Full. Mais barato que a concorrência." },
+      { property: "og:description", content: "R$ 99/mês no Básico ou R$ 299/mês no Full. Mais barato que a concorrência." },
     ],
   }),
   component: PlanosPage,
 });
 
 const DESCONTO_ANUAL = 0.2;
-const PRECO_BASICO = 44.9;
-const PRECO_FULL = 82.4;
+const PRECO_BASICO = 99;
+const PRECO_FULL = 299;
 
 const brl = (n: number) => n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -103,7 +103,7 @@ function PlanosPage() {
           nome="Básico" destaque
           preco={ciclo === "mensal" ? `R$ ${brl(PRECO_BASICO)}` : `R$ ${brl(PRECO_BASICO * 12 * (1 - DESCONTO_ANUAL))}`}
           subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
-          comparativo="Portais tradicionais: a partir de ~R$ 59,90/mês"
+          comparativo="Portais tradicionais: a partir de ~R$ 149,90/mês"
           features={[
             "Tudo do Free, mais:",
             "100 contatos liberados/mês",
@@ -117,7 +117,7 @@ function PlanosPage() {
           nome="Full"
           preco={ciclo === "mensal" ? `R$ ${brl(PRECO_FULL)}` : `R$ ${brl(PRECO_FULL * 12 * (1 - DESCONTO_ANUAL))}`}
           subtitulo={ciclo === "mensal" ? "por mês" : "por ano"}
-          comparativo="Planos destaque do mercado: ~R$ 109,90/mês"
+          comparativo="Planos destaque do mercado: ~R$ 399/mês"
           features={[
             "Tudo do Básico, mais:",
             "Contatos ilimitados",
@@ -139,10 +139,10 @@ function PlanosPage() {
             <thead>
               <tr className="border-b border-border bg-secondary/60">
                 <th className="px-4 py-3 text-left font-bold">Recurso</th>
-                <th className="px-4 py-3 text-center font-bold">VagasAgora<br /><span className="text-xs text-muted-foreground">Básico R$ 44,90</span></th>
-                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Portal tradicional<br /><span className="text-xs">~R$ 59,90</span></th>
-                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Outro portal<br /><span className="text-xs">~R$ 79,00</span></th>
-                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Marketplace de vagas<br /><span className="text-xs">~R$ 69,00</span></th>
+                <th className="px-4 py-3 text-center font-bold">VagasAgora<br /><span className="text-xs text-muted-foreground">Básico R$ 99</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Portal tradicional<br /><span className="text-xs">~R$ 149,90</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Outro portal<br /><span className="text-xs">~R$ 179,00</span></th>
+                <th className="px-4 py-3 text-center font-bold text-muted-foreground">Marketplace de vagas<br /><span className="text-xs">~R$ 149,00</span></th>
               </tr>
             </thead>
             <tbody>
