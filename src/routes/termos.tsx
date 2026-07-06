@@ -113,7 +113,7 @@ function TermosPage() {
 
           <h2>13. Contato</h2>
           <p>
-            Dúvidas sobre estes Termos: <a href="mailto:oi@vagasagora.com.br" className="text-accent">oi@vagasagora.com.br</a>
+            Dúvidas sobre estes Termos: <a href="mailto:contato@vagasagora.com.br" className="text-accent">contato@vagasagora.com.br</a>
           </p>
         </article>
       </main>

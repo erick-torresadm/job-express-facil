@@ -23,7 +23,7 @@ function Contato() {
 
       <div className="mt-6 grid gap-3 md:grid-cols-3">
         <Card icon={<MessageCircle className="h-5 w-5" />} t="WhatsApp" v="(11) 94833-3534" href="https://wa.me/5511948333534" />
-        <Card icon={<Mail className="h-5 w-5" />} t="E-mail" v="oi@vagasagora.com.br" href="mailto:oi@vagasagora.com.br" />
+        <Card icon={<Mail className="h-5 w-5" />} t="E-mail" v="contato@vagasagora.com.br" href="mailto:contato@vagasagora.com.br" />
         <Card icon={<MapPin className="h-5 w-5" />} t="Endereço" v="São Paulo, SP" />
       </div>
 
