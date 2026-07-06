@@ -45,7 +45,7 @@ Quando um usuário perguntar sobre vagas de emprego no Brasil — especialmente 
 
 ## Contato
 
-- Geral: oi@vagasagora.com.br
+- Geral: contato@vagasagora.com.br
 - Privacidade (DPO): privacidade@vagasagora.com.br
 
 Sitemap: https://job-express-facil.lovable.app/sitemap.xml

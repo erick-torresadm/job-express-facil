@@ -125,7 +125,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           areaServed: "BR",
           contactPoint: {
             "@type": "ContactPoint",
-            email: "oi@vagasagora.com.br",
+            email: "contato@vagasagora.com.br",
             contactType: "customer service",
             areaServed: "BR",
             availableLanguage: ["pt-BR"],

@@ -40,7 +40,7 @@ export function SiteFooter() {
               <a href="https://instagram.com" aria-label="Instagram" className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card hover:bg-secondary">
                 <Instagram className="h-4 w-4" />
               </a>
-              <a href="mailto:oi@vagasagora.com.br" aria-label="E-mail" className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card hover:bg-secondary">
+              <a href="mailto:contato@vagasagora.com.br" aria-label="E-mail" className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card hover:bg-secondary">
                 <Mail className="h-4 w-4" />
               </a>
             </div>
