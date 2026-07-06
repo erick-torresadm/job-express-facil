@@ -89,18 +89,26 @@ export function AdSlot({ placement, format = "banner", className, adsenseSlot }:
     }
   }, [loaded, ad, adsenseEnabled]);
 
+  const aspect = aspectByPlacement[placement] ?? aspectByFormat[format];
+  const hasImage = !!ad?.imagem_url;
+
   return (
     <aside
       aria-label="Publicidade"
       className={cn(
-        "relative w-full overflow-hidden rounded-xl border border-border/40 bg-muted/20",
-        sizeByFormat[format],
+        "relative mx-auto w-full max-w-3xl overflow-hidden rounded-lg",
+        // Sem borda/fundo quando há imagem — evita "moldura branca".
+        hasImage ? "bg-transparent" : "border border-border/40 bg-muted/20",
+        aspect,
         className,
       )}
     >
-      <span className="pointer-events-none absolute right-2 top-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60">
-        Publicidade
-      </span>
+      {!hasImage && (
+        <span className="pointer-events-none absolute right-2 top-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60">
+          Publicidade
+        </span>
+      )}
+
 
       {ad ? (
         ad.html_custom ? (
