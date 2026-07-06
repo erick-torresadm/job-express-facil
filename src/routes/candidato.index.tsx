@@ -104,6 +104,50 @@ function PainelHome() {
         </div>
       </section>
 
+      {/* Badge Pro + Checklist de força do perfil */}
+      <section className="grid gap-3 md:grid-cols-2">
+        {promoAte && new Date(promoAte).getTime() > Date.now() && (
+          <div className="rounded-3xl border-2 border-accent/40 bg-gradient-to-br from-accent/10 via-primary/5 to-accent/10 p-5 shadow-soft">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-[10px] font-extrabold uppercase text-accent-foreground">
+              <Gift className="h-3 w-3" /> Pro ativo
+            </span>
+            <p className="mt-3 text-sm font-bold">Você tem Pro grátis até {new Date(promoAte).toLocaleDateString("pt-BR")}</p>
+            <p className="text-xs text-muted-foreground">Todos os recursos liberados — vagas em destaque, alertas ilimitados e prioridade nas candidaturas.</p>
+          </div>
+        )}
+        <div className="rounded-3xl border border-border bg-card p-5 shadow-soft">
+          <p className="text-xs font-bold uppercase text-muted-foreground">Força do seu perfil</p>
+          {(() => {
+            const items = [
+              { done: checklist.midia, label: "Gravar áudio ou vídeo de apresentação", to: "/candidato/curriculo" as const },
+              { done: checklist.sobre, label: "Escrever sobre você (mín. 30 chars)", to: "/candidato/curriculo" as const },
+              { done: checklist.whatsapp, label: "Confirmar WhatsApp", to: "/perfil" as const },
+              { done: checklist.cidade, label: "Definir cidade", to: "/candidato/curriculo" as const },
+            ];
+            const done = items.filter((i) => i.done).length;
+            const pct = Math.round((done / items.length) * 100);
+            return (
+              <>
+                <div className="mt-2 flex items-center gap-3">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary">
+                    <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                  <span className="text-xs font-extrabold">{pct}%</span>
+                </div>
+                <ul className="mt-3 space-y-1.5 text-xs">
+                  {items.map((i) => (
+                    <li key={i.label} className="flex items-center gap-2">
+                      {i.done ? <CheckCircle2 className="h-3.5 w-3.5 text-accent" /> : <Circle className="h-3.5 w-3.5 text-muted-foreground" />}
+                      {i.done ? <span className="text-muted-foreground line-through">{i.label}</span> : <Link to={i.to} className="hover:underline">{i.label}</Link>}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            );
+          })()}
+        </div>
+      </section>
+
       {/* Métricas */}
       <section className="grid grid-cols-3 gap-3">
         <StatTile to="/candidato/candidaturas" icon={<Send className="h-4 w-4" />}
@@ -113,6 +157,7 @@ function PainelHome() {
         <StatTile to="/candidato/alertas" icon={<Bell className="h-4 w-4" />}
           label="Alertas ativos" value={stats.alertas} />
       </section>
+
 
       {/* Vagas recomendadas */}
       <section>
