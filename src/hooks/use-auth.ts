@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
 
@@ -9,6 +10,7 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
@@ -36,5 +38,19 @@ export function useAuth() {
     setRole((data?.role as Role) ?? null);
   };
 
-  return { session, user, role, loading, signOut: () => supabase.auth.signOut() };
+  // Sign-out hygiene: cancela queries em voo → limpa cache → encerra sessão.
+  // Assim nenhum request autenticado dispara com token já revogado (evita 401 storm
+  // e impede que dados protegidos cacheados apareçam depois do logout).
+  const signOut = async () => {
+    try {
+      await queryClient.cancelQueries();
+    } catch { /* noop */ }
+    queryClient.clear();
+    const res = await supabase.auth.signOut();
+    setRole(null);
+    return res;
+  };
+
+  return { session, user, role, loading, signOut };
 }
+
