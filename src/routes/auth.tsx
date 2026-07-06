@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import type { Role } from "@/hooks/use-auth";
+import { notifyNewSignup } from "@/lib/notify.functions";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -66,6 +67,16 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        // Fire-and-forget: notifica admin do novo cadastro
+        notifyNewSignup({
+          data: {
+            tipo: role === "empresa" ? "empresa" : "candidato",
+            nome: fullName || (role === "empresa" ? companyName : email),
+            email,
+            whatsapp: whatsapp || null,
+            empresa: role === "empresa" ? companyName || null : null,
+          },
+        }).catch(() => null);
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;

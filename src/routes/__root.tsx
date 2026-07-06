@@ -84,6 +84,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Ache vagas de emprego CLT, PJ e diária perto de casa. Cadastre seu currículo grátis por áudio em 1 minuto — a IA monta pra você. Empresas verificadas te chamam no WhatsApp." },
       { name: "author", content: "VagasAgora" },
       { name: "theme-color", content: "#0F172A" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "VagasAgora" },
+      { name: "mobile-web-app-capable", content: "yes" },
       { name: "geo.region", content: "BR" },
       { property: "og:site_name", content: "VagasAgora" },
       { property: "og:title", content: "VagasAgora — Emprego perto de você, cadastro por áudio em 1 minuto" },
@@ -104,6 +108,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "alternate", hrefLang: "pt-BR", href: "https://vagasagora.com.br" },
       { rel: "alternate", hrefLang: "x-default", href: "https://vagasagora.com.br" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "icon", type: "image/png", sizes: "512x512", href: "/pwa-512.png" },
     ],
     scripts: [
       {
