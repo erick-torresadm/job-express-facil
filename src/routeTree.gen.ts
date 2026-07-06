@@ -40,6 +40,7 @@ import { Route as EmpresaMinhasVagasRouteImport } from './routes/empresa.minhas-
 import { Route as CvSlugRouteImport } from './routes/cv.$slug'
 import { Route as CandidatoVagasRouteImport } from './routes/candidato.vagas'
 import { Route as CandidatoSalvasRouteImport } from './routes/candidato.salvas'
+import { Route as CandidatoCurriculoRouteImport } from './routes/candidato.curriculo'
 import { Route as CandidatoCandidaturasRouteImport } from './routes/candidato.candidaturas'
 import { Route as CandidatoAlertasRouteImport } from './routes/candidato.alertas'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
@@ -212,6 +213,11 @@ const CandidatoSalvasRoute = CandidatoSalvasRouteImport.update({
   path: '/salvas',
   getParentRoute: () => CandidatoRoute,
 } as any)
+const CandidatoCurriculoRoute = CandidatoCurriculoRouteImport.update({
+  id: '/curriculo',
+  path: '/curriculo',
+  getParentRoute: () => CandidatoRoute,
+} as any)
 const CandidatoCandidaturasRoute = CandidatoCandidaturasRouteImport.update({
   id: '/candidaturas',
   path: '/candidaturas',
@@ -319,6 +325,7 @@ export interface FileRoutesByFullPath {
   '/c/$slug': typeof CSlugRoute
   '/candidato/alertas': typeof CandidatoAlertasRoute
   '/candidato/candidaturas': typeof CandidatoCandidaturasRoute
+  '/candidato/curriculo': typeof CandidatoCurriculoRoute
   '/candidato/salvas': typeof CandidatoSalvasRoute
   '/candidato/vagas': typeof CandidatoVagasRoute
   '/cv/$slug': typeof CvSlugRoute
@@ -367,6 +374,7 @@ export interface FileRoutesByTo {
   '/c/$slug': typeof CSlugRoute
   '/candidato/alertas': typeof CandidatoAlertasRoute
   '/candidato/candidaturas': typeof CandidatoCandidaturasRoute
+  '/candidato/curriculo': typeof CandidatoCurriculoRoute
   '/candidato/salvas': typeof CandidatoSalvasRoute
   '/candidato/vagas': typeof CandidatoVagasRoute
   '/cv/$slug': typeof CvSlugRoute
@@ -417,6 +425,7 @@ export interface FileRoutesById {
   '/c/$slug': typeof CSlugRoute
   '/candidato/alertas': typeof CandidatoAlertasRoute
   '/candidato/candidaturas': typeof CandidatoCandidaturasRoute
+  '/candidato/curriculo': typeof CandidatoCurriculoRoute
   '/candidato/salvas': typeof CandidatoSalvasRoute
   '/candidato/vagas': typeof CandidatoVagasRoute
   '/cv/$slug': typeof CvSlugRoute
@@ -468,6 +477,7 @@ export interface FileRouteTypes {
     | '/c/$slug'
     | '/candidato/alertas'
     | '/candidato/candidaturas'
+    | '/candidato/curriculo'
     | '/candidato/salvas'
     | '/candidato/vagas'
     | '/cv/$slug'
@@ -516,6 +526,7 @@ export interface FileRouteTypes {
     | '/c/$slug'
     | '/candidato/alertas'
     | '/candidato/candidaturas'
+    | '/candidato/curriculo'
     | '/candidato/salvas'
     | '/candidato/vagas'
     | '/cv/$slug'
@@ -565,6 +576,7 @@ export interface FileRouteTypes {
     | '/c/$slug'
     | '/candidato/alertas'
     | '/candidato/candidaturas'
+    | '/candidato/curriculo'
     | '/candidato/salvas'
     | '/candidato/vagas'
     | '/cv/$slug'
@@ -847,6 +859,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CandidatoSalvasRouteImport
       parentRoute: typeof CandidatoRoute
     }
+    '/candidato/curriculo': {
+      id: '/candidato/curriculo'
+      path: '/curriculo'
+      fullPath: '/candidato/curriculo'
+      preLoaderRoute: typeof CandidatoCurriculoRouteImport
+      parentRoute: typeof CandidatoRoute
+    }
     '/candidato/candidaturas': {
       id: '/candidato/candidaturas'
       path: '/candidaturas'
@@ -965,6 +984,7 @@ declare module '@tanstack/react-router' {
 interface CandidatoRouteChildren {
   CandidatoAlertasRoute: typeof CandidatoAlertasRoute
   CandidatoCandidaturasRoute: typeof CandidatoCandidaturasRoute
+  CandidatoCurriculoRoute: typeof CandidatoCurriculoRoute
   CandidatoSalvasRoute: typeof CandidatoSalvasRoute
   CandidatoVagasRoute: typeof CandidatoVagasRoute
   CandidatoIndexRoute: typeof CandidatoIndexRoute
@@ -973,6 +993,7 @@ interface CandidatoRouteChildren {
 const CandidatoRouteChildren: CandidatoRouteChildren = {
   CandidatoAlertasRoute: CandidatoAlertasRoute,
   CandidatoCandidaturasRoute: CandidatoCandidaturasRoute,
+  CandidatoCurriculoRoute: CandidatoCurriculoRoute,
   CandidatoSalvasRoute: CandidatoSalvasRoute,
   CandidatoVagasRoute: CandidatoVagasRoute,
   CandidatoIndexRoute: CandidatoIndexRoute,
