@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { rateLimit } from "@/lib/rate-limit.server";
 
 // E-mail que recebe os avisos de novos cadastros
 const ADMIN_TO = "contato@vagasagora.com.br";
