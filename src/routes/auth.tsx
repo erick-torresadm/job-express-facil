@@ -29,7 +29,30 @@ function AuthPage() {
   const [companyName, setCompanyName] = useState("");
   const [cpfCnpj, setCpfCnpj] = useState("");
   const [err, setErr] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+
+  const handleReset = async () => {
+    setErr(null);
+    setInfo(null);
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      setErr("Digite seu e-mail no campo acima para receber o link de recuperação.");
+      return;
+    }
+    setResetLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      setInfo("Se este e-mail estiver cadastrado, enviamos um link para redefinir sua senha. Verifique sua caixa de entrada e o spam.");
+    } catch {
+      setInfo("Se este e-mail estiver cadastrado, enviamos um link para redefinir sua senha. Verifique sua caixa de entrada e o spam.");
+    } finally {
+      setResetLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && user && currentRole) {
