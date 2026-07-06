@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { rateLimit } from "@/lib/rate-limit.server";
 
 // Versão pública do currículo: SEM email, WhatsApp ou endereço.
 // Empresa só vê contato após pagar "revelar contato".
