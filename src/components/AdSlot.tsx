@@ -22,12 +22,24 @@ interface AdSlotProps {
 
 const ADSENSE_CLIENT = ""; // ex.: "ca-pub-XXXXXXXXXXXXXXXX" — preencher quando ativar
 
-const sizeByFormat: Record<Format, string> = {
-  banner: "min-h-[90px] md:min-h-[120px]",
-  card: "min-h-[180px]",
-  inline: "min-h-[100px]",
-  sidebar: "min-h-[250px]",
+// Aspect ratios alinhados aos tamanhos recomendados em /admin/anuncios
+// para evitar bordas/letterbox quando a imagem tem proporção certa.
+const aspectByPlacement: Record<string, string> = {
+  home_meio: "aspect-[4/1]",
+  home_inferior: "aspect-[4/1]",
+  vagas_lista_topo: "aspect-[970/250]",
+  blog_topo: "aspect-[728/90]",
+  blog_post_fim: "aspect-[6/5]",
+  rodape: "aspect-[10/1]",
 };
+
+const aspectByFormat: Record<Format, string> = {
+  banner: "aspect-[6/1] sm:aspect-[8/1]",
+  card: "aspect-[3/2]",
+  inline: "aspect-[5/1]",
+  sidebar: "aspect-[4/5]",
+};
+
 
 export function AdSlot({ placement, format = "banner", className, adsenseSlot }: AdSlotProps) {
   const [ad, setAd] = useState<Anuncio | null>(null);
@@ -77,18 +89,26 @@ export function AdSlot({ placement, format = "banner", className, adsenseSlot }:
     }
   }, [loaded, ad, adsenseEnabled]);
 
+  const aspect = aspectByPlacement[placement] ?? aspectByFormat[format];
+  const hasImage = !!ad?.imagem_url;
+
   return (
     <aside
       aria-label="Publicidade"
       className={cn(
-        "relative w-full overflow-hidden rounded-xl border border-border/40 bg-muted/20",
-        sizeByFormat[format],
+        "relative mx-auto w-full max-w-3xl overflow-hidden rounded-lg",
+        // Sem borda/fundo quando há imagem — evita "moldura branca".
+        hasImage ? "bg-transparent" : "border border-border/40 bg-muted/20",
+        aspect,
         className,
       )}
     >
-      <span className="pointer-events-none absolute right-2 top-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60">
-        Publicidade
-      </span>
+      {!hasImage && (
+        <span className="pointer-events-none absolute right-2 top-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60">
+          Publicidade
+        </span>
+      )}
+
 
       {ad ? (
         ad.html_custom ? (
