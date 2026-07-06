@@ -131,6 +131,15 @@ function NovaVaga() {
     } else {
       toast.success("Vaga publicada!");
     }
+    // Push aos admins (fire-and-forget)
+    notifyAdminsVagaCriada({
+      data: {
+        titulo: form.titulo,
+        empresa: empresaNome,
+        cidade: form.cidade,
+        slug: `${prof?.slug ?? form.profissao.toLowerCase().replace(/\s+/g, "-")}-em-${form.cidade.toLowerCase().replace(/\s+/g, "-")}`,
+      },
+    }).catch(() => null);
     setSaved(true);
   };
 
