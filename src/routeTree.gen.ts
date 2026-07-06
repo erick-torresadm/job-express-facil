@@ -31,6 +31,7 @@ import { Route as CandidatoIndexRouteImport } from './routes/candidato.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as VagasPjRouteImport } from './routes/vagas.pj'
+import { Route as VagasEstagioRouteImport } from './routes/vagas.estagio'
 import { Route as VagasCltRouteImport } from './routes/vagas.clt'
 import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
@@ -169,6 +170,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const VagasPjRoute = VagasPjRouteImport.update({
   id: '/vagas/pj',
   path: '/vagas/pj',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VagasEstagioRoute = VagasEstagioRouteImport.update({
+  id: '/vagas/estagio',
+  path: '/vagas/estagio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VagasCltRoute = VagasCltRouteImport.update({
@@ -356,6 +362,7 @@ export interface FileRoutesByFullPath {
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/vagas/clt': typeof VagasCltRoute
+  '/vagas/estagio': typeof VagasEstagioRoute
   '/vagas/pj': typeof VagasPjRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
@@ -408,6 +415,7 @@ export interface FileRoutesByTo {
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/vagas/clt': typeof VagasCltRoute
+  '/vagas/estagio': typeof VagasEstagioRoute
   '/vagas/pj': typeof VagasPjRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
@@ -462,6 +470,7 @@ export interface FileRoutesById {
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/vagas/clt': typeof VagasCltRoute
+  '/vagas/estagio': typeof VagasEstagioRoute
   '/vagas/pj': typeof VagasPjRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
@@ -517,6 +526,7 @@ export interface FileRouteTypes {
     | '/u/$handle'
     | '/vagas/$slug'
     | '/vagas/clt'
+    | '/vagas/estagio'
     | '/vagas/pj'
     | '/admin/'
     | '/blog/'
@@ -569,6 +579,7 @@ export interface FileRouteTypes {
     | '/u/$handle'
     | '/vagas/$slug'
     | '/vagas/clt'
+    | '/vagas/estagio'
     | '/vagas/pj'
     | '/admin'
     | '/blog'
@@ -622,6 +633,7 @@ export interface FileRouteTypes {
     | '/u/$handle'
     | '/vagas/$slug'
     | '/vagas/clt'
+    | '/vagas/estagio'
     | '/vagas/pj'
     | '/admin/'
     | '/blog/'
@@ -667,6 +679,7 @@ export interface RootRouteChildren {
   UHandleRoute: typeof UHandleRoute
   VagasSlugRoute: typeof VagasSlugRoute
   VagasCltRoute: typeof VagasCltRoute
+  VagasEstagioRoute: typeof VagasEstagioRoute
   VagasPjRoute: typeof VagasPjRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
@@ -833,6 +846,13 @@ declare module '@tanstack/react-router' {
       path: '/vagas/pj'
       fullPath: '/vagas/pj'
       preLoaderRoute: typeof VagasPjRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vagas/estagio': {
+      id: '/vagas/estagio'
+      path: '/vagas/estagio'
+      fullPath: '/vagas/estagio'
+      preLoaderRoute: typeof VagasEstagioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vagas/clt': {
@@ -1124,6 +1144,7 @@ const rootRouteChildren: RootRouteChildren = {
   UHandleRoute: UHandleRoute,
   VagasSlugRoute: VagasSlugRoute,
   VagasCltRoute: VagasCltRoute,
+  VagasEstagioRoute: VagasEstagioRoute,
   VagasPjRoute: VagasPjRoute,
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
