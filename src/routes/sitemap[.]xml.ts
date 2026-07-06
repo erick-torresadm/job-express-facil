@@ -3,7 +3,7 @@ import type {} from "@tanstack/react-start";
 import { PROFISSOES, CIDADES } from "@/lib/mock-data";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const BASE_URL = "https://job-express-facil.lovable.app";
+const BASE_URL = "https://vagasagora.com.br";
 
 function slugifyCidade(c: string) {
   return c.toLowerCase().replace(/\s+/g, "-");
