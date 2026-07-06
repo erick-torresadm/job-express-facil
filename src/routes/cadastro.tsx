@@ -8,6 +8,7 @@ import { PROFISSOES } from "@/lib/mock-data";
 import { analisarCandidato, type PerfilGerado } from "@/lib/ai.functions";
 import { claimCurriculo, updateLinkedin } from "@/lib/curriculo.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyNewSignup } from "@/lib/notify.functions";
 
 export const Route = createFileRoute("/cadastro")({
   head: () => ({
@@ -680,6 +681,9 @@ function StepContato({ onBack, onDone }: { onBack: () => void; onDone: (c: Conta
         // Caso o auto-confirm esteja desativado, tenta login mesmo assim
         await supabase.auth.signInWithPassword({ email: e, password: senha }).catch(() => null);
       }
+
+      // Notifica o admin (fire-and-forget — não bloqueia o fluxo)
+      notifyNewSignup({ data: { tipo: "candidato", nome: n, email: e, whatsapp: w } }).catch(() => null);
 
       onDone({ nome: n, email: e, whatsapp: w, senha });
     } catch (err) {
