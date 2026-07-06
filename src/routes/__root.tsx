@@ -17,6 +17,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { CookieConsent } from "@/components/CookieConsent";
 import { SoundProvider } from "@/components/SoundProvider";
 import { PageViewTracker } from "@/components/PageViewTracker";
+import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 
 function NotFoundComponent() {
   return (
