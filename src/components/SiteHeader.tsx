@@ -116,15 +116,15 @@ export function SiteHeader() {
 
   return (
     <header className="fixed inset-x-0 top-3 z-30 px-3 md:top-5 md:px-6">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border border-white/10 bg-primary/80 px-4 py-2.5 text-primary-foreground shadow-pop backdrop-blur-xl supports-[backdrop-filter]:bg-primary/60">
-        <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)} aria-label="VagasAgora">
+      <div className="mx-auto flex max-w-6xl items-center gap-2 rounded-full border border-white/10 bg-primary/80 px-3 py-2 text-primary-foreground shadow-pop backdrop-blur-xl supports-[backdrop-filter]:bg-primary/60 md:gap-3 md:px-4 md:py-2.5">
+        <Link to="/" className="flex shrink-0 items-center gap-2" onClick={() => setOpen(false)} aria-label="VagasAgora">
           <span className="font-display text-lg font-extrabold tracking-tight text-primary-foreground md:text-xl">
             VagasAgora
           </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden min-w-0 items-center gap-0.5 md:flex">
           {navLinks.map((l) => (
             <Link
               key={l.to}
@@ -132,47 +132,39 @@ export function SiteHeader() {
               activeOptions={{ exact: l.to === "/" }}
               activeProps={{ className: "text-primary-foreground bg-white/15" }}
               inactiveProps={{ className: "text-primary-foreground/70" }}
-              className="rounded-full px-3.5 py-2 text-sm font-semibold transition-colors hover:bg-white/10 hover:text-primary-foreground"
+              className="whitespace-nowrap rounded-full px-2.5 py-1.5 text-[13px] font-semibold transition-colors hover:bg-white/10 hover:text-primary-foreground lg:px-3 lg:py-2 lg:text-sm"
             >
               {l.label}
             </Link>
           ))}
         </nav>
 
-        {/* Busca global desktop */}
-        <div className="hidden flex-1 justify-center px-2 md:flex lg:max-w-xs">
+        {/* Busca global desktop — só em telas grandes */}
+        <div className="ml-auto hidden shrink-0 lg:flex lg:w-56 xl:w-64">
           <GlobalSearch />
         </div>
 
-
-
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="ml-auto hidden shrink-0 items-center gap-1.5 md:flex lg:ml-2">
           {user ? (
             <>
               <NotificationBell />
               <Link
-                to="/perfil"
-                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-white/20"
-              >
-                <UserIcon className="h-4 w-4" /> Meu perfil
-              </Link>
-              <Link
                 to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
-                className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-white/25"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-[13px] font-semibold text-primary-foreground hover:bg-white/25 lg:px-4 lg:py-2 lg:text-sm"
               >
                 <UserIcon className="h-4 w-4" /> Minha conta
               </Link>
-              <button onClick={handleSignOut} aria-label="Sair"
+              <button onClick={handleSignOut} aria-label="Sair" title="Sair"
                 className="grid h-9 w-9 place-items-center rounded-full text-primary-foreground/80 hover:bg-white/15">
                 <LogOut className="h-4 w-4" />
               </button>
             </>
           ) : (
             <>
-              <Link to="/auth" className="rounded-full px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-white/10">
+              <Link to="/auth" className="rounded-full px-3 py-1.5 text-[13px] font-semibold text-primary-foreground hover:bg-white/10 lg:px-4 lg:py-2 lg:text-sm">
                 Entrar
               </Link>
-              <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-soft transition-transform hover:scale-[1.02]">
+              <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-[13px] font-semibold text-accent-foreground shadow-soft transition-transform hover:scale-[1.02] lg:px-4 lg:py-2 lg:text-sm">
                 <Building2 className="h-4 w-4" /> Criar conta
               </Link>
             </>
@@ -180,7 +172,7 @@ export function SiteHeader() {
         </div>
 
         {/* Mobile actions */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="ml-auto flex items-center gap-2 md:hidden">
           {user && <NotificationBell />}
           {!user && (
             <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground shadow-soft">
@@ -196,6 +188,7 @@ export function SiteHeader() {
           </button>
         </div>
       </div>
+
 
       {/* Mobile drawer */}
       {open && (
