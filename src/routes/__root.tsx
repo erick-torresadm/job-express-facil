@@ -18,6 +18,7 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { SoundProvider } from "@/components/SoundProvider";
 import { PageViewTracker } from "@/components/PageViewTracker";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
+import { PromoLancamentoBanner } from "@/components/PromoLancamentoBanner";
 
 function NotFoundComponent() {
   return (
@@ -196,6 +197,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col bg-background">
+        {!hideChrome && <PromoLancamentoBanner compact />}
         {!hideChrome && <SiteHeader />}
         {!hideChrome && <TrendingMenu />}
         <div className="flex-1">

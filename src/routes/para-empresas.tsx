@@ -6,6 +6,7 @@ import {
   Bell, BarChart3, Lock, Clock, Users, Zap, ArrowRight, Star,
   TrendingDown, AlertTriangle, ThumbsUp, Flame,
 } from "lucide-react";
+import { PromoLancamentoBanner } from "@/components/PromoLancamentoBanner";
 
 export const Route = createFileRoute("/para-empresas")({
   head: () => ({
@@ -29,6 +30,9 @@ function ParaEmpresas() {
   return (
     <div className="bg-background overflow-x-hidden">
       <Hero />
+      <section className="mx-auto max-w-6xl px-4 py-6">
+        <PromoLancamentoBanner />
+      </section>
       <Problema />
       <ComoFunciona />
       <Diferenciais />

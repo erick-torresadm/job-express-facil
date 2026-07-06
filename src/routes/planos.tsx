@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { criarAssinaturaAsaas, criarAssinaturaCartao } from "@/lib/asaas.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { PromoLancamentoBanner } from "@/components/PromoLancamentoBanner";
 
 export const Route = createFileRoute("/planos")({
   head: () => ({
@@ -91,6 +92,11 @@ function PlanosPage() {
           ))}
         </div>
       </section>
+
+      <section className="mx-auto max-w-5xl px-4 pb-4">
+        <PromoLancamentoBanner />
+      </section>
+
 
       <section className="mx-auto grid max-w-5xl gap-6 px-4 pb-12 lg:grid-cols-3">
         <PlanoCard
