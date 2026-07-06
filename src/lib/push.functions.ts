@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { rateLimit } from "@/lib/rate-limit.server";
 
 /** Devolve a chave pública VAPID (segura para expor). */
 export const getVapidPublicKey = createServerFn({ method: "GET" }).handler(async () => {
