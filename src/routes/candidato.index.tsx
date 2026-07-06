@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Send, Heart, Bell, ArrowRight, Sparkles, TrendingUp, MapPin } from "lucide-react";
+import { Send, Heart, Bell, ArrowRight, Sparkles, TrendingUp, MapPin, Gift, CheckCircle2, Circle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { VagaCard, type VagaCardData } from "@/components/VagaCard";
@@ -21,13 +21,17 @@ function PainelHome() {
   const [cidade, setCidade] = useState<string | null>(null);
   const [vagas, setVagas] = useState<VagaCardData[] | null>(null);
   const [ativasCand, setAtivasCand] = useState<number>(0);
+  const [promoAte, setPromoAte] = useState<string | null>(null);
+  const [checklist, setChecklist] = useState<{ midia: boolean; whatsapp: boolean; cidade: boolean; sobre: boolean }>({
+    midia: false, whatsapp: false, cidade: false, sobre: false,
+  });
 
   useEffect(() => {
     if (!user) return;
     (async () => {
       const [{ data: prof }, { data: cv }, { count: c }, { count: f }, { count: a }, { count: ativas }] = await Promise.all([
-        supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
-        supabase.from("curriculos").select("cidade").eq("user_id", user.id).maybeSingle(),
+        supabase.from("profiles").select("full_name, whatsapp, promo_pro_ate").eq("id", user.id).maybeSingle(),
+        supabase.from("curriculos").select("cidade, video_url, audio_url, sobre").eq("user_id", user.id).maybeSingle(),
         supabase.from("candidaturas").select("id", { count: "exact", head: true }).eq("candidato_id", user.id),
         supabase.from("favoritos").select("id", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("alertas").select("id", { count: "exact", head: true }).eq("user_id", user.id),
@@ -35,11 +39,20 @@ function PainelHome() {
           .eq("candidato_id", user.id)
           .in("status", ["enviado", "visto", "em_analise"]),
       ]);
-      setNome((prof?.full_name as string | null)?.split(" ")[0] ?? "");
-      const cid = (cv as { cidade?: string | null } | null)?.cidade ?? null;
+      const profileRow = prof as { full_name?: string | null; whatsapp?: string | null; promo_pro_ate?: string | null } | null;
+      const cvRow = cv as { cidade?: string | null; video_url?: string | null; audio_url?: string | null; sobre?: string | null } | null;
+      setNome(profileRow?.full_name?.split(" ")[0] ?? "");
+      setPromoAte(profileRow?.promo_pro_ate ?? null);
+      const cid = cvRow?.cidade ?? null;
       setCidade(cid);
       setStats({ candidaturas: c ?? 0, salvas: f ?? 0, alertas: a ?? 0 });
       setAtivasCand(ativas ?? 0);
+      setChecklist({
+        midia: !!(cvRow?.video_url || cvRow?.audio_url),
+        whatsapp: !!profileRow?.whatsapp,
+        cidade: !!cid,
+        sobre: !!(cvRow?.sobre && cvRow.sobre.length > 30),
+      });
 
       let q = supabase.from("vagas")
         .select("id,titulo,empresa_nome,bairro,cidade,salario,profissao_slug,urgente,created_at")
@@ -61,6 +74,7 @@ function PainelHome() {
       setVagas(recs);
     })();
   }, [user]);
+
 
   if (!user) return null;
 
