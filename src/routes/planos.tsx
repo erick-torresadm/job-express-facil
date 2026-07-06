@@ -262,29 +262,39 @@ function Cell({ value, highlight }: { value: boolean | "full" | "limitado"; high
 }
 
 
-function PlanoCard({ nome, preco, subtitulo, features, cta, onClick, destaque, comparativo }: {
-  nome: string; preco: string; subtitulo: string;
+function PlanoCard({ nome, preco, precoRiscado, subtitulo, features, cta, onClick, destaque, comparativo, promoTag, loading }: {
+  nome: string; preco: string; precoRiscado?: string; subtitulo: string;
   features: string[]; cta: string;
   onClick: "link-auth" | (() => void);
   destaque?: boolean;
   comparativo?: string;
+  promoTag?: boolean;
+  loading?: boolean;
 }) {
   const isLink = onClick === "link-auth";
-  const btnCls = `mt-6 inline-flex w-full items-center justify-center rounded-xl py-3 text-sm font-bold ${
+  const btnCls = `mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold disabled:opacity-70 ${
     destaque ? "bg-primary text-primary-foreground hover:opacity-90" : "bg-secondary text-foreground hover:bg-accent/20"
   }`;
   return (
     <article className={`relative rounded-3xl border bg-card p-6 ${destaque ? "border-primary shadow-lg ring-2 ring-primary/30" : "border-border"}`}>
       {destaque && (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-[10px] font-extrabold uppercase text-primary-foreground">
-          Mais popular
+          {promoTag ? "Grátis 2 anos" : "Mais popular"}
         </span>
       )}
       <h3 className="text-xl font-extrabold">{nome}</h3>
-      <div className="mt-4 flex items-baseline gap-1">
+      <div className="mt-4 flex items-baseline gap-2">
         <span className="text-4xl font-extrabold">{preco}</span>
+        {precoRiscado && (
+          <span className="text-sm font-bold text-muted-foreground line-through">{precoRiscado}</span>
+        )}
         <span className="text-sm text-muted-foreground">{subtitulo}</span>
       </div>
+      {promoTag && (
+        <p className="mt-1 inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-bold text-accent-foreground">
+          <Gift className="h-3 w-3" /> Promoção de lançamento
+        </p>
+      )}
       {comparativo && (
         <p className="mt-1 text-[11px] font-bold text-accent-foreground">↓ {comparativo}</p>
       )}
@@ -298,11 +308,14 @@ function PlanoCard({ nome, preco, subtitulo, features, cta, onClick, destaque, c
       {isLink ? (
         <Link to="/auth" className={btnCls}>{cta}</Link>
       ) : (
-        <button onClick={onClick} className={btnCls}>{cta}</button>
+        <button onClick={onClick} disabled={loading} className={btnCls}>
+          {loading && <Loader2 className="h-4 w-4 animate-spin" />} {cta}
+        </button>
       )}
     </article>
   );
 }
+
 
 type Metodo = "cartao" | "pix";
 
