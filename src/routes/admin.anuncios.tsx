@@ -98,6 +98,42 @@ function AdminAnuncios() {
     },
   });
 
+  const [uploading, setUploading] = useState(false);
+  const selectedPlacement = PLACEMENTS.find((p) => p.id === form.placement)!;
+
+  const handleUpload = async (file: File) => {
+    if (!file) return;
+    if (file.size > 500 * 1024) {
+      toast.error("Arquivo maior que 500 KB. Otimize a imagem antes de subir.");
+      return;
+    }
+    if (!/^image\/(png|jpe?g|webp|gif)$/.test(file.type)) {
+      toast.error("Formato inválido. Use JPG, PNG, WebP ou GIF.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id;
+      if (!uid) throw new Error("Sem sessão");
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${uid}/anuncios/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage.from("social-media").upload(path, file, {
+        cacheControl: "31536000",
+        upsert: false,
+        contentType: file.type,
+      });
+      if (error) throw error;
+      const { data: pub } = supabase.storage.from("social-media").getPublicUrl(path);
+      setForm((f) => ({ ...f, imagem_url: pub.publicUrl }));
+      toast.success("Imagem enviada");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Falha no upload");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <AdminShell title="Anúncios">
       <section className="rounded-2xl border border-border bg-card p-5">
