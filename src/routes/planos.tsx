@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { criarAssinaturaAsaas, criarAssinaturaCartao } from "@/lib/asaas.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { PromoLancamentoBanner } from "@/components/PromoLancamentoBanner";
 
 export const Route = createFileRoute("/planos")({
   head: () => ({
