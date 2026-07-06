@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, Trash2, Eye, MousePointerClick } from "lucide-react";
+import { Plus, Trash2, Eye, MousePointerClick, Upload, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/AdminShell";
