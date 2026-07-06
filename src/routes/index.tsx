@@ -829,14 +829,14 @@ function Como() {
 
 function Profissoes() {
   const list = [
-    { e: "💼", n: "Administrativo", v: "1.842 vagas" },
-    { e: "🛍️", n: "Vendas & Varejo", v: "2.310 vagas" },
-    { e: "🎧", n: "Atendimento", v: "1.207 vagas" },
-    { e: "📊", n: "Financeiro", v: "684 vagas" },
-    { e: "📦", n: "Logística", v: "1.495 vagas" },
-    { e: "💻", n: "Tecnologia", v: "923 vagas" },
-    { e: "🏥", n: "Saúde", v: "812 vagas" },
-    { e: "🎓", n: "Estágio & Trainee", v: "476 vagas" },
+    { icon: Briefcase, n: "Administrativo", v: "1.842 vagas" },
+    { icon: ShoppingBag, n: "Vendas & Varejo", v: "2.310 vagas" },
+    { icon: Headphones, n: "Atendimento", v: "1.207 vagas" },
+    { icon: BarChart3, n: "Financeiro", v: "684 vagas" },
+    { icon: Package, n: "Logística", v: "1.495 vagas" },
+    { icon: Code2, n: "Tecnologia", v: "923 vagas" },
+    { icon: Stethoscope, n: "Saúde", v: "812 vagas" },
+    { icon: GraduationCap, n: "Estágio & Trainee", v: "476 vagas" },
   ];
   return (
     <section className="bg-secondary/40 py-14 sm:py-20 md:py-28">
