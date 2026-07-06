@@ -16,7 +16,8 @@ export const Route = createFileRoute("/sitemap.xml")({
         const today = new Date().toISOString().split("T")[0];
 
         const staticPaths = [
-          "/", "/como-funciona", "/para-empresas", "/contato",
+          "/", "/vagas", "/vagas/clt", "/vagas/pj", "/vagas/estagio",
+          "/como-funciona", "/para-empresas", "/contato",
           "/blog", "/categorias", "/planos", "/termos", "/privacidade",
         ];
 
