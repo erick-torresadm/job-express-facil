@@ -9,6 +9,7 @@ import {
 } from "@/lib/intel.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { notifyAdminsVagaCriada } from "@/lib/admin-notify.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/empresa/nova-vaga")({
@@ -130,6 +131,15 @@ function NovaVaga() {
     } else {
       toast.success("Vaga publicada!");
     }
+    // Push aos admins (fire-and-forget)
+    notifyAdminsVagaCriada({
+      data: {
+        titulo: form.titulo,
+        empresa: empresaNome,
+        cidade: form.cidade,
+        slug: `${prof?.slug ?? form.profissao.toLowerCase().replace(/\s+/g, "-")}-em-${form.cidade.toLowerCase().replace(/\s+/g, "-")}`,
+      },
+    }).catch(() => null);
     setSaved(true);
   };
 

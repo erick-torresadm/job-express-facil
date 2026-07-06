@@ -48,6 +48,7 @@ import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 import { Route as ApiPublicAsaasWebhookRouteImport } from './routes/api/public/asaas-webhook'
 import { Route as AdminBlogNovoRouteImport } from './routes/admin.blog.novo'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
+import { Route as ApiPublicPushRenewRouteImport } from './routes/api/public/push.renew'
 import { Route as ApiPublicCronGerarPostRouteImport } from './routes/api/public/cron.gerar-post'
 import { Route as ApiPublicBlogIngestRouteImport } from './routes/api/public/blog.ingest'
 
@@ -246,6 +247,11 @@ const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AdminBlogRoute,
 } as any)
+const ApiPublicPushRenewRoute = ApiPublicPushRenewRouteImport.update({
+  id: '/api/public/push/renew',
+  path: '/api/public/push/renew',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicCronGerarPostRoute = ApiPublicCronGerarPostRouteImport.update({
   id: '/api/public/cron/gerar-post',
   path: '/api/public/cron/gerar-post',
@@ -299,6 +305,7 @@ export interface FileRoutesByFullPath {
   '/api/public/track': typeof ApiPublicTrackRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
+  '/api/public/push/renew': typeof ApiPublicPushRenewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -342,6 +349,7 @@ export interface FileRoutesByTo {
   '/api/public/track': typeof ApiPublicTrackRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
+  '/api/public/push/renew': typeof ApiPublicPushRenewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -386,6 +394,7 @@ export interface FileRoutesById {
   '/api/public/track': typeof ApiPublicTrackRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
+  '/api/public/push/renew': typeof ApiPublicPushRenewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -431,6 +440,7 @@ export interface FileRouteTypes {
     | '/api/public/track'
     | '/api/public/blog/ingest'
     | '/api/public/cron/gerar-post'
+    | '/api/public/push/renew'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -474,6 +484,7 @@ export interface FileRouteTypes {
     | '/api/public/track'
     | '/api/public/blog/ingest'
     | '/api/public/cron/gerar-post'
+    | '/api/public/push/renew'
   id:
     | '__root__'
     | '/'
@@ -517,6 +528,7 @@ export interface FileRouteTypes {
     | '/api/public/track'
     | '/api/public/blog/ingest'
     | '/api/public/cron/gerar-post'
+    | '/api/public/push/renew'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -555,6 +567,7 @@ export interface RootRouteChildren {
   ApiPublicTrackRoute: typeof ApiPublicTrackRoute
   ApiPublicBlogIngestRoute: typeof ApiPublicBlogIngestRoute
   ApiPublicCronGerarPostRoute: typeof ApiPublicCronGerarPostRoute
+  ApiPublicPushRenewRoute: typeof ApiPublicPushRenewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -832,6 +845,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogIdRouteImport
       parentRoute: typeof AdminBlogRoute
     }
+    '/api/public/push/renew': {
+      id: '/api/public/push/renew'
+      path: '/api/public/push/renew'
+      fullPath: '/api/public/push/renew'
+      preLoaderRoute: typeof ApiPublicPushRenewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/cron/gerar-post': {
       id: '/api/public/cron/gerar-post'
       path: '/api/public/cron/gerar-post'
@@ -916,6 +936,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicTrackRoute: ApiPublicTrackRoute,
   ApiPublicBlogIngestRoute: ApiPublicBlogIngestRoute,
   ApiPublicCronGerarPostRoute: ApiPublicCronGerarPostRoute,
+  ApiPublicPushRenewRoute: ApiPublicPushRenewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

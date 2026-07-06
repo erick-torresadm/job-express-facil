@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import type { VagaPublica } from "@/lib/vagas.functions";
+import { notifyAdminsCandidatura } from "@/lib/admin-notify.functions";
 
 export function VagaActions({ vaga, empresaId }: { vaga: VagaPublica; empresaId?: string }) {
   const { user, role } = useAuth();
@@ -134,7 +135,9 @@ function ApplyModal({ vaga, empresaId, userId, onClose, onDone }: {
       });
       if (error) throw error;
       toast.success(`Candidatura enviada! (${(usadasHoje ?? 0) + 1}/${limite} hoje)`);
-      toast.success("Candidatura enviada!");
+      notifyAdminsCandidatura({
+        data: { vagaTitulo: vaga.titulo, candidato: null },
+      }).catch(() => null);
       onDone();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Erro ao enviar");
