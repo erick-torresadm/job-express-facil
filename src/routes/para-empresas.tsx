@@ -29,6 +29,9 @@ function ParaEmpresas() {
   return (
     <div className="bg-background overflow-x-hidden">
       <Hero />
+      <section className="mx-auto max-w-6xl px-4 py-6">
+        <PromoLancamentoBanner />
+      </section>
       <Problema />
       <ComoFunciona />
       <Diferenciais />
