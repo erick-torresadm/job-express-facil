@@ -73,7 +73,7 @@ export async function getAccessToken(): Promise<string> {
   return data.access_token;
 }
 
-async function publish(url: string, type: "URL_UPDATED" | "URL_DELETED", token: string) {
+export async function publish(url: string, type: "URL_UPDATED" | "URL_DELETED", token: string) {
   const res = await fetch("https://indexing.googleapis.com/v3/urlNotifications:publish", {
     method: "POST",
     headers: {
