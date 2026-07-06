@@ -35,7 +35,7 @@ function MinhasVagas() {
     if (!user) return;
     supabase
       .from("vagas")
-      .select("id,titulo,empresa_nome,salario,horario,bairro,cidade,urgente,ativa,created_at")
+      .select("id,titulo,empresa_nome,salario,horario,bairro,cidade,urgente,ativa,created_at,profissao_slug")
       .eq("empresa_id", user.id)
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
@@ -45,16 +45,21 @@ function MinhasVagas() {
       });
   }, [user]);
 
+  const slugDe = (v: Vaga) =>
+    `${v.profissao_slug ?? v.titulo.toLowerCase().replace(/\s+/g, "-")}-em-${v.cidade.toLowerCase().replace(/\s+/g, "-")}`;
+
   const toggleAtiva = async (v: Vaga) => {
     const novo = !v.ativa;
     setVagas((prev) => prev.map((x) => (x.id === v.id ? { ...x, ativa: novo } : x)));
     await supabase.from("vagas").update({ ativa: novo }).eq("id", v.id);
+    pingVagaSlug({ data: { slug: slugDe(v), type: novo ? "URL_UPDATED" : "URL_DELETED" } }).catch(() => null);
   };
 
-  const excluir = async (id: string) => {
+  const excluir = async (v: Vaga) => {
     if (!confirm("Excluir esta vaga?")) return;
-    setVagas((prev) => prev.filter((v) => v.id !== id));
-    await supabase.from("vagas").delete().eq("id", id);
+    setVagas((prev) => prev.filter((x) => x.id !== v.id));
+    await supabase.from("vagas").delete().eq("id", v.id);
+    pingVagaSlug({ data: { slug: slugDe(v), type: "URL_DELETED" } }).catch(() => null);
     toast.success("Vaga removida");
   };
 
