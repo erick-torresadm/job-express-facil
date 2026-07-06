@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { CandidaturasVaga } from "@/components/CandidaturasVaga";
+import { pingVagaSlug } from "@/lib/google-indexing.functions";
 
 export const Route = createFileRoute("/empresa/minhas-vagas")({
   head: () => ({ meta: [{ title: "Minhas vagas — VagasAgora" }, { name: "robots", content: "noindex" }] }),
