@@ -138,7 +138,7 @@ export const reindexarTodasVagas = createServerFn({ method: "POST" })
   .inputValidator((data) =>
     z
       .object({
-        limite: z.number().int().min(1).max(200).default(180),
+        limite: z.number().int().min(1).max(180).default(120),
       })
       .parse(data ?? {}),
   )
