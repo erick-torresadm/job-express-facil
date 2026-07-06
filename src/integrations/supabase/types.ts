@@ -364,6 +364,255 @@ export type Database = {
         }
         Relationships: []
       }
+      freelancer_avaliacoes: {
+        Row: {
+          aprovada: boolean
+          autor_empresa: string | null
+          autor_id: string | null
+          autor_nome: string
+          comentario: string
+          created_at: string
+          freelancer_id: string
+          id: string
+          nota: number
+        }
+        Insert: {
+          aprovada?: boolean
+          autor_empresa?: string | null
+          autor_id?: string | null
+          autor_nome: string
+          comentario: string
+          created_at?: string
+          freelancer_id: string
+          id?: string
+          nota: number
+        }
+        Update: {
+          aprovada?: boolean
+          autor_empresa?: string | null
+          autor_id?: string | null
+          autor_nome?: string
+          comentario?: string
+          created_at?: string
+          freelancer_id?: string
+          id?: string
+          nota?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "freelancer_avaliacoes_freelancer_id_fkey"
+            columns: ["freelancer_id"]
+            isOneToOne: false
+            referencedRelation: "freelancers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      freelancer_orcamentos: {
+        Row: {
+          cliente_id: string | null
+          created_at: string
+          descricao: string
+          email: string | null
+          freelancer_id: string
+          id: string
+          nome: string
+          orcamento_alvo: number | null
+          prazo_dias: number | null
+          status: string
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string
+          descricao: string
+          email?: string | null
+          freelancer_id: string
+          id?: string
+          nome: string
+          orcamento_alvo?: number | null
+          prazo_dias?: number | null
+          status?: string
+          updated_at?: string
+          whatsapp: string
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string
+          descricao?: string
+          email?: string | null
+          freelancer_id?: string
+          id?: string
+          nome?: string
+          orcamento_alvo?: number | null
+          prazo_dias?: number | null
+          status?: string
+          updated_at?: string
+          whatsapp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "freelancer_orcamentos_freelancer_id_fkey"
+            columns: ["freelancer_id"]
+            isOneToOne: false
+            referencedRelation: "freelancers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      freelancer_projetos: {
+        Row: {
+          ano: number | null
+          capa_url: string | null
+          cliente_nome: string | null
+          created_at: string
+          descricao: string | null
+          freelancer_id: string
+          id: string
+          imagens: string[]
+          link_externo: string | null
+          ordem: number
+          publicado: boolean
+          slug: string
+          tags: string[]
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          ano?: number | null
+          capa_url?: string | null
+          cliente_nome?: string | null
+          created_at?: string
+          descricao?: string | null
+          freelancer_id: string
+          id?: string
+          imagens?: string[]
+          link_externo?: string | null
+          ordem?: number
+          publicado?: boolean
+          slug: string
+          tags?: string[]
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          ano?: number | null
+          capa_url?: string | null
+          cliente_nome?: string | null
+          created_at?: string
+          descricao?: string | null
+          freelancer_id?: string
+          id?: string
+          imagens?: string[]
+          link_externo?: string | null
+          ordem?: number
+          publicado?: boolean
+          slug?: string
+          tags?: string[]
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "freelancer_projetos_freelancer_id_fkey"
+            columns: ["freelancer_id"]
+            isOneToOne: false
+            referencedRelation: "freelancers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      freelancers: {
+        Row: {
+          atende_remoto: boolean
+          ativo: boolean
+          avatar_url: string | null
+          behance: string | null
+          bio: string | null
+          categoria_principal: string
+          cidade: string | null
+          cover_url: string | null
+          created_at: string
+          destaque: boolean
+          disponibilidade: string | null
+          estado: string | null
+          handle: string
+          headline: string | null
+          id: string
+          instagram: string | null
+          linkedin: string | null
+          nivel: string | null
+          nome: string
+          site: string | null
+          skills: string[]
+          updated_at: string
+          user_id: string
+          valor_hora_min: number | null
+          verificado: boolean
+          views: number
+          whatsapp: string | null
+        }
+        Insert: {
+          atende_remoto?: boolean
+          ativo?: boolean
+          avatar_url?: string | null
+          behance?: string | null
+          bio?: string | null
+          categoria_principal: string
+          cidade?: string | null
+          cover_url?: string | null
+          created_at?: string
+          destaque?: boolean
+          disponibilidade?: string | null
+          estado?: string | null
+          handle: string
+          headline?: string | null
+          id?: string
+          instagram?: string | null
+          linkedin?: string | null
+          nivel?: string | null
+          nome: string
+          site?: string | null
+          skills?: string[]
+          updated_at?: string
+          user_id: string
+          valor_hora_min?: number | null
+          verificado?: boolean
+          views?: number
+          whatsapp?: string | null
+        }
+        Update: {
+          atende_remoto?: boolean
+          ativo?: boolean
+          avatar_url?: string | null
+          behance?: string | null
+          bio?: string | null
+          categoria_principal?: string
+          cidade?: string | null
+          cover_url?: string | null
+          created_at?: string
+          destaque?: boolean
+          disponibilidade?: string | null
+          estado?: string | null
+          handle?: string
+          headline?: string | null
+          id?: string
+          instagram?: string | null
+          linkedin?: string | null
+          nivel?: string | null
+          nome?: string
+          site?: string | null
+          skills?: string[]
+          updated_at?: string
+          user_id?: string
+          valor_hora_min?: number | null
+          verificado?: boolean
+          views?: number
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       notificacoes: {
         Row: {
           created_at: string
