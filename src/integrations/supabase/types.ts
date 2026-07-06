@@ -131,6 +131,21 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_ingest_nonces: {
+        Row: {
+          created_at: string
+          nonce: string
+        }
+        Insert: {
+          created_at?: string
+          nonce: string
+        }
+        Update: {
+          created_at?: string
+          nonce?: string
+        }
+        Relationships: []
+      }
       candidaturas: {
         Row: {
           candidato_id: string
@@ -361,10 +376,13 @@ export type Database = {
           conteudo: string
           cover_url: string | null
           created_at: string
+          faq: Json
           id: string
+          meta_description: string | null
           publicado: boolean
           published_at: string
           resumo: string
+          scheduled_for: string | null
           slug: string
           tags: Json
           titulo: string
@@ -375,10 +393,13 @@ export type Database = {
           conteudo: string
           cover_url?: string | null
           created_at?: string
+          faq?: Json
           id?: string
+          meta_description?: string | null
           publicado?: boolean
           published_at?: string
           resumo: string
+          scheduled_for?: string | null
           slug: string
           tags?: Json
           titulo: string
@@ -389,10 +410,13 @@ export type Database = {
           conteudo?: string
           cover_url?: string | null
           created_at?: string
+          faq?: Json
           id?: string
+          meta_description?: string | null
           publicado?: boolean
           published_at?: string
           resumo?: string
+          scheduled_for?: string | null
           slug?: string
           tags?: Json
           titulo?: string
