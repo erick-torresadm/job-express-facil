@@ -6,7 +6,7 @@ import {
   Bell, BarChart3, Lock, Clock, Users, Zap, ArrowRight, Star,
   TrendingDown, AlertTriangle, ThumbsUp, Flame,
 } from "lucide-react";
-import { PromoLancamentoBanner } from "@/components/PromoLancamentoBanner";
+import { PromoLancamentoBanner, isPromoAtiva } from "@/components/PromoLancamentoBanner";
 
 export const Route = createFileRoute("/para-empresas")({
   head: () => ({
