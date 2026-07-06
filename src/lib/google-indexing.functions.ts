@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { SITE_URL } from "./site";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 // ─────────────────────────────────────────────────────────────
 // Google Indexing API — pings for JobPosting URLs
@@ -124,4 +126,66 @@ export const pingVagaSlug = createServerFn({ method: "POST" })
       console.error("[pingVagaSlug]", err);
       return { ok: false as const, url, error: err instanceof Error ? err.message : String(err) };
     }
+  });
+
+// ─────────────────────────────────────────────────────────────
+// Reindexar todas as vagas ativas (somente admin)
+// Google Indexing API quota padrão: 200 URLs/dia para JobPosting.
+// Rodamos em lotes pequenos com pausa entre pings pra não estourar rate limit.
+// ─────────────────────────────────────────────────────────────
+export const reindexarTodasVagas = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) =>
+    z
+      .object({
+        limite: z.number().int().min(1).max(200).default(180),
+      })
+      .parse(data ?? {}),
+  )
+  .handler(async ({ data, context }) => {
+    // Verifica admin
+    const { data: role } = await supabaseAdmin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!role) throw new Error("Acesso negado: apenas administradores.");
+
+    // Puxa vagas ativas
+    const { data: vagas, error } = await supabaseAdmin
+      .from("vagas")
+      .select("id,titulo,cidade,profissao_slug,created_at")
+      .eq("ativa", true)
+      .order("created_at", { ascending: false })
+      .limit(500);
+    if (error) throw new Error(error.message);
+
+    // Dedupe por slug (URL)
+    const urls = new Map<string, string>();
+    for (const v of vagas ?? []) {
+      const slug = `${v.profissao_slug ?? v.titulo.toLowerCase().replace(/\s+/g, "-")}-em-${v.cidade.toLowerCase().replace(/\s+/g, "-")}`;
+      const url = `${SITE_URL}/vagas/${slug}`;
+      if (!urls.has(url)) urls.set(url, slug);
+      if (urls.size >= data.limite) break;
+    }
+
+    const token = await getAccessToken();
+    let ok = 0;
+    let falha = 0;
+    const erros: string[] = [];
+    for (const url of urls.keys()) {
+      try {
+        await publish(url, "URL_UPDATED", token);
+        ok++;
+      } catch (err) {
+        falha++;
+        const msg = err instanceof Error ? err.message : String(err);
+        if (erros.length < 5) erros.push(`${url}: ${msg}`);
+      }
+      // pausa curta pra respeitar rate limit (600 req/min)
+      await new Promise((r) => setTimeout(r, 120));
+    }
+
+    return { total: urls.size, ok, falha, erros };
   });
