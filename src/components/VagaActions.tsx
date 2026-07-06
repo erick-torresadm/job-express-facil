@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import type { VagaPublica } from "@/lib/vagas.functions";
+import { notifyAdminsCandidatura } from "@/lib/admin-notify.functions";
 
 export function VagaActions({ vaga, empresaId }: { vaga: VagaPublica; empresaId?: string }) {
   const { user, role } = useAuth();
