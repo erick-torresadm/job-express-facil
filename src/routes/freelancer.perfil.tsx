@@ -86,6 +86,9 @@ function FreelaPerfilEdit() {
         linkedin: freela.linkedin ?? "",
         behance: freela.behance ?? "",
         site: freela.site ?? "",
+        notif_email: (freela as any).notif_email ?? true,
+        notif_email_endereco: (freela as any).notif_email_endereco ?? "",
+        notif_wa: (freela as any).notif_wa ?? false,
       });
     }
   }, [freela]);
@@ -117,6 +120,9 @@ function FreelaPerfilEdit() {
           linkedin: form.linkedin || null,
           behance: form.behance || null,
           site: form.site || null,
+          notif_email: form.notif_email,
+          notif_email_endereco: form.notif_email_endereco || null,
+          notif_wa: form.notif_wa,
         },
       }),
     onSuccess: (res) => {
