@@ -128,9 +128,9 @@ function FreelaPerfil() {
                   )}
                 </div>
 
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 w-full flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="font-display text-2xl font-black leading-tight md:text-4xl">
+                    <h1 className="font-display text-2xl font-black leading-tight break-words md:text-4xl">
                       {freela.nome}
                     </h1>
                     {freela.destaque && (
