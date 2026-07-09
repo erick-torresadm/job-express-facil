@@ -389,7 +389,7 @@ function FreelaPerfil() {
 
       {/* Floating CTA mobile */}
       {waLink && (
-        <div className="fixed inset-x-0 bottom-4 z-40 mx-auto flex max-w-md justify-center px-4 lg:hidden">
+        <div className="fixed inset-x-0 bottom-20 z-40 mx-auto flex max-w-md justify-center px-4 lg:hidden">
           <a
             href={waLink}
             target="_blank"
