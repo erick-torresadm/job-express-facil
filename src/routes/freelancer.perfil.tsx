@@ -28,6 +28,9 @@ type FormState = {
   linkedin: string;
   behance: string;
   site: string;
+  notif_email: boolean;
+  notif_email_endereco: string;
+  notif_wa: boolean;
 };
 
 const empty: FormState = {
@@ -50,6 +53,9 @@ const empty: FormState = {
   linkedin: "",
   behance: "",
   site: "",
+  notif_email: true,
+  notif_email_endereco: "",
+  notif_wa: false,
 };
 
 function FreelaPerfilEdit() {
