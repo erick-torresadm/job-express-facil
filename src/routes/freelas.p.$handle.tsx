@@ -112,7 +112,7 @@ function FreelaPerfil() {
         <div className="mx-auto -mt-20 max-w-5xl px-4 md:-mt-24">
           <div className="rounded-3xl border border-border bg-card p-5 shadow-pop md:p-7">
             <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-              <div className="flex flex-col items-start gap-4 md:flex-row md:items-end">
+              <div className="flex w-full flex-col items-start gap-4 md:flex-row md:items-end">
                 <div className="relative">
                   <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-3xl border-4 border-card bg-secondary text-3xl font-black text-primary shadow-pop md:h-32 md:w-32">
                     {freela.avatar_url ? (
@@ -128,9 +128,9 @@ function FreelaPerfil() {
                   )}
                 </div>
 
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 w-full flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="font-display text-2xl font-black leading-tight md:text-4xl">
+                    <h1 className="font-display text-2xl font-black leading-tight break-words md:text-4xl">
                       {freela.nome}
                     </h1>
                     {freela.destaque && (
@@ -389,7 +389,7 @@ function FreelaPerfil() {
 
       {/* Floating CTA mobile */}
       {waLink && (
-        <div className="fixed inset-x-0 bottom-4 z-40 mx-auto flex max-w-md justify-center px-4 lg:hidden">
+        <div className="fixed inset-x-0 bottom-20 z-40 mx-auto flex max-w-md justify-center px-4 lg:hidden">
           <a
             href={waLink}
             target="_blank"

@@ -1,7 +1,8 @@
-import { Sparkles, Gift } from "lucide-react";
+import { Sparkles, Gift, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
-// Promoção de lançamento: 6 meses de janela (até 06/01/2027).
+// Promoção de lançamento: janela até 06/01/2027.
 // Quem se cadastrar nesse período ganha Pro grátis por 2 anos.
 export const PROMO_FIM = new Date("2027-01-06T23:59:59-03:00");
 
@@ -9,17 +10,55 @@ export function isPromoAtiva() {
   return Date.now() <= PROMO_FIM.getTime();
 }
 
+const DISMISS_KEY = "va_promo_lanc_dismiss_v2";
+
 export function PromoLancamentoBanner({ compact = false }: { compact?: boolean }) {
+  const [dismissed, setDismissed] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    try {
+      const v = sessionStorage.getItem(DISMISS_KEY);
+      setDismissed(v === "1");
+    } catch {
+      setDismissed(false);
+    }
+  }, []);
+
   if (!isPromoAtiva()) return null;
 
   if (compact) {
+    if (!mounted || dismissed) return null;
+    const close = () => {
+      setDismissed(true);
+      try {
+        sessionStorage.setItem(DISMISS_KEY, "1");
+      } catch {}
+    };
     return (
-      <div className="w-full bg-gradient-to-r from-accent via-primary to-accent text-primary-foreground">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 py-2 text-center text-xs font-bold sm:text-sm">
-          <Gift className="h-4 w-4 shrink-0" />
-          <span>
-            <strong>Promoção de lançamento:</strong> cadastre-se agora e ganhe <strong>Pro grátis por 2 anos</strong>. Termina em 06/01/2027.
+      <div className="fixed inset-x-3 bottom-3 z-40 flex justify-center pointer-events-none sm:inset-x-auto sm:right-4 sm:bottom-4 sm:left-auto sm:justify-end">
+        <div className="pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-2xl border border-accent/40 bg-gradient-to-r from-primary via-primary to-accent px-4 py-3 text-primary-foreground shadow-pop backdrop-blur-md sm:w-auto">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/15">
+            <Gift className="h-4 w-4" />
           </span>
+          <div className="min-w-0 flex-1 text-[13px] leading-tight">
+            <p className="font-bold">Pro grátis por 2 anos</p>
+            <p className="opacity-80">Cadastre-se até 06/01/2027.</p>
+          </div>
+          <Link
+            to="/cadastro"
+            className="shrink-0 rounded-full bg-white px-3 py-1.5 text-xs font-black text-primary hover:scale-105 transition"
+          >
+            Quero
+          </Link>
+          <button
+            onClick={close}
+            aria-label="Fechar promoção"
+            className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/10 text-primary-foreground/80 hover:bg-white/20"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
         </div>
       </div>
     );
