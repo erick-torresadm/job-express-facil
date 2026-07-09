@@ -931,7 +931,7 @@ function ParaQuem() {
           className="group relative overflow-hidden rounded-3xl bg-primary p-8 text-primary-foreground shadow-pop md:p-10"
         >
           <div
-            className="absolute inset-0 opacity-30"
+            className="pointer-events-none absolute inset-0 opacity-30"
             style={{
               backgroundImage:
                 "radial-gradient(circle at 80% 20%, oklch(0.7 0.18 200 / 0.5), transparent 50%)",
@@ -952,7 +952,7 @@ function ParaQuem() {
               </li>
             ))}
           </ul>
-          <Link to="/para-empresas" className="btn-touch mt-7 inline-flex w-full items-center justify-center gap-2 bg-white text-primary shadow-pop">
+          <Link to="/para-empresas" className="btn-touch relative z-10 mt-7 inline-flex w-full items-center justify-center gap-2 bg-white text-primary shadow-pop">
             Falar com o time comercial <ArrowRight className="h-4 w-4" />
           </Link>
         </motion.div>
