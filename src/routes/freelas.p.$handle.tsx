@@ -112,7 +112,7 @@ function FreelaPerfil() {
         <div className="mx-auto -mt-20 max-w-5xl px-4 md:-mt-24">
           <div className="rounded-3xl border border-border bg-card p-5 shadow-pop md:p-7">
             <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-              <div className="flex flex-col items-start gap-4 md:flex-row md:items-end">
+              <div className="flex w-full flex-col items-start gap-4 md:flex-row md:items-end">
                 <div className="relative">
                   <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-3xl border-4 border-card bg-secondary text-3xl font-black text-primary shadow-pop md:h-32 md:w-32">
                     {freela.avatar_url ? (
