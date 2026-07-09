@@ -194,10 +194,17 @@ function RootComponent() {
     pathname === "/anuncie" ||
     pathname.startsWith("/empresa");
 
+  // Promo Pro grátis: SÓ na área empresa (dono/RH), não polui candidato/freelas
+  const showPromo =
+    pathname === "/para-empresas" ||
+    pathname === "/planos" ||
+    pathname === "/anuncie" ||
+    pathname.startsWith("/empresa");
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col bg-background">
-        {!hideChrome && <PromoLancamentoBanner compact />}
+        {showPromo && <PromoLancamentoBanner compact />}
         {!hideChrome && <SiteHeader />}
         {!hideChrome && <TrendingMenu />}
         <div className="flex-1">
