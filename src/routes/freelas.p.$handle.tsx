@@ -111,10 +111,10 @@ function FreelaPerfil() {
         {/* Header card */}
         <div className="mx-auto -mt-10 max-w-5xl px-4 md:-mt-14">
           <div className="rounded-3xl border border-border bg-card p-5 shadow-pop md:p-7">
-            {/* Linha topo: avatar + nome + headline */}
-            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-4 md:gap-6">
-              <div className="relative -mt-14 md:-mt-20">
-                <div className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-3xl border-4 border-card bg-secondary text-2xl font-black text-primary shadow-pop md:h-28 md:w-28 md:text-3xl">
+            {/* Avatar acima (sobrepondo capa) */}
+            <div className="-mt-16 mb-4 flex items-end gap-4 md:-mt-24">
+              <div className="relative">
+                <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-3xl border-4 border-card bg-secondary text-3xl font-black text-primary shadow-pop md:h-32 md:w-32 md:text-4xl">
                   {freela.avatar_url ? (
                     <img src={freela.avatar_url} alt={freela.nome} className="h-full w-full object-cover" />
                   ) : (
@@ -122,52 +122,54 @@ function FreelaPerfil() {
                   )}
                 </div>
                 {freela.verificado && (
-                  <span className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-full border-4 border-card bg-sky-500 text-white shadow">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  <span className="absolute -bottom-1 -right-1 grid h-8 w-8 place-items-center rounded-full border-4 border-card bg-sky-500 text-white shadow">
+                    <CheckCircle2 className="h-4 w-4" />
                   </span>
                 )}
               </div>
+            </div>
 
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="font-display text-xl font-black leading-tight break-words sm:text-2xl md:text-3xl lg:text-4xl">
-                    {freela.nome}
-                  </h1>
-                  {freela.destaque && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase text-amber-800">
-                      <Sparkles className="h-3 w-3" /> Pro
-                    </span>
-                  )}
-                </div>
-                {freela.headline && (
-                  <p className="mt-1 text-sm text-muted-foreground sm:text-base md:text-lg">
-                    {freela.headline}
-                  </p>
+            {/* Nome + headline + meta (linha própria, largura total) */}
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="font-display text-2xl font-black leading-tight break-words sm:text-3xl md:text-4xl">
+                  {freela.nome}
+                </h1>
+                {freela.destaque && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase text-amber-800">
+                    <Sparkles className="h-3 w-3" /> Pro
+                  </span>
                 )}
-                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
-                  {freela.cidade && (
-                    <span className="inline-flex items-center gap-1 font-medium text-muted-foreground">
-                      <MapPin className="h-3.5 w-3.5" /> {freela.cidade}
-                      {freela.estado ? `, ${freela.estado}` : ""}
+              </div>
+              {freela.headline && (
+                <p className="mt-1 text-base text-muted-foreground md:text-lg">
+                  {freela.headline}
+                </p>
+              )}
+              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
+                {freela.cidade && (
+                  <span className="inline-flex items-center gap-1 font-medium text-muted-foreground">
+                    <MapPin className="h-3.5 w-3.5" /> {freela.cidade}
+                    {freela.estado ? `, ${freela.estado}` : ""}
+                  </span>
+                )}
+                {freela.atende_remoto && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700">
+                    <Zap className="h-3 w-3" /> Atende remoto
+                  </span>
+                )}
+                {notaMedia != null && (
+                  <span className="inline-flex items-center gap-1 font-bold text-foreground">
+                    <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                    {notaMedia.toFixed(1)}
+                    <span className="font-medium text-muted-foreground">
+                      ({avaliacoes.length})
                     </span>
-                  )}
-                  {freela.atende_remoto && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700">
-                      <Zap className="h-3 w-3" /> Atende remoto
-                    </span>
-                  )}
-                  {notaMedia != null && (
-                    <span className="inline-flex items-center gap-1 font-bold text-foreground">
-                      <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
-                      {notaMedia.toFixed(1)}
-                      <span className="font-medium text-muted-foreground">
-                        ({avaliacoes.length})
-                      </span>
-                    </span>
-                  )}
-                </div>
+                  </span>
+                )}
               </div>
             </div>
+
 
             {/* Ações */}
             <div className="mt-5 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
