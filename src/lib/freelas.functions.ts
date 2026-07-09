@@ -144,6 +144,9 @@ const FreelaUpsertSchema = z.object({
   linkedin: z.string().trim().max(200).optional().nullable(),
   behance: z.string().trim().max(200).optional().nullable(),
   site: z.string().trim().max(200).optional().nullable(),
+  notif_email: z.boolean().default(true),
+  notif_email_endereco: z.string().trim().email().optional().nullable(),
+  notif_wa: z.boolean().default(false),
 });
 
 export const upsertMeuFreelancer = createServerFn({ method: "POST" })
