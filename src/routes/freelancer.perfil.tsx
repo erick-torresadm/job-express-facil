@@ -223,6 +223,57 @@ function FreelaPerfilEdit() {
         <Field label="Site pessoal (URL)" value={form.site} onChange={(v) => setForm({ ...form, site: v })} />
       </Section>
 
+      <Section title="Notificações de novos orçamentos">
+        <p className="text-xs text-muted-foreground">
+          Escolha como quer ser avisado quando um cliente pedir orçamento. Você não perde nenhum
+          serviço mesmo offline.
+        </p>
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-3">
+          <input
+            type="checkbox"
+            checked={form.notif_email}
+            onChange={(e) => setForm({ ...form, notif_email: e.target.checked })}
+            className="mt-1 h-4 w-4"
+          />
+          <div className="flex-1">
+            <p className="text-sm font-bold">📧 Receber por email</p>
+            <p className="text-[11px] text-muted-foreground">
+              Enviamos os dados do cliente + botão de responder no WhatsApp.
+            </p>
+          </div>
+        </label>
+        {form.notif_email && (
+          <Field
+            label="Email pra notificação (opcional — padrão é o email da conta)"
+            type="email"
+            value={form.notif_email_endereco}
+            onChange={(v) => setForm({ ...form, notif_email_endereco: v })}
+            placeholder="voce@email.com"
+          />
+        )}
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-3">
+          <input
+            type="checkbox"
+            checked={form.notif_wa}
+            onChange={(e) => setForm({ ...form, notif_wa: e.target.checked })}
+            className="mt-1 h-4 w-4"
+          />
+          <div className="flex-1">
+            <p className="text-sm font-bold">
+              💬 Alerta no WhatsApp{" "}
+              <span className="ml-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-amber-800">
+                em breve
+              </span>
+            </p>
+            <p className="text-[11px] text-muted-foreground">
+              Vamos avisar no seu WhatsApp assim que a opção estiver ativa. Já pode marcar.
+            </p>
+          </div>
+        </label>
+      </Section>
+
+
+
       <button
         type="submit"
         disabled={save.isPending}
