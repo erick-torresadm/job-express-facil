@@ -95,7 +95,7 @@ function FreelaPerfil() {
       {/* HERO */}
       <section className="relative mt-3">
         <div
-          className="relative h-52 w-full overflow-hidden md:h-72"
+          className="relative h-40 w-full overflow-hidden md:h-56"
           style={
             freela.cover_url
               ? { backgroundImage: `url(${freela.cover_url})`, backgroundSize: "cover", backgroundPosition: "center" }
@@ -105,99 +105,101 @@ function FreelaPerfil() {
           {!freela.cover_url && (
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,oklch(0.35_0.18_260)_0%,transparent_45%),radial-gradient(circle_at_80%_70%,oklch(0.4_0.2_320)_0%,transparent_45%),linear-gradient(135deg,oklch(0.22_0.1_260),oklch(0.3_0.15_260))]" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-background" />
         </div>
 
         {/* Header card */}
-        <div className="mx-auto -mt-20 max-w-5xl px-4 md:-mt-24">
+        <div className="mx-auto -mt-10 max-w-5xl px-4 md:-mt-14">
           <div className="rounded-3xl border border-border bg-card p-5 shadow-pop md:p-7">
-            <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-              <div className="flex w-full flex-col items-start gap-4 md:flex-row md:items-end">
-                <div className="relative">
-                  <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-3xl border-4 border-card bg-secondary text-3xl font-black text-primary shadow-pop md:h-32 md:w-32">
-                    {freela.avatar_url ? (
-                      <img src={freela.avatar_url} alt={freela.nome} className="h-full w-full object-cover" />
-                    ) : (
-                      freela.nome.slice(0, 1).toUpperCase()
-                    )}
-                  </div>
-                  {freela.verificado && (
-                    <span className="absolute -bottom-1 -right-1 grid h-8 w-8 place-items-center rounded-full border-4 border-card bg-sky-500 text-white shadow">
-                      <CheckCircle2 className="h-4 w-4" />
+            {/* Linha topo: avatar + nome + headline */}
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-4 md:gap-6">
+              <div className="relative -mt-14 md:-mt-20">
+                <div className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-3xl border-4 border-card bg-secondary text-2xl font-black text-primary shadow-pop md:h-28 md:w-28 md:text-3xl">
+                  {freela.avatar_url ? (
+                    <img src={freela.avatar_url} alt={freela.nome} className="h-full w-full object-cover" />
+                  ) : (
+                    freela.nome.slice(0, 1).toUpperCase()
+                  )}
+                </div>
+                {freela.verificado && (
+                  <span className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-full border-4 border-card bg-sky-500 text-white shadow">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  </span>
+                )}
+              </div>
+
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="font-display text-xl font-black leading-tight break-words sm:text-2xl md:text-3xl lg:text-4xl">
+                    {freela.nome}
+                  </h1>
+                  {freela.destaque && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase text-amber-800">
+                      <Sparkles className="h-3 w-3" /> Pro
                     </span>
                   )}
                 </div>
-
-                <div className="min-w-0 w-full flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="font-display text-2xl font-black leading-tight break-words md:text-4xl">
-                      {freela.nome}
-                    </h1>
-                    {freela.destaque && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase text-amber-800">
-                        <Sparkles className="h-3 w-3" /> Pro
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-1 text-base text-muted-foreground md:text-lg">
+                {freela.headline && (
+                  <p className="mt-1 text-sm text-muted-foreground sm:text-base md:text-lg">
                     {freela.headline}
                   </p>
-                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
-                    {freela.cidade && (
-                      <span className="inline-flex items-center gap-1 font-medium text-muted-foreground">
-                        <MapPin className="h-3.5 w-3.5" /> {freela.cidade}
-                        {freela.estado ? `, ${freela.estado}` : ""}
-                      </span>
-                    )}
-                    {freela.atende_remoto && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700">
-                        <Zap className="h-3 w-3" /> Atende remoto
-                      </span>
-                    )}
-                    {notaMedia != null && (
-                      <span className="inline-flex items-center gap-1 font-bold text-foreground">
-                        <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
-                        {notaMedia.toFixed(1)}
-                        <span className="font-medium text-muted-foreground">
-                          ({avaliacoes.length})
-                        </span>
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2 md:min-w-[240px]">
-                {waLink && (
-                  <a
-                    href={waLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3.5 text-sm font-bold text-white shadow-soft transition hover:bg-emerald-600 active:scale-[0.98]"
-                  >
-                    <MessageCircle className="h-4 w-4" /> Chamar no WhatsApp
-                  </a>
                 )}
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setOrcamentoOpen(true)}
-                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-2.5 text-sm font-bold text-primary hover:bg-primary/10"
-                  >
-                    <Send className="h-4 w-4" /> Orçamento
-                  </button>
-                  <button
-                    onClick={share}
-                    aria-label="Compartilhar"
-                    className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-border hover:border-accent"
-                  >
-                    <Share2 className="h-4 w-4" />
-                  </button>
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
+                  {freela.cidade && (
+                    <span className="inline-flex items-center gap-1 font-medium text-muted-foreground">
+                      <MapPin className="h-3.5 w-3.5" /> {freela.cidade}
+                      {freela.estado ? `, ${freela.estado}` : ""}
+                    </span>
+                  )}
+                  {freela.atende_remoto && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700">
+                      <Zap className="h-3 w-3" /> Atende remoto
+                    </span>
+                  )}
+                  {notaMedia != null && (
+                    <span className="inline-flex items-center gap-1 font-bold text-foreground">
+                      <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                      {notaMedia.toFixed(1)}
+                      <span className="font-medium text-muted-foreground">
+                        ({avaliacoes.length})
+                      </span>
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
 
+            {/* Ações */}
+            <div className="mt-5 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+              {waLink ? (
+                <a
+                  href={waLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-emerald-600 active:scale-[0.98]"
+                >
+                  <MessageCircle className="h-4 w-4" /> Chamar no WhatsApp
+                </a>
+              ) : (
+                <div className="hidden sm:block" />
+              )}
+              <button
+                onClick={() => setOrcamentoOpen(true)}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm font-bold text-primary hover:bg-primary/10"
+              >
+                <Send className="h-4 w-4" /> Orçamento
+              </button>
+              <button
+                onClick={share}
+                aria-label="Compartilhar"
+                className="grid h-12 w-full place-items-center rounded-2xl border border-border hover:border-accent sm:w-12"
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
+            </div>
+
             {/* Stats strip */}
-            <div className="mt-6 grid grid-cols-3 gap-2 rounded-2xl bg-secondary/50 p-2">
+            <div className="mt-5 grid grid-cols-3 gap-2 rounded-2xl bg-secondary/50 p-2">
               <Stat icon={Layers} label="Projetos" value={projetos.length} />
               <Stat icon={Star} label="Avaliações" value={avaliacoes.length} />
               <Stat
@@ -209,6 +211,7 @@ function FreelaPerfil() {
           </div>
         </div>
       </section>
+
 
       {/* Corpo */}
       <div className="mx-auto mt-8 grid max-w-5xl gap-6 px-4 lg:grid-cols-[1fr_300px]">
