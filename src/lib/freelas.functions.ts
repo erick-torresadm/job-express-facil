@@ -174,6 +174,7 @@ export const upsertMeuFreelancer = createServerFn({ method: "POST" })
         .update({ ...data })
         .eq("id", mine.id);
       if (error) throw new Error(error.message);
+      void pingGoogleIndexing(`${SITE_URL}/freelas/p/${data.handle}`);
       return { id: mine.id, handle: data.handle };
     }
 
@@ -183,6 +184,7 @@ export const upsertMeuFreelancer = createServerFn({ method: "POST" })
       .select("id, handle")
       .single();
     if (error) throw new Error(error.message);
+    void pingGoogleIndexing(`${SITE_URL}/freelas/p/${created!.handle}`);
     return { id: created!.id, handle: created!.handle };
   });
 
