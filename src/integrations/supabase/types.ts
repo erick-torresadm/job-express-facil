@@ -544,6 +544,9 @@ export type Database = {
           linkedin: string | null
           nivel: string | null
           nome: string
+          notif_email: boolean
+          notif_email_endereco: string | null
+          notif_wa: boolean
           site: string | null
           skills: string[]
           updated_at: string
@@ -573,6 +576,9 @@ export type Database = {
           linkedin?: string | null
           nivel?: string | null
           nome: string
+          notif_email?: boolean
+          notif_email_endereco?: string | null
+          notif_wa?: boolean
           site?: string | null
           skills?: string[]
           updated_at?: string
@@ -602,6 +608,9 @@ export type Database = {
           linkedin?: string | null
           nivel?: string | null
           nome?: string
+          notif_email?: boolean
+          notif_email_endereco?: string | null
+          notif_wa?: boolean
           site?: string | null
           skills?: string[]
           updated_at?: string
