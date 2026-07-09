@@ -365,3 +365,21 @@ export const enviarAvaliacao = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const listMinhasAvaliacoes = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { data: freela } = await supabase
+      .from("freelancers")
+      .select("id")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (!freela) return [];
+    const { data } = await supabase
+      .from("freelancer_avaliacoes")
+      .select("*")
+      .eq("freelancer_id", freela.id)
+      .order("created_at", { ascending: false });
+    return data ?? [];
+  });
