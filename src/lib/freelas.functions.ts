@@ -3,11 +3,24 @@ import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { SITE_URL } from "./site";
 
 const publicClient = () =>
   createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
     auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
   });
+
+async function pingGoogleIndexing(url: string, type: "URL_UPDATED" | "URL_DELETED" = "URL_UPDATED") {
+  try {
+    if (!process.env.GOOGLE_INDEXING_SA_JSON) return;
+    const { getAccessToken, publish } = await import("./google-indexing.functions");
+    const token = await getAccessToken();
+    await publish(url, type, token);
+  } catch (err) {
+    console.warn("[freelas pingGoogleIndexing]", err);
+  }
+}
+
 
 export const CATEGORIAS_FREELA = [
   { slug: "design-grafico", label: "Design Gráfico" },
