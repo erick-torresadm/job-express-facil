@@ -307,8 +307,77 @@ export const enviarOrcamento = createServerFn({ method: "POST" })
     const supa = publicClient();
     const { error } = await supa.from("freelancer_orcamentos").insert({ ...data });
     if (error) throw new Error(error.message);
+
+    // Notificação por email (fire-and-forget, não bloqueia o cliente)
+    void (async () => {
+      try {
+        if (!process.env.RESEND_API_KEY) return;
+        const { data: freela } = await supa
+          .from("freelancers")
+          .select("nome, handle, whatsapp, notif_email, notif_email_endereco, user_id")
+          .eq("id", data.freelancer_id)
+          .maybeSingle();
+        if (!freela || !freela.notif_email) return;
+
+        // Endereço: override explícito OU email do auth do usuário
+        let destino = freela.notif_email_endereco ?? null;
+        if (!destino) {
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { data: userInfo } = await supabaseAdmin.auth.admin.getUserById(freela.user_id);
+          destino = userInfo?.user?.email ?? null;
+        }
+        if (!destino) return;
+
+        const linkOrcamentos = `${SITE_URL}/freelancer/orcamentos`;
+        const whatsappCliente = data.whatsapp.replace(/\D/g, "");
+        const html = `
+          <div style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;max-width:560px;margin:auto;padding:24px;background:#fafafa;border-radius:16px;">
+            <div style="background:linear-gradient(135deg,#1e1e5a,#4f46e5);color:#fff;padding:20px;border-radius:12px;margin-bottom:20px;">
+              <p style="margin:0;font-size:12px;opacity:0.8;text-transform:uppercase;letter-spacing:1px;">Novo pedido de orçamento</p>
+              <h1 style="margin:6px 0 0;font-size:24px;">${escapeHtml(data.nome)} quer conversar</h1>
+            </div>
+            <p style="font-size:15px;line-height:1.55;color:#111;">${escapeHtml(data.descricao)}</p>
+            <table style="width:100%;margin-top:16px;font-size:13px;color:#555;">
+              <tr><td style="padding:4px 0;"><strong>WhatsApp</strong></td><td>${escapeHtml(data.whatsapp)}</td></tr>
+              ${data.email ? `<tr><td style="padding:4px 0;"><strong>Email</strong></td><td>${escapeHtml(data.email)}</td></tr>` : ""}
+              ${data.orcamento_alvo ? `<tr><td style="padding:4px 0;"><strong>Orçamento alvo</strong></td><td>R$ ${data.orcamento_alvo}</td></tr>` : ""}
+              ${data.prazo_dias ? `<tr><td style="padding:4px 0;"><strong>Prazo</strong></td><td>${data.prazo_dias} dias</td></tr>` : ""}
+            </table>
+            <div style="margin-top:24px;display:flex;gap:8px;flex-wrap:wrap;">
+              <a href="https://wa.me/55${whatsappCliente}" style="display:inline-block;background:#25D366;color:#fff;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:700;font-size:13px;">Responder no WhatsApp</a>
+              <a href="${linkOrcamentos}" style="display:inline-block;background:#111;color:#fff;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:700;font-size:13px;">Ver no painel</a>
+            </div>
+            <p style="margin-top:24px;font-size:11px;color:#999;">Você recebeu este email porque ativou notificações no VagasAgora. Prefere desativar? Acesse seu perfil.</p>
+          </div>`;
+
+        await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "VagasAgora <noreply@vagasagora.com.br>",
+            to: [destino],
+            subject: `💼 Novo orçamento de ${data.nome}`,
+            html,
+            reply_to: data.email || undefined,
+          }),
+        });
+      } catch (err) {
+        console.warn("[enviarOrcamento email]", err);
+      }
+    })();
+
     return { ok: true };
   });
+
+function escapeHtml(s: string) {
+  return s.replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string),
+  );
+}
+
 
 export const listMeusOrcamentos = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
