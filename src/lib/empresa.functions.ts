@@ -18,7 +18,9 @@ export const getEmpresaPagina = createServerFn({ method: "GET" })
     const { userId } = context;
     const { data } = await supabaseAdmin
       .from("profiles")
-      .select("company_name, full_name, logo_url, cor_primaria, sobre, slug_publico, campos_extras")
+      .select(
+        "company_name, full_name, logo_url, cor_primaria, sobre, slug_publico, campos_extras, raio_km_padrao, latitude, longitude",
+      )
       .eq("id", userId)
       .maybeSingle();
     return data ?? null;
@@ -38,6 +40,9 @@ export const salvarEmpresaPagina = createServerFn({ method: "POST" })
         tipo: z.enum(["texto", "numero", "sim_nao"]),
         obrigatorio: z.boolean().default(false),
       })).max(8).default([]),
+      raio_km_padrao: z.number().int().min(1).max(500).optional().nullable(),
+      latitude: z.number().min(-90).max(90).optional().nullable(),
+      longitude: z.number().min(-180).max(180).optional().nullable(),
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
@@ -57,6 +62,9 @@ export const salvarEmpresaPagina = createServerFn({ method: "POST" })
         logo_url: data.logo_url ?? null,
         cor_primaria: data.cor_primaria ?? null,
         campos_extras: data.campos_extras,
+        raio_km_padrao: data.raio_km_padrao ?? null,
+        latitude: data.latitude ?? null,
+        longitude: data.longitude ?? null,
       })
       .eq("id", userId)
       .select("id")

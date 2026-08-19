@@ -760,8 +760,11 @@ export type Database = {
           full_name: string | null
           handle: string | null
           id: string
+          latitude: number | null
           logo_url: string | null
+          longitude: number | null
           promo_pro_ate: string | null
+          raio_km_padrao: number | null
           slug_publico: string | null
           sobre: string | null
           updated_at: string
@@ -782,8 +785,11 @@ export type Database = {
           full_name?: string | null
           handle?: string | null
           id: string
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           promo_pro_ate?: string | null
+          raio_km_padrao?: number | null
           slug_publico?: string | null
           sobre?: string | null
           updated_at?: string
@@ -804,8 +810,11 @@ export type Database = {
           full_name?: string | null
           handle?: string | null
           id?: string
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           promo_pro_ate?: string | null
+          raio_km_padrao?: number | null
           slug_publico?: string | null
           sobre?: string | null
           updated_at?: string
@@ -917,6 +926,7 @@ export type Database = {
           perguntas_triagem: Json
           profissao: string
           profissao_slug: string
+          raio_km: number | null
           regime: Database["public"]["Enums"]["vaga_regime"]
           requisitos: Json
           risco_fraude: number
@@ -946,6 +956,7 @@ export type Database = {
           perguntas_triagem?: Json
           profissao: string
           profissao_slug: string
+          raio_km?: number | null
           regime?: Database["public"]["Enums"]["vaga_regime"]
           requisitos?: Json
           risco_fraude?: number
@@ -975,6 +986,7 @@ export type Database = {
           perguntas_triagem?: Json
           profissao?: string
           profissao_slug?: string
+          raio_km?: number | null
           regime?: Database["public"]["Enums"]["vaga_regime"]
           requisitos?: Json
           risco_fraude?: number

@@ -67,7 +67,7 @@ import { Route as ApiPublicAsaasWebhookRouteImport } from './routes/api/public/a
 import { Route as AdminBlogNovoRouteImport } from './routes/admin.blog.novo'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
 import { Route as ApiPublicPushRenewRouteImport } from './routes/api/public/push.renew'
-import { Route as ApiPublicCronReindexVagasRouteImport } from './routes/api/public/cron/reindex-vagas'
+import { Route as ApiPublicHooksNotificarCandidaturaRouteImport } from './routes/api/public/hooks/notificar-candidatura'
 import { Route as ApiPublicCronReindexGoogleRouteImport } from './routes/api/public/cron.reindex-google'
 import { Route as ApiPublicCronGerarPostRouteImport } from './routes/api/public/cron.gerar-post'
 import { Route as ApiPublicCronEmpresaDailyRouteImport } from './routes/api/public/cron/empresa-daily'
@@ -363,10 +363,10 @@ const ApiPublicPushRenewRoute = ApiPublicPushRenewRouteImport.update({
   path: '/api/public/push/renew',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicCronReindexVagasRoute =
-  ApiPublicCronReindexVagasRouteImport.update({
-    id: '/api/public/cron/reindex-vagas',
-    path: '/api/public/cron/reindex-vagas',
+const ApiPublicHooksNotificarCandidaturaRoute =
+  ApiPublicHooksNotificarCandidaturaRouteImport.update({
+    id: '/api/public/hooks/notificar-candidatura',
+    path: '/api/public/hooks/notificar-candidatura',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicCronReindexGoogleRoute =
@@ -454,7 +454,7 @@ export interface FileRoutesByFullPath {
   '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
   '/api/public/cron/reindex-google': typeof ApiPublicCronReindexGoogleRoute
-  '/api/public/cron/reindex-vagas': typeof ApiPublicCronReindexVagasRoute
+  '/api/public/hooks/notificar-candidatura': typeof ApiPublicHooksNotificarCandidaturaRoute
   '/api/public/push/renew': typeof ApiPublicPushRenewRoute
 }
 export interface FileRoutesByTo {
@@ -516,7 +516,7 @@ export interface FileRoutesByTo {
   '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
   '/api/public/cron/reindex-google': typeof ApiPublicCronReindexGoogleRoute
-  '/api/public/cron/reindex-vagas': typeof ApiPublicCronReindexVagasRoute
+  '/api/public/hooks/notificar-candidatura': typeof ApiPublicHooksNotificarCandidaturaRoute
   '/api/public/push/renew': typeof ApiPublicPushRenewRoute
 }
 export interface FileRoutesById {
@@ -582,7 +582,7 @@ export interface FileRoutesById {
   '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
   '/api/public/cron/reindex-google': typeof ApiPublicCronReindexGoogleRoute
-  '/api/public/cron/reindex-vagas': typeof ApiPublicCronReindexVagasRoute
+  '/api/public/hooks/notificar-candidatura': typeof ApiPublicHooksNotificarCandidaturaRoute
   '/api/public/push/renew': typeof ApiPublicPushRenewRoute
 }
 export interface FileRouteTypes {
@@ -649,7 +649,7 @@ export interface FileRouteTypes {
     | '/api/public/cron/empresa-daily'
     | '/api/public/cron/gerar-post'
     | '/api/public/cron/reindex-google'
-    | '/api/public/cron/reindex-vagas'
+    | '/api/public/hooks/notificar-candidatura'
     | '/api/public/push/renew'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -711,7 +711,7 @@ export interface FileRouteTypes {
     | '/api/public/cron/empresa-daily'
     | '/api/public/cron/gerar-post'
     | '/api/public/cron/reindex-google'
-    | '/api/public/cron/reindex-vagas'
+    | '/api/public/hooks/notificar-candidatura'
     | '/api/public/push/renew'
   id:
     | '__root__'
@@ -776,7 +776,7 @@ export interface FileRouteTypes {
     | '/api/public/cron/empresa-daily'
     | '/api/public/cron/gerar-post'
     | '/api/public/cron/reindex-google'
-    | '/api/public/cron/reindex-vagas'
+    | '/api/public/hooks/notificar-candidatura'
     | '/api/public/push/renew'
   fileRoutesById: FileRoutesById
 }
@@ -824,7 +824,7 @@ export interface RootRouteChildren {
   ApiPublicCronEmpresaDailyRoute: typeof ApiPublicCronEmpresaDailyRoute
   ApiPublicCronGerarPostRoute: typeof ApiPublicCronGerarPostRoute
   ApiPublicCronReindexGoogleRoute: typeof ApiPublicCronReindexGoogleRoute
-  ApiPublicCronReindexVagasRoute: typeof ApiPublicCronReindexVagasRoute
+  ApiPublicHooksNotificarCandidaturaRoute: typeof ApiPublicHooksNotificarCandidaturaRoute
   ApiPublicPushRenewRoute: typeof ApiPublicPushRenewRoute
 }
 
@@ -1236,11 +1236,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPushRenewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/cron/reindex-vagas': {
-      id: '/api/public/cron/reindex-vagas'
-      path: '/api/public/cron/reindex-vagas'
-      fullPath: '/api/public/cron/reindex-vagas'
-      preLoaderRoute: typeof ApiPublicCronReindexVagasRouteImport
+    '/api/public/hooks/notificar-candidatura': {
+      id: '/api/public/hooks/notificar-candidatura'
+      path: '/api/public/hooks/notificar-candidatura'
+      fullPath: '/api/public/hooks/notificar-candidatura'
+      preLoaderRoute: typeof ApiPublicHooksNotificarCandidaturaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/cron/reindex-google': {
@@ -1402,7 +1402,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicCronEmpresaDailyRoute: ApiPublicCronEmpresaDailyRoute,
   ApiPublicCronGerarPostRoute: ApiPublicCronGerarPostRoute,
   ApiPublicCronReindexGoogleRoute: ApiPublicCronReindexGoogleRoute,
-  ApiPublicCronReindexVagasRoute: ApiPublicCronReindexVagasRoute,
+  ApiPublicHooksNotificarCandidaturaRoute:
+    ApiPublicHooksNotificarCandidaturaRoute,
   ApiPublicPushRenewRoute: ApiPublicPushRenewRoute,
 }
 export const routeTree = rootRouteImport

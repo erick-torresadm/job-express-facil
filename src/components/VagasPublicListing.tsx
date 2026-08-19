@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Search, MapPin, Filter, Briefcase, Zap, ArrowRight, X } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { Search, MapPin, Filter, Briefcase, Zap, ArrowRight, X, Navigation, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { listarVagasPublicas } from "@/lib/vagas.functions";
 
 type Regime = "clt" | "pj" | "estagio" | "outros";
 
@@ -17,6 +19,7 @@ export type VagaPublica = {
   urgente: boolean;
   created_at: string;
   regime: Regime;
+  distancia_km?: number | null;
 };
 
 const TABS: Array<{ to: "/vagas" | "/vagas/clt" | "/vagas/pj" | "/vagas/estagio"; label: string; regime: Regime | "todos"; desc: string }> = [
@@ -60,7 +63,73 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
     todos: 0, clt: 0, pj: 0, estagio: 0, outros: 0,
   });
 
+  const [pertoDeMim, setPertoDeMim] = useState(false);
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [buscandoLocal, setBuscandoLocal] = useState(false);
+  const [erroLocal, setErroLocal] = useState<string | null>(null);
+  const listar = useServerFn(listarVagasPublicas);
+
+  async function ativarPertoDeMim() {
+    setErroLocal(null);
+    setBuscandoLocal(true);
+    try {
+      const gps = await new Promise<{ lat: number; lng: number }>((resolve, reject) => {
+        if (!navigator.geolocation) return reject(new Error("sem suporte"));
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+          () => reject(new Error("negado")),
+          { timeout: 8000 },
+        );
+      }).catch(async () => {
+        // fallback: localização salva no perfil do candidato logado
+        const { data: auth } = await supabase.auth.getUser();
+        if (!auth.user) return null;
+        const { data: perfil } = await supabase
+          .from("profiles")
+          .select("latitude, longitude")
+          .eq("id", auth.user.id)
+          .maybeSingle();
+        if (perfil?.latitude != null && perfil?.longitude != null) {
+          return { lat: perfil.latitude, lng: perfil.longitude };
+        }
+        return null;
+      });
+
+      if (!gps) {
+        setErroLocal("Não conseguimos sua localização. Ative o GPS ou preencha seu endereço no perfil.");
+        return;
+      }
+      setCoords(gps);
+      setPertoDeMim(true);
+    } finally {
+      setBuscandoLocal(false);
+    }
+  }
+
+  function desativarPertoDeMim() {
+    setPertoDeMim(false);
+    setCoords(null);
+    setErroLocal(null);
+  }
+
   useEffect(() => {
+    if (pertoDeMim && coords) {
+      (async () => {
+        setVagas(null);
+        const res = await listar({
+          data: {
+            regime: regime === "todos" ? undefined : regime,
+            lat: coords.lat,
+            lng: coords.lng,
+            q: q.trim() || undefined,
+            urgente: urgente || undefined,
+            limit: 60,
+          },
+        });
+        setVagas(res.vagas as unknown as VagaPublica[]);
+      })();
+      return;
+    }
     (async () => {
       setVagas(null);
       let query = supabase.from("vagas")
@@ -77,7 +146,7 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
       const { data } = await query;
       setVagas((data ?? []) as VagaPublica[]);
     })();
-  }, [regime, q, cidade, urgente]);
+  }, [regime, q, cidade, urgente, pertoDeMim, coords]);
 
   useEffect(() => {
     (async () => {
@@ -166,9 +235,9 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
           </label>
           <label className="relative">
             <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input value={cidade} onChange={(e) => setCidade(e.target.value)}
-              placeholder="Cidade"
-              className="h-11 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none focus:border-primary" />
+            <input value={cidade} onChange={(e) => setCidade(e.target.value)} disabled={pertoDeMim}
+              placeholder={pertoDeMim ? "Ignorado no modo perto de mim" : "Cidade"}
+              className="h-11 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none focus:border-primary disabled:opacity-50" />
           </label>
           <button onClick={() => setUrgente((u) => !u)}
             className={`inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border px-4 text-sm font-bold transition ${
@@ -176,6 +245,19 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
             }`}>
             <Zap className="h-4 w-4" /> Urgentes
           </button>
+        </div>
+
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => (pertoDeMim ? desativarPertoDeMim() : ativarPertoDeMim())}
+            disabled={buscandoLocal}
+            className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border px-3 text-xs font-bold transition disabled:opacity-60 ${
+              pertoDeMim ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground hover:text-foreground"
+            }`}>
+            {buscandoLocal ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Navigation className="h-3.5 w-3.5" />}
+            {pertoDeMim ? "Perto de mim (ativo)" : "Perto de mim"}
+          </button>
+          {erroLocal && <span className="text-[11px] text-destructive">{erroLocal}</span>}
         </div>
 
         {activeFilters.length > 0 && (
@@ -212,7 +294,7 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
         <>
           <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
             <span><strong className="text-foreground">{vagas.length}</strong> vaga{vagas.length > 1 ? "s" : ""} encontrada{vagas.length > 1 ? "s" : ""}</span>
-            <span>Ordenado por urgentes primeiro</span>
+            <span>{pertoDeMim ? "Ordenado por mais perto" : "Ordenado por urgentes primeiro"}</span>
           </div>
           <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {vagas.map((v) => (
@@ -231,6 +313,11 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
                         {v.urgente && (
                           <span className="inline-flex items-center gap-0.5 rounded-md bg-warning/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-warning">
                             <Zap className="h-2.5 w-2.5" /> Urgente
+                          </span>
+                        )}
+                        {v.distancia_km != null && (
+                          <span className="inline-flex items-center gap-0.5 rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-primary">
+                            <Navigation className="h-2.5 w-2.5" /> {v.distancia_km} km
                           </span>
                         )}
                       </div>

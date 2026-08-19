@@ -35,6 +35,7 @@ function NovaVaga() {
     urgente: false,
     descricao: "",
     requisitos: [] as string[],
+    raioKm: "",
   });
   const [saved, setSaved] = useState(false);
   const [salvando, setSalvando] = useState(false);
@@ -123,6 +124,7 @@ function NovaVaga() {
       risco_motivo: fraudeData?.motivos?.join("; ") ?? null,
       custo_alimentacao_mes: alimData?.mensal_medio ?? null,
       faixa_salarial_sugerida: faixaData ? `R$ ${faixaData.min}–${faixaData.max} (médio R$ ${faixaData.medio})` : null,
+      raio_km: form.raioKm ? parseInt(form.raioKm, 10) : null,
     });
     setSalvando(false);
     if (error) {
@@ -234,6 +236,11 @@ function NovaVaga() {
 
         <Field label="Endereço completo (opcional, melhora cálculo de distância)">
           <input value={form.endereco} onChange={(e) => upd("endereco", e.target.value)} placeholder="Rua, número — bairro" className="input-base" />
+        </Field>
+        <Field label="Raio de alcance desta vaga (km)">
+          <input type="number" min={1} max={500} value={form.raioKm} onChange={(e) => upd("raioKm", e.target.value)}
+            placeholder="Padrão da empresa" className="input-base" />
+          <p className="mt-1 text-[11px] text-muted-foreground">Deixe em branco pra usar o raio padrão da sua empresa (configurável em "Página de captação").</p>
         </Field>
         <div className="flex items-start gap-2 rounded-xl border border-primary/30 bg-primary/5 p-3 text-xs text-muted-foreground">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
