@@ -78,48 +78,78 @@ export const Route = createFileRoute("/vagas/$slug")({
 
     const validThrough = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-    const jobPostings = d.vagas.map((v) => ({
-      "@context": "https://schema.org",
-      "@type": "JobPosting",
-      title: v.titulo,
-      description: v.descricao
-        ? v.descricao
-        : `${v.titulo} na empresa ${v.empresa_nome}. Horário: ${v.horario}. Salário: ${v.salario}. Localização: ${v.bairro}, ${v.cidade}.`,
-      identifier: {
-        "@type": "PropertyValue",
-        name: "VagasAgora",
-        value: v.id,
-      },
-      datePosted: v.created_at,
-      validThrough,
-      employmentType: "FULL_TIME",
-      hiringOrganization: {
-        "@type": "Organization",
-        name: v.empresa_nome,
-        sameAs: SITE_URL,
-      },
-      jobLocation: {
-        "@type": "Place",
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: v.endereco ?? undefined,
-          addressLocality: v.cidade,
-          addressRegion: "BR",
-          addressCountry: "BR",
+    // Helper: Parse salary string (e.g., "1500-2500" or "1500" or "R$ 1500") to extract first number
+    const parseSalary = (salarioStr: string): number | null => {
+      if (!salarioStr) return null;
+      const match = salarioStr.match(/\d+/);
+      return match ? parseInt(match[0], 10) : null;
+    };
+
+    // Helper: Map regime to Google JobPosting employmentType
+    const getEmploymentType = (regime: string): string => {
+      const regimeMap: Record<string, string> = {
+        clt: "FULL_TIME",
+        pj: "CONTRACTOR",
+        estagio: "INTERN",
+        outros: "OTHER",
+      };
+      return regimeMap[regime.toLowerCase()] || "FULL_TIME";
+    };
+
+    // Esta página é uma listagem faceada (profissão × cidade), não a página de
+    // uma vaga específica — não existe URL única por vaga no site ainda. Emitir
+    // um JobPosting por vaga aqui violaria as diretrizes do Google (todas
+    // apontariam pra mesma URL canônica), então publicamos só a mais relevante
+    // como representativa da página.
+    const jobPostings = d.vagas.slice(0, 1).map((v) => {
+      const baseSalaryValue = parseSalary(v.salario);
+
+      return {
+        "@context": "https://schema.org",
+        "@type": "JobPosting",
+        title: v.titulo,
+        description: v.descricao
+          ? v.descricao
+          : `${v.titulo} na empresa ${v.empresa_nome}. Horário: ${v.horario}. Salário: ${v.salario}. Localização: ${v.bairro}, ${v.cidade}.`,
+        identifier: {
+          "@type": "PropertyValue",
+          name: "VagasAgora",
+          value: v.id,
         },
-      },
-      baseSalary: {
-        "@type": "MonetaryAmount",
-        currency: "BRL",
-        value: {
-          "@type": "QuantitativeValue",
-          value: v.salario,
-          unitText: "MONTH",
+        datePosted: v.created_at,
+        validThrough,
+        employmentType: getEmploymentType(v.regime),
+        jobTitle: v.titulo,
+        hiringOrganization: {
+          "@type": "Organization",
+          name: v.empresa_nome,
+          url: SITE_URL,
         },
-      },
-      url: canonical,
-      directApply: true,
-    }));
+        jobLocation: {
+          "@type": "Place",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: v.endereco ?? v.bairro ?? undefined,
+            addressLocality: v.cidade,
+            addressRegion: "BR",
+            addressCountry: "BR",
+          },
+        },
+        ...(baseSalaryValue && {
+          baseSalary: {
+            "@type": "PriceSpecification",
+            currency: "BRL",
+            value: {
+              "@type": "QuantitativeValue",
+              value: baseSalaryValue,
+              unitText: "MONTH",
+            },
+          },
+        }),
+        url: canonical,
+        directApply: true,
+      };
+    });
 
     const faq = buildFAQ(profissao, cidade);
 

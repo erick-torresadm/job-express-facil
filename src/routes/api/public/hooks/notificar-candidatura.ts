@@ -8,6 +8,7 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { sendEmail } from "@/lib/email.server";
 import { notifyUsersPush } from "@/lib/push-notify.server";
+import { trackCandidatura } from "@/lib/recruiter-notifications.server";
 import { SITE_URL } from "@/lib/site";
 
 const Body = z.object({ candidatura_id: z.string().uuid() });
@@ -66,6 +67,9 @@ export const Route = createFileRoute("/api/public/hooks/notificar-candidatura")(
           getEmail(candidatura.candidato_id),
         ]);
 
+        // Track the candidatura event for recruiter activity feed
+        await trackCandidatura(candidatura.empresa_id, candidatura.vaga_id, candidatura.candidato_id);
+
         await Promise.allSettled([
           empresaEmail &&
             sendEmail({
@@ -82,7 +86,7 @@ export const Route = createFileRoute("/api/public/hooks/notificar-candidatura")(
           notifyUsersPush([candidatura.empresa_id], {
             title: "Nova candidatura",
             body: `${nomeCandidato} se candidatou pra ${titulo}`,
-            url: "/empresa/minhas-vagas",
+            url: "/empresa/atividade",
             tag: "candidatura",
           }),
           notifyUsersPush([candidatura.candidato_id], {

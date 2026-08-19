@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
 import { MapPin, Phone, Search, Loader2, Lock, Unlock, Video, Mic, ExternalLink, Sparkles } from "lucide-react";
 import { listarCandidatosBusca, revelarContato } from "@/lib/empresa.functions";
+import { trackCvClick } from "@/lib/recruiter-notifications.server";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 
@@ -12,6 +13,7 @@ export function CandidatosList() {
   const { user, loading: authLoading } = useAuth();
   const buscar = useServerFn(listarCandidatosBusca);
   const revelar = useServerFn(revelarContato);
+  const trackCvClickFn = useServerFn(trackCvClick);
 
   const [busca, setBusca] = useState("");
   const [profissao, setProfissao] = useState("");
@@ -39,6 +41,11 @@ export function CandidatosList() {
       const r = await revelar({ data: { curriculo_id: c.id } });
       setContatos((m) => ({ ...m, [c.id]: r }));
       setItems((arr) => arr?.map((x) => (x.id === c.id ? { ...x, ja_revelado: true } : x)) ?? null);
+
+      // Track CV click for recruiter activity feed
+      trackCvClickFn({ data: { curriculo_id: c.id, candidato_id: c.id } })
+        .catch((err) => console.error("[trackCvClick] error:", err));
+
       toast.success("Contato revelado!");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Erro ao revelar");

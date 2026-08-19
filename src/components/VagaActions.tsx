@@ -2,16 +2,19 @@ import { useEffect, useState } from "react";
 import { Heart, Share2, Send, Check, Copy, Loader2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import type { VagaPublica } from "@/lib/vagas.functions";
 import { notifyAdminsCandidatura } from "@/lib/admin-notify.functions";
+import { trackVagaViewFn } from "@/lib/recruiter-notifications.server";
 
 export function VagaActions({ vaga, empresaId }: { vaga: VagaPublica; empresaId?: string }) {
   const { user, role } = useAuth();
   const [fav, setFav] = useState(false);
   const [candidatado, setCandidatado] = useState(false);
   const [showApply, setShowApply] = useState(false);
+  const trackView = useServerFn(trackVagaViewFn);
 
   // Bloqueia para empresas — só candidatos interagem
   const isCandidato = !user || role === "candidato";
@@ -56,7 +59,7 @@ export function VagaActions({ vaga, empresaId }: { vaga: VagaPublica; empresaId?
 
   return (
     <div className="mt-3 flex gap-2">
-      <button onClick={() => (user ? setShowApply(true) : null)}
+      <button onClick={() => { if (user) { setShowApply(true); trackView({ data: { vaga_id: vaga.id } }).catch(() => {}); } }}
         disabled={candidatado}
         data-sound={candidatado ? "none" : "pop"}
         className={`flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-sm font-bold transition ${

@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Calendar, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { SITE_URL } from "@/lib/site";
 import { AdSlot } from "@/components/AdSlot";
 
 
@@ -19,7 +20,7 @@ async function fetchPost(slug: string) {
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => ({ post: await fetchPost(params.slug) }),
   head: ({ loaderData, params }) => {
-    const url = `https://job-express-facil.lovable.app/blog/${params.slug}`;
+    const url = `${SITE_URL}/blog/${params.slug}`;
     const title = loaderData?.post ? `${loaderData.post.titulo} — VagasAgora` : "Post";
     const desc = loaderData?.post?.resumo ?? "";
     return {
