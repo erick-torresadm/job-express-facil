@@ -1031,6 +1031,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      exec_sql: { Args: { sql_query: string }; Returns: Json }
       has_pro_ativo: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
