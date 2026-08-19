@@ -36,7 +36,7 @@ CREATE POLICY "entrevistas_candidato_select" ON public.entrevistas FOR SELECT TO
 CREATE POLICY "entrevistas_empresa_select" ON public.entrevistas FOR SELECT TO authenticated
   USING (auth.uid() = empresa_id);
 CREATE POLICY "entrevistas_empresa_insert" ON public.entrevistas FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = empresa_id AND public.has_role(auth.uid(), 'empresa'));
+  WITH CHECK (auth.uid() = empresa_id AND private.has_role(auth.uid(), 'empresa'));
 CREATE POLICY "entrevistas_empresa_update" ON public.entrevistas FOR UPDATE TO authenticated
   USING (auth.uid() = empresa_id);
 
