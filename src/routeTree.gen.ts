@@ -16,6 +16,7 @@ import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as ParaEmpresasRouteImport } from './routes/para-empresas'
+import { Route as PainelMigracaoRouteImport } from './routes/painel-migracao'
 import { Route as FreelasRouteImport } from './routes/freelas'
 import { Route as FreelancerRouteImport } from './routes/freelancer'
 import { Route as EmpresaRouteImport } from './routes/empresa'
@@ -108,6 +109,11 @@ const PerfilRoute = PerfilRouteImport.update({
 const ParaEmpresasRoute = ParaEmpresasRouteImport.update({
   id: '/para-empresas',
   path: '/para-empresas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PainelMigracaoRoute = PainelMigracaoRouteImport.update({
+  id: '/painel-migracao',
+  path: '/painel-migracao',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FreelasRoute = FreelasRouteImport.update({
@@ -416,6 +422,7 @@ export interface FileRoutesByFullPath {
   '/empresa': typeof EmpresaRouteWithChildren
   '/freelancer': typeof FreelancerRouteWithChildren
   '/freelas': typeof FreelasRouteWithChildren
+  '/painel-migracao': typeof PainelMigracaoRoute
   '/para-empresas': typeof ParaEmpresasRoute
   '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
@@ -480,6 +487,7 @@ export interface FileRoutesByTo {
   '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
+  '/painel-migracao': typeof PainelMigracaoRoute
   '/para-empresas': typeof ParaEmpresasRoute
   '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
@@ -548,6 +556,7 @@ export interface FileRoutesById {
   '/empresa': typeof EmpresaRouteWithChildren
   '/freelancer': typeof FreelancerRouteWithChildren
   '/freelas': typeof FreelasRouteWithChildren
+  '/painel-migracao': typeof PainelMigracaoRoute
   '/para-empresas': typeof ParaEmpresasRoute
   '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
@@ -617,6 +626,7 @@ export interface FileRouteTypes {
     | '/empresa'
     | '/freelancer'
     | '/freelas'
+    | '/painel-migracao'
     | '/para-empresas'
     | '/perfil'
     | '/planos'
@@ -681,6 +691,7 @@ export interface FileRouteTypes {
     | '/como-funciona'
     | '/contato'
     | '/empresa'
+    | '/painel-migracao'
     | '/para-empresas'
     | '/perfil'
     | '/planos'
@@ -748,6 +759,7 @@ export interface FileRouteTypes {
     | '/empresa'
     | '/freelancer'
     | '/freelas'
+    | '/painel-migracao'
     | '/para-empresas'
     | '/perfil'
     | '/planos'
@@ -816,6 +828,7 @@ export interface RootRouteChildren {
   EmpresaRoute: typeof EmpresaRouteWithChildren
   FreelancerRoute: typeof FreelancerRouteWithChildren
   FreelasRoute: typeof FreelasRouteWithChildren
+  PainelMigracaoRoute: typeof PainelMigracaoRoute
   ParaEmpresasRoute: typeof ParaEmpresasRoute
   PerfilRoute: typeof PerfilRoute
   PlanosRoute: typeof PlanosRoute
@@ -903,6 +916,13 @@ declare module '@tanstack/react-router' {
       path: '/para-empresas'
       fullPath: '/para-empresas'
       preLoaderRoute: typeof ParaEmpresasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/painel-migracao': {
+      id: '/painel-migracao'
+      path: '/painel-migracao'
+      fullPath: '/painel-migracao'
+      preLoaderRoute: typeof PainelMigracaoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/freelas': {
@@ -1410,6 +1430,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmpresaRoute: EmpresaRouteWithChildren,
   FreelancerRoute: FreelancerRouteWithChildren,
   FreelasRoute: FreelasRouteWithChildren,
+  PainelMigracaoRoute: PainelMigracaoRoute,
   ParaEmpresasRoute: ParaEmpresasRoute,
   PerfilRoute: PerfilRoute,
   PlanosRoute: PlanosRoute,
