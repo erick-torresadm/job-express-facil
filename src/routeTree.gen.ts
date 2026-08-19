@@ -16,6 +16,7 @@ import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as ParaEmpresasRouteImport } from './routes/para-empresas'
+import { Route as PainelMigracaoRouteImport } from './routes/painel-migracao'
 import { Route as FreelasRouteImport } from './routes/freelas'
 import { Route as FreelancerRouteImport } from './routes/freelancer'
 import { Route as EmpresaRouteImport } from './routes/empresa'
@@ -63,6 +64,8 @@ import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminAnunciosRouteImport } from './routes/admin.anuncios'
 import { Route as FreelasPHandleRouteImport } from './routes/freelas.p.$handle'
 import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
+import { Route as ApiPublicPainelMigracaoRouteImport } from './routes/api/public/painel-migracao'
+import { Route as ApiPublicMigrateSqlRouteImport } from './routes/api/public/migrate-sql'
 import { Route as ApiPublicAsaasWebhookRouteImport } from './routes/api/public/asaas-webhook'
 import { Route as AdminBlogNovoRouteImport } from './routes/admin.blog.novo'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
@@ -106,6 +109,11 @@ const PerfilRoute = PerfilRouteImport.update({
 const ParaEmpresasRoute = ParaEmpresasRouteImport.update({
   id: '/para-empresas',
   path: '/para-empresas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PainelMigracaoRoute = PainelMigracaoRouteImport.update({
+  id: '/painel-migracao',
+  path: '/painel-migracao',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FreelasRoute = FreelasRouteImport.update({
@@ -343,6 +351,16 @@ const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
   path: '/api/public/track',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPainelMigracaoRoute = ApiPublicPainelMigracaoRouteImport.update({
+  id: '/api/public/painel-migracao',
+  path: '/api/public/painel-migracao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicMigrateSqlRoute = ApiPublicMigrateSqlRouteImport.update({
+  id: '/api/public/migrate-sql',
+  path: '/api/public/migrate-sql',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAsaasWebhookRoute = ApiPublicAsaasWebhookRouteImport.update({
   id: '/api/public/asaas-webhook',
   path: '/api/public/asaas-webhook',
@@ -404,6 +422,7 @@ export interface FileRoutesByFullPath {
   '/empresa': typeof EmpresaRouteWithChildren
   '/freelancer': typeof FreelancerRouteWithChildren
   '/freelas': typeof FreelasRouteWithChildren
+  '/painel-migracao': typeof PainelMigracaoRoute
   '/para-empresas': typeof ParaEmpresasRoute
   '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
@@ -448,6 +467,8 @@ export interface FileRoutesByFullPath {
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
+  '/api/public/migrate-sql': typeof ApiPublicMigrateSqlRoute
+  '/api/public/painel-migracao': typeof ApiPublicPainelMigracaoRoute
   '/api/public/track': typeof ApiPublicTrackRoute
   '/freelas/p/$handle': typeof FreelasPHandleRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
@@ -466,6 +487,7 @@ export interface FileRoutesByTo {
   '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
+  '/painel-migracao': typeof PainelMigracaoRoute
   '/para-empresas': typeof ParaEmpresasRoute
   '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
@@ -510,6 +532,8 @@ export interface FileRoutesByTo {
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
+  '/api/public/migrate-sql': typeof ApiPublicMigrateSqlRoute
+  '/api/public/painel-migracao': typeof ApiPublicPainelMigracaoRoute
   '/api/public/track': typeof ApiPublicTrackRoute
   '/freelas/p/$handle': typeof FreelasPHandleRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
@@ -532,6 +556,7 @@ export interface FileRoutesById {
   '/empresa': typeof EmpresaRouteWithChildren
   '/freelancer': typeof FreelancerRouteWithChildren
   '/freelas': typeof FreelasRouteWithChildren
+  '/painel-migracao': typeof PainelMigracaoRoute
   '/para-empresas': typeof ParaEmpresasRoute
   '/perfil': typeof PerfilRoute
   '/planos': typeof PlanosRoute
@@ -576,6 +601,8 @@ export interface FileRoutesById {
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
+  '/api/public/migrate-sql': typeof ApiPublicMigrateSqlRoute
+  '/api/public/painel-migracao': typeof ApiPublicPainelMigracaoRoute
   '/api/public/track': typeof ApiPublicTrackRoute
   '/freelas/p/$handle': typeof FreelasPHandleRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
@@ -599,6 +626,7 @@ export interface FileRouteTypes {
     | '/empresa'
     | '/freelancer'
     | '/freelas'
+    | '/painel-migracao'
     | '/para-empresas'
     | '/perfil'
     | '/planos'
@@ -643,6 +671,8 @@ export interface FileRouteTypes {
     | '/admin/blog/$id'
     | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
+    | '/api/public/migrate-sql'
+    | '/api/public/painel-migracao'
     | '/api/public/track'
     | '/freelas/p/$handle'
     | '/api/public/blog/ingest'
@@ -661,6 +691,7 @@ export interface FileRouteTypes {
     | '/como-funciona'
     | '/contato'
     | '/empresa'
+    | '/painel-migracao'
     | '/para-empresas'
     | '/perfil'
     | '/planos'
@@ -705,6 +736,8 @@ export interface FileRouteTypes {
     | '/admin/blog/$id'
     | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
+    | '/api/public/migrate-sql'
+    | '/api/public/painel-migracao'
     | '/api/public/track'
     | '/freelas/p/$handle'
     | '/api/public/blog/ingest'
@@ -726,6 +759,7 @@ export interface FileRouteTypes {
     | '/empresa'
     | '/freelancer'
     | '/freelas'
+    | '/painel-migracao'
     | '/para-empresas'
     | '/perfil'
     | '/planos'
@@ -770,6 +804,8 @@ export interface FileRouteTypes {
     | '/admin/blog/$id'
     | '/admin/blog/novo'
     | '/api/public/asaas-webhook'
+    | '/api/public/migrate-sql'
+    | '/api/public/painel-migracao'
     | '/api/public/track'
     | '/freelas/p/$handle'
     | '/api/public/blog/ingest'
@@ -792,6 +828,7 @@ export interface RootRouteChildren {
   EmpresaRoute: typeof EmpresaRouteWithChildren
   FreelancerRoute: typeof FreelancerRouteWithChildren
   FreelasRoute: typeof FreelasRouteWithChildren
+  PainelMigracaoRoute: typeof PainelMigracaoRoute
   ParaEmpresasRoute: typeof ParaEmpresasRoute
   PerfilRoute: typeof PerfilRoute
   PlanosRoute: typeof PlanosRoute
@@ -819,6 +856,8 @@ export interface RootRouteChildren {
   PreviewIndexRoute: typeof PreviewIndexRoute
   VagasIndexRoute: typeof VagasIndexRoute
   ApiPublicAsaasWebhookRoute: typeof ApiPublicAsaasWebhookRoute
+  ApiPublicMigrateSqlRoute: typeof ApiPublicMigrateSqlRoute
+  ApiPublicPainelMigracaoRoute: typeof ApiPublicPainelMigracaoRoute
   ApiPublicTrackRoute: typeof ApiPublicTrackRoute
   ApiPublicBlogIngestRoute: typeof ApiPublicBlogIngestRoute
   ApiPublicCronEmpresaDailyRoute: typeof ApiPublicCronEmpresaDailyRoute
@@ -877,6 +916,13 @@ declare module '@tanstack/react-router' {
       path: '/para-empresas'
       fullPath: '/para-empresas'
       preLoaderRoute: typeof ParaEmpresasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/painel-migracao': {
+      id: '/painel-migracao'
+      path: '/painel-migracao'
+      fullPath: '/painel-migracao'
+      preLoaderRoute: typeof PainelMigracaoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/freelas': {
@@ -1208,6 +1254,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTrackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/painel-migracao': {
+      id: '/api/public/painel-migracao'
+      path: '/api/public/painel-migracao'
+      fullPath: '/api/public/painel-migracao'
+      preLoaderRoute: typeof ApiPublicPainelMigracaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/migrate-sql': {
+      id: '/api/public/migrate-sql'
+      path: '/api/public/migrate-sql'
+      fullPath: '/api/public/migrate-sql'
+      preLoaderRoute: typeof ApiPublicMigrateSqlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/asaas-webhook': {
       id: '/api/public/asaas-webhook'
       path: '/api/public/asaas-webhook'
@@ -1370,6 +1430,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmpresaRoute: EmpresaRouteWithChildren,
   FreelancerRoute: FreelancerRouteWithChildren,
   FreelasRoute: FreelasRouteWithChildren,
+  PainelMigracaoRoute: PainelMigracaoRoute,
   ParaEmpresasRoute: ParaEmpresasRoute,
   PerfilRoute: PerfilRoute,
   PlanosRoute: PlanosRoute,
@@ -1397,6 +1458,8 @@ const rootRouteChildren: RootRouteChildren = {
   PreviewIndexRoute: PreviewIndexRoute,
   VagasIndexRoute: VagasIndexRoute,
   ApiPublicAsaasWebhookRoute: ApiPublicAsaasWebhookRoute,
+  ApiPublicMigrateSqlRoute: ApiPublicMigrateSqlRoute,
+  ApiPublicPainelMigracaoRoute: ApiPublicPainelMigracaoRoute,
   ApiPublicTrackRoute: ApiPublicTrackRoute,
   ApiPublicBlogIngestRoute: ApiPublicBlogIngestRoute,
   ApiPublicCronEmpresaDailyRoute: ApiPublicCronEmpresaDailyRoute,
@@ -1408,3 +1471,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
