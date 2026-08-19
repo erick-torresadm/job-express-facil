@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Flame, Trash2, Eye, EyeOff, PlusSquare, Loader2 } from "lucide-react";
+import { ArrowLeft, Flame, Trash2, Eye, EyeOff, PlusSquare, Loader2, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -110,6 +110,10 @@ function MinhasVagas() {
                   </p>
                 </div>
                 <div className="flex shrink-0 gap-1.5">
+                  <Link to="/empresa/editar-vaga/$id" params={{ id: v.id }} title="Editar"
+                    className="grid h-9 w-9 place-items-center rounded-lg border border-border hover:bg-secondary">
+                    <Pencil className="h-4 w-4" />
+                  </Link>
                   <button onClick={() => toggleAtiva(v)} title={v.ativa ? "Pausar" : "Ativar"}
                     className="grid h-9 w-9 place-items-center rounded-lg border border-border hover:bg-secondary">
                     {v.ativa ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}

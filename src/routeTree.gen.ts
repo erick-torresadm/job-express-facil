@@ -64,6 +64,7 @@ import { Route as AdminEmpresasRouteImport } from './routes/admin.empresas'
 import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminAnunciosRouteImport } from './routes/admin.anuncios'
 import { Route as FreelasPHandleRouteImport } from './routes/freelas.p.$handle'
+import { Route as EmpresaEditarVagaIdRouteImport } from './routes/empresa.editar-vaga.$id'
 import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 import { Route as ApiPublicAsaasWebhookRouteImport } from './routes/api/public/asaas-webhook'
 import { Route as AdminEmpresasIdRouteImport } from './routes/admin.empresas.$id'
@@ -351,6 +352,11 @@ const FreelasPHandleRoute = FreelasPHandleRouteImport.update({
   path: '/p/$handle',
   getParentRoute: () => FreelasRoute,
 } as any)
+const EmpresaEditarVagaIdRoute = EmpresaEditarVagaIdRouteImport.update({
+  id: '/editar-vaga/$id',
+  path: '/editar-vaga/$id',
+  getParentRoute: () => EmpresaRoute,
+} as any)
 const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
   id: '/api/public/track',
   path: '/api/public/track',
@@ -470,6 +476,7 @@ export interface FileRoutesByFullPath {
   '/admin/empresas/$id': typeof AdminEmpresasIdRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/empresa/editar-vaga/$id': typeof EmpresaEditarVagaIdRoute
   '/freelas/p/$handle': typeof FreelasPHandleRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
@@ -535,6 +542,7 @@ export interface FileRoutesByTo {
   '/admin/empresas/$id': typeof AdminEmpresasIdRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/empresa/editar-vaga/$id': typeof EmpresaEditarVagaIdRoute
   '/freelas/p/$handle': typeof FreelasPHandleRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
@@ -604,6 +612,7 @@ export interface FileRoutesById {
   '/admin/empresas/$id': typeof AdminEmpresasIdRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/empresa/editar-vaga/$id': typeof EmpresaEditarVagaIdRoute
   '/freelas/p/$handle': typeof FreelasPHandleRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
@@ -674,6 +683,7 @@ export interface FileRouteTypes {
     | '/admin/empresas/$id'
     | '/api/public/asaas-webhook'
     | '/api/public/track'
+    | '/empresa/editar-vaga/$id'
     | '/freelas/p/$handle'
     | '/api/public/blog/ingest'
     | '/api/public/cron/empresa-daily'
@@ -739,6 +749,7 @@ export interface FileRouteTypes {
     | '/admin/empresas/$id'
     | '/api/public/asaas-webhook'
     | '/api/public/track'
+    | '/empresa/editar-vaga/$id'
     | '/freelas/p/$handle'
     | '/api/public/blog/ingest'
     | '/api/public/cron/empresa-daily'
@@ -807,6 +818,7 @@ export interface FileRouteTypes {
     | '/admin/empresas/$id'
     | '/api/public/asaas-webhook'
     | '/api/public/track'
+    | '/empresa/editar-vaga/$id'
     | '/freelas/p/$handle'
     | '/api/public/blog/ingest'
     | '/api/public/cron/empresa-daily'
@@ -1252,6 +1264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FreelasPHandleRouteImport
       parentRoute: typeof FreelasRoute
     }
+    '/empresa/editar-vaga/$id': {
+      id: '/empresa/editar-vaga/$id'
+      path: '/editar-vaga/$id'
+      fullPath: '/empresa/editar-vaga/$id'
+      preLoaderRoute: typeof EmpresaEditarVagaIdRouteImport
+      parentRoute: typeof EmpresaRoute
+    }
     '/api/public/track': {
       id: '/api/public/track'
       path: '/api/public/track'
@@ -1360,6 +1379,7 @@ interface EmpresaRouteChildren {
   EmpresaNovaVagaRoute: typeof EmpresaNovaVagaRoute
   EmpresaPaginaRoute: typeof EmpresaPaginaRoute
   EmpresaVerificacaoRoute: typeof EmpresaVerificacaoRoute
+  EmpresaEditarVagaIdRoute: typeof EmpresaEditarVagaIdRoute
 }
 
 const EmpresaRouteChildren: EmpresaRouteChildren = {
@@ -1368,6 +1388,7 @@ const EmpresaRouteChildren: EmpresaRouteChildren = {
   EmpresaNovaVagaRoute: EmpresaNovaVagaRoute,
   EmpresaPaginaRoute: EmpresaPaginaRoute,
   EmpresaVerificacaoRoute: EmpresaVerificacaoRoute,
+  EmpresaEditarVagaIdRoute: EmpresaEditarVagaIdRoute,
 }
 
 const EmpresaRouteWithChildren =
