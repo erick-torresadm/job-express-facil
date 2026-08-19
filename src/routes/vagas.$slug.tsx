@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MapPin, Clock, DollarSign, Flame, ArrowLeft, ChevronDown } from "lucide-react";
 import { PROFISSOES, CIDADES } from "@/lib/mock-data";
@@ -22,9 +22,14 @@ function parseSlug(slug: string) {
   const profPart = (parts[0] ?? "vagas").replace(/-/g, " ");
   const locPart = (parts[1] ?? "").replace(/-/g, " ");
   const prof = PROFISSOES.find((p) => clean.includes(p.slug)) ?? null;
-  const cidade = CIDADES.find((c) => locPart.includes(c.toLowerCase())) ?? (locPart ? capitalize(locPart) : "Brasil");
+  const cidadeMatch = CIDADES.find((c) => locPart.includes(c.toLowerCase())) ?? null;
+  const cidade = cidadeMatch ?? (locPart ? capitalize(locPart) : "Brasil");
   const profissao = prof?.nome ?? capitalize(profPart);
-  return { profissao, cidade, profSlug: prof?.slug ?? clean };
+  // Reconhecido = achou profissão OU cidade de verdade no catálogo. Slug com
+  // as duas partes desconhecidas é lixo (typo, URL antiga do Lovable etc.) —
+  // não deve virar página 200 (soft-404 confunde o Google).
+  const reconhecido = !!prof || !!cidadeMatch;
+  return { profissao, cidade, profSlug: prof?.slug ?? clean, reconhecido };
 }
 function capitalize(s: string) {
   return s.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
@@ -59,7 +64,8 @@ function buildFAQ(profissao: string, cidade: string) {
 
 export const Route = createFileRoute("/vagas/$slug")({
   loader: async ({ params }) => {
-    const { profissao, cidade, profSlug } = parseSlug(params.slug);
+    const { profissao, cidade, profSlug, reconhecido } = parseSlug(params.slug);
+    if (!reconhecido) throw notFound();
     const { vagas } = await listarVagasPublicas({ data: { profissaoSlug: profSlug, limit: 30 } });
     const count = vagas.length > 0 ? vagas.length : 0;
     return { profissao, cidade, vagas, count };
@@ -67,6 +73,7 @@ export const Route = createFileRoute("/vagas/$slug")({
   head: ({ params, loaderData }) => {
     const d = loaderData ?? { profissao: "Vagas", cidade: "Brasil", count: 0, vagas: [] as VagaPublica[] };
     const { profissao, cidade, count } = d;
+    const robots = count > 0 ? "index, follow" : "noindex, follow";
     const year = new Date().getFullYear();
     const title = count > 0
       ? `${count} vagas de ${profissao} em ${cidade} — ${year} | VagasAgora`
@@ -157,6 +164,7 @@ export const Route = createFileRoute("/vagas/$slug")({
       meta: [
         { title },
         { name: "description", content: description },
+        { name: "robots", content: robots },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
