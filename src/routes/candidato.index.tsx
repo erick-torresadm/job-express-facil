@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Send, Heart, Bell, ArrowRight, Sparkles, TrendingUp, MapPin, Gift, CheckCircle2, Circle } from "lucide-react";
+import { Send, Heart, Bell, ArrowRight, Sparkles, TrendingUp, MapPin, CheckCircle2, Circle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { VagaCard, type VagaCardData } from "@/components/VagaCard";
@@ -21,7 +21,6 @@ function PainelHome() {
   const [cidade, setCidade] = useState<string | null>(null);
   const [vagas, setVagas] = useState<VagaCardData[] | null>(null);
   const [ativasCand, setAtivasCand] = useState<number>(0);
-  const [promoAte, setPromoAte] = useState<string | null>(null);
   const [checklist, setChecklist] = useState<{ midia: boolean; whatsapp: boolean; cidade: boolean; sobre: boolean }>({
     midia: false, whatsapp: false, cidade: false, sobre: false,
   });
@@ -30,7 +29,7 @@ function PainelHome() {
     if (!user) return;
     (async () => {
       const [{ data: prof }, { data: cv }, { count: c }, { count: f }, { count: a }, { count: ativas }] = await Promise.all([
-        supabase.from("profiles").select("full_name, whatsapp, promo_pro_ate").eq("id", user.id).maybeSingle(),
+        supabase.from("profiles").select("full_name, whatsapp").eq("id", user.id).maybeSingle(),
         supabase.from("curriculos").select("cidade, video_url, audio_url, sobre").eq("user_id", user.id).maybeSingle(),
         supabase.from("candidaturas").select("id", { count: "exact", head: true }).eq("candidato_id", user.id),
         supabase.from("favoritos").select("id", { count: "exact", head: true }).eq("user_id", user.id),
@@ -39,10 +38,9 @@ function PainelHome() {
           .eq("candidato_id", user.id)
           .in("status", ["enviado", "visto", "em_analise"]),
       ]);
-      const profileRow = prof as { full_name?: string | null; whatsapp?: string | null; promo_pro_ate?: string | null } | null;
+      const profileRow = prof as { full_name?: string | null; whatsapp?: string | null } | null;
       const cvRow = cv as { cidade?: string | null; video_url?: string | null; audio_url?: string | null; sobre?: string | null } | null;
       setNome(profileRow?.full_name?.split(" ")[0] ?? "");
-      setPromoAte(profileRow?.promo_pro_ate ?? null);
       const cid = cvRow?.cidade ?? null;
       setCidade(cid);
       setStats({ candidaturas: c ?? 0, salvas: f ?? 0, alertas: a ?? 0 });
@@ -104,17 +102,8 @@ function PainelHome() {
         </div>
       </section>
 
-      {/* Badge Pro + Checklist de força do perfil */}
+      {/* Checklist de força do perfil — candidato é 100% grátis, sem menção a Pro */}
       <section className="grid gap-3 md:grid-cols-2">
-        {promoAte && new Date(promoAte).getTime() > Date.now() && (
-          <div className="rounded-3xl border-2 border-accent/40 bg-gradient-to-br from-accent/10 via-primary/5 to-accent/10 p-5 shadow-soft">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-[10px] font-extrabold uppercase text-accent-foreground">
-              <Gift className="h-3 w-3" /> Pro ativo
-            </span>
-            <p className="mt-3 text-sm font-bold">Você tem Pro grátis até {new Date(promoAte).toLocaleDateString("pt-BR")}</p>
-            <p className="text-xs text-muted-foreground">Todos os recursos liberados — vagas em destaque, alertas ilimitados e prioridade nas candidaturas.</p>
-          </div>
-        )}
         <div className="rounded-3xl border border-border bg-card p-5 shadow-soft">
           <p className="text-xs font-bold uppercase text-muted-foreground">Força do seu perfil</p>
           {(() => {
