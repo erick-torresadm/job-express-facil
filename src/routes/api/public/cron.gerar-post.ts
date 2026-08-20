@@ -119,11 +119,8 @@ async function criarUmPost(evitar: Set<string>) {
   return novo;
 }
 
-export const Route = createFileRoute("/api/public/cron/gerar-post")({
-  server: {
-    handlers: {
-      GET: async ({ request }) => {
-        // Auth: header `x-cron-secret` must match the rotating secret stored
+async function handle({ request }: { request: Request }) {
+  // Auth: header `x-cron-secret` must match the rotating secret stored
         // in `private.app_secrets` (name = 'cron_secret'). The secret is
         // never committed to source control; pg_cron reads the same row when
         // firing the schedule. Never accept the Supabase publishable/anon
@@ -174,12 +171,18 @@ export const Route = createFileRoute("/api/public/cron/gerar-post")({
             if (i < qtd - 1) await new Promise((r) => setTimeout(r, 1500));
           }
 
-          return Response.json({ ok: true, solicitados: qtd, criados, erros });
-        } catch (e: unknown) {
-          const msg = e instanceof Error ? e.message : String(e);
-          return Response.json({ ok: false, error: msg }, { status: 500 });
-        }
-      },
+    return Response.json({ ok: true, solicitados: qtd, criados, erros });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    return Response.json({ ok: false, error: msg }, { status: 500 });
+  }
+}
+
+export const Route = createFileRoute("/api/public/cron/gerar-post")({
+  server: {
+    handlers: {
+      GET: async ({ request }) => handle({ request }),
+      POST: async ({ request }) => handle({ request }),
     },
   },
 });
