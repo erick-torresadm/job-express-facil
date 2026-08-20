@@ -17,6 +17,13 @@ export function useAuth() {
   const [role, setRole] = useState<Role | null>(null);
   const [profile, setProfile] = useState<AuthProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  // Distinto de `loading`: `loading` só cobre a sessão (rápido, do
+  // localStorage); o role vem de uma consulta ao banco à parte, que pode
+  // ainda estar em voo quando `loading` já virou false. Sem isso, um clique
+  // rápido no ícone de conta caía sempre em /cadastro (fallback de "sem
+  // role"), mesmo pra quem já era candidato/empresa — só não tinha chegado
+  // a resposta ainda.
+  const [roleLoading, setRoleLoading] = useState(true);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -24,10 +31,12 @@ export function useAuth() {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
+        setRoleLoading(true);
         setTimeout(() => loadRoleEProfile(s.user.id), 0);
       } else {
         setRole(null);
         setProfile(null);
+        setRoleLoading(false);
       }
     });
 
@@ -35,6 +44,7 @@ export function useAuth() {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) loadRoleEProfile(session.user.id);
+      else setRoleLoading(false);
       setLoading(false);
     });
 
@@ -58,6 +68,7 @@ export function useAuth() {
           : null;
     setRole(chosen);
     setProfile(profileData ?? null);
+    setRoleLoading(false);
   };
 
   // Sign-out hygiene: cancela queries em voo → limpa cache → encerra sessão.
@@ -72,5 +83,5 @@ export function useAuth() {
     return res;
   };
 
-  return { session, user, role, profile, loading, signOut };
+  return { session, user, role, roleLoading, profile, loading, signOut };
 }

@@ -18,10 +18,18 @@ const navLinks = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { user, role, profile, signOut } = useAuth();
+  const { user, role, roleLoading, profile, signOut } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isHome = pathname === "/";
+
+  // Enquanto o role ainda não chegou do banco, manda pra própria página
+  // atual (não navega errado) em vez de cair em /cadastro por padrão —
+  // clique rápido logo após logar não deve mais levar quem já é
+  // candidato/empresa/admin pro fluxo de cadastro.
+  const dashboardTo = roleLoading
+    ? pathname
+    : role === "admin" ? "/admin" : role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro";
 
   const handleSignOut = async () => {
     await signOut();
@@ -42,7 +50,7 @@ export function SiteHeader() {
           </button>
           {user ? (
             <Link
-              to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
+              to={dashboardTo}
               className="flex items-center gap-2 rounded-full border border-white/10 bg-primary/85 py-1.5 pl-1.5 pr-3 text-primary-foreground shadow-pop backdrop-blur-xl"
             >
               <UserAvatar profile={profile} email={user.email} className="h-8 w-8" />
@@ -64,7 +72,7 @@ export function SiteHeader() {
           <Drawer
             onClose={() => setOpen(false)}
             user={user}
-            role={role}
+            dashboardTo={dashboardTo}
             profile={profile}
             onSignOut={handleSignOut}
           />
@@ -112,7 +120,7 @@ export function SiteHeader() {
             <>
               <NotificationBell />
               <Link
-                to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
+                to={dashboardTo}
                 className="hidden lg:inline-flex items-center gap-2 rounded-full bg-white/15 py-1 pl-1 pr-4 text-sm font-semibold text-primary-foreground hover:bg-white/25"
               >
                 <UserAvatar profile={profile} email={user.email} className="h-7 w-7" />
@@ -157,7 +165,7 @@ export function SiteHeader() {
         <Drawer
           onClose={() => setOpen(false)}
           user={user}
-          role={role}
+          dashboardTo={dashboardTo}
           profile={profile}
           onSignOut={handleSignOut}
         />
@@ -181,13 +189,13 @@ export function UserAvatar({ profile, email, className = "h-8 w-8" }: { profile:
 function Drawer({
   onClose,
   user,
-  role,
+  dashboardTo,
   profile,
   onSignOut,
 }: {
   onClose: () => void;
   user: any;
-  role: string | null | undefined;
+  dashboardTo: string;
   profile: { avatar_url: string | null; full_name: string | null; company_name: string | null } | null;
   onSignOut: () => void;
 }) {
@@ -236,7 +244,7 @@ function Drawer({
               <UserIcon className="h-5 w-5" /> Meu perfil
             </Link>
             <Link
-              to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
+              to={dashboardTo}
               onClick={onClose}
               className="flex items-center gap-2 rounded-2xl px-3 py-3 text-base font-semibold text-foreground hover:bg-secondary"
             >
