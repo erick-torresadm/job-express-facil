@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { notifyUsersPush } from "@/lib/push-notify.server";
 
 export const FREE_REVELACOES = 10;
 
@@ -146,13 +147,18 @@ export const enviarCurriculoEmpresa = createServerFn({ method: "POST" })
     });
     if (error) throw error;
 
-    // notifica a empresa
+    // notifica a empresa — in-app + push (sem isso ela só ficava sabendo se
+    // abrisse o painel, nunca recebia aviso no celular/PWA como as outras
+    // notificações do site)
+    const titulo = `Novo candidato pela sua página: ${data.nome}`;
+    const mensagem = `${data.profissao}${data.bairro ? " • " + data.bairro : ""}`;
     await supabaseAdmin.from("notificacoes").insert({
       user_id: empresa.id,
-      titulo: `Novo candidato pela sua página: ${data.nome}`,
-      mensagem: `${data.profissao}${data.bairro ? " • " + data.bairro : ""}`,
+      titulo,
+      mensagem,
       link: "/empresa",
     });
+    notifyUsersPush([empresa.id], { title: titulo, body: mensagem, url: "/empresa" }).catch(() => null);
 
     return { ok: true };
   });
