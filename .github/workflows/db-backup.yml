@@ -12,15 +12,22 @@ jobs:
     steps:
       - name: Instalar cliente Postgres 17
         run: |
+          sudo apt-get install -y curl ca-certificates
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(. /etc/os-release && echo $VERSION_CODENAME)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
           sudo apt-get update
-          sudo apt-get install -y postgresql-client-17 || sudo apt-get install -y postgresql-client
+          sudo apt-get install -y postgresql-client-17
 
       - name: Rodar pg_dump
         env:
+          # A secret pode vir com espaço/quebra de linha grudado do
+          # copiar-colar — remove qualquer whitespace nas pontas antes de usar.
           DATABASE_URL: ${{ secrets.SUPABASE_DB_URL_BACKUP }}
         run: |
+          CLEAN_URL=$(echo -n "$DATABASE_URL" | tr -d '[:space:]')
           DATA=$(date +%Y%m%d)
-          pg_dump --format=custom --no-owner --no-privileges --file="backup-$DATA.backup" "$DATABASE_URL"
+          /usr/lib/postgresql/17/bin/pg_dump --format=custom --no-owner --no-privileges --file="backup-$DATA.backup" "$CLEAN_URL"
           echo "BACKUP_NAME=backup-$DATA.backup" >> "$GITHUB_ENV"
 
       - name: Guardar como artefato
