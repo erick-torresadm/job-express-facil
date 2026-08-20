@@ -108,6 +108,7 @@ export const CIDADES = [
   "Recife", "Fortaleza", "Porto Alegre", "Brasília", "Manaus",
   "Osasco", "Guarulhos", "Campinas", "Santo André", "São Bernardo",
   "Diadema", "Mauá", "Suzano", "Mogi das Cruzes", "São José dos Campos",
+  "Itaquaquecetuba", "Poá", "Ferraz de Vasconcelos", "Arujá",
   "Sorocaba", "Ribeirão Preto", "Santos", "São Vicente", "Niterói",
   "Duque de Caxias", "Nova Iguaçu", "Belford Roxo", "São Gonçalo", "Vitória",
   "Vila Velha", "Serra", "Goiânia", "Aparecida de Goiânia", "Florianópolis",
