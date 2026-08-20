@@ -27,9 +27,10 @@ function EmpresaDetail() {
   const fetchCandidaturas = useServerFn(getEmpresaCandidaturas);
   const fetchAtividade = useServerFn(getEmpresaAtividade);
 
-  const { data: empresa, isLoading: loadingDetail } = useQuery({
+  const { data: empresa, isLoading: loadingDetail, isError: errorDetail, error: detailError } = useQuery({
     queryKey: ["admin-empresa-detail", id],
     queryFn: () => fetchDetail({ data: { id } }),
+    retry: false,
   });
 
   const { data: vagas, isLoading: loadingVagas } = useQuery({
@@ -49,6 +50,19 @@ function EmpresaDetail() {
     queryFn: () => fetchAtividade({ data: { id } }),
     enabled: tab === "atividade",
   });
+
+  if (errorDetail) {
+    return (
+      <AdminShell title="Erro">
+        <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-8 text-center">
+          <p className="font-bold text-destructive">Não foi possível carregar esta empresa.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {detailError instanceof Error ? detailError.message : "Erro desconhecido."}
+          </p>
+        </div>
+      </AdminShell>
+    );
+  }
 
   if (loadingDetail || !empresa) {
     return (
