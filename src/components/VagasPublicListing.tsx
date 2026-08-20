@@ -3,28 +3,15 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   Search, MapPin, Briefcase, Zap, ArrowRight, X, Navigation, Loader2,
-  Wallet, Clock3, SlidersHorizontal, ShieldCheck,
+  Wallet, Clock3, SlidersHorizontal, ShieldCheck, Building2, ListChecks,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { listarVagasPublicas } from "@/lib/vagas.functions";
+import { listarVagasPublicas, type VagaPublica } from "@/lib/vagas.functions";
+import { VagaActions } from "@/components/VagaActions";
 
 type Regime = "clt" | "pj" | "estagio" | "outros";
 
-export type VagaPublica = {
-  id: string;
-  titulo: string;
-  empresa_nome: string;
-  bairro: string;
-  cidade: string;
-  salario: string;
-  horario: string;
-  profissao_slug: string;
-  descricao?: string | null;
-  urgente: boolean;
-  created_at: string;
-  regime: Regime;
-  distancia_km?: number | null;
-};
+export type { VagaPublica };
 
 function isNova(iso: string) {
   return Date.now() - new Date(iso).getTime() < 48 * 3600_000;
@@ -120,41 +107,38 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
     setErroLocal(null);
   }
 
+  const [selecionada, setSelecionada] = useState<VagaPublica | null>(null);
+
   useEffect(() => {
-    if (pertoDeMim && coords) {
-      (async () => {
-        setVagas(null);
-        const res = await listar({
-          data: {
-            regime: regime === "todos" ? undefined : regime,
-            lat: coords.lat,
-            lng: coords.lng,
-            q: q.trim() || undefined,
-            urgente: urgente || undefined,
-            limit: 60,
-          },
-        });
-        setVagas(res.vagas as unknown as VagaPublica[]);
-      })();
-      return;
-    }
     (async () => {
       setVagas(null);
-      let query = supabase.from("vagas")
-        .select("id,titulo,empresa_nome,bairro,cidade,salario,horario,profissao_slug,descricao,urgente,created_at,regime")
-        .eq("ativa", true)
-        .lt("risco_fraude", 70)
-        .order("urgente", { ascending: false })
-        .order("created_at", { ascending: false })
-        .limit(80);
-      if (regime !== "todos") query = query.eq("regime", regime);
-      if (q.trim()) query = query.or(`titulo.ilike.%${q}%,empresa_nome.ilike.%${q}%,profissao.ilike.%${q}%`);
-      if (cidade.trim()) query = query.ilike("cidade", `%${cidade}%`);
-      if (urgente) query = query.eq("urgente", true);
-      const { data } = await query;
-      setVagas((data ?? []) as VagaPublica[]);
+      const res = await listar({
+        data: {
+          regime: regime === "todos" ? undefined : regime,
+          ...(pertoDeMim && coords ? { lat: coords.lat, lng: coords.lng } : {}),
+          q: q.trim() || undefined,
+          cidade: !pertoDeMim && cidade.trim() ? cidade.trim() : undefined,
+          urgente: urgente || undefined,
+          limit: pertoDeMim ? 60 : 80,
+        },
+      });
+      setVagas(res.vagas as VagaPublica[]);
     })();
   }, [regime, q, cidade, urgente, pertoDeMim, coords]);
+
+  // Painel de detalhe (desktop): mantém a vaga selecionada em sincronia com
+  // a lista carregada — seleciona a primeira por padrão, estilo InfoJobs.
+  useEffect(() => {
+    if (!vagas || vagas.length === 0) { setSelecionada(null); return; }
+    if (!selecionada || !vagas.some((v) => v.id === selecionada.id)) setSelecionada(vagas[0]);
+  }, [vagas]);
+
+  function abrirVaga(e: React.MouseEvent, v: VagaPublica) {
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+      e.preventDefault();
+      setSelecionada(v);
+    }
+  }
 
   useEffect(() => {
     (async () => {
@@ -292,7 +276,7 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
         )}
       </button>
 
-      <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[220px_380px_1fr]">
         {/* Sidebar de filtros — fixa no desktop */}
         <aside className="hidden lg:block">
           <div className="sticky top-24 rounded-2xl border border-border bg-card p-4 shadow-soft">
@@ -350,7 +334,10 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
                     <Link
                       to="/vagas/$slug"
                       params={{ slug: `${v.profissao_slug}-em-${slugCidade(v.cidade)}` }}
-                      className="group block rounded-2xl border border-border bg-card p-4 shadow-soft transition hover:border-primary/50 hover:shadow-pop sm:p-5"
+                      onClick={(e) => abrirVaga(e, v)}
+                      className={`group block rounded-2xl border p-4 shadow-soft transition hover:border-primary/50 hover:shadow-pop sm:p-5 ${
+                        selecionada?.id === v.id ? "border-primary bg-primary/5 lg:ring-1 lg:ring-primary/30" : "border-border bg-card"
+                      }`}
                     >
                       <div className="flex flex-wrap items-center gap-1.5">
                         {isNova(v.created_at) && (
@@ -364,7 +351,7 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
                           </span>
                         )}
                         <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-primary">
-                          {REGIME_LABEL[v.regime]}
+                          {REGIME_LABEL[v.regime as Regime] ?? v.regime}
                         </span>
                         {v.distancia_km != null && (
                           <span className="inline-flex items-center gap-0.5 rounded-md bg-secondary px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-secondary-foreground">
@@ -410,6 +397,21 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
             </>
           )}
         </div>
+
+        {/* Painel de detalhe — desktop only, mostra a vaga selecionada sem sair da página */}
+        <aside className="hidden lg:block">
+          <div className="sticky top-24">
+            {vagas === null ? (
+              <div className="h-96 animate-pulse rounded-2xl bg-muted/50" />
+            ) : selecionada ? (
+              <VagaDetalhe vaga={selecionada} />
+            ) : (
+              <div className="rounded-2xl border-2 border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">
+                Selecione uma vaga na lista pra ver os detalhes aqui.
+              </div>
+            )}
+          </div>
+        </aside>
       </div>
 
       {/* CTA final */}
@@ -427,6 +429,78 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
           </Link>
         </div>
       </section>
+    </div>
+  );
+}
+
+function VagaDetalhe({ vaga }: { vaga: VagaPublica }) {
+  return (
+    <div className="max-h-[calc(100vh-7rem)] overflow-y-auto rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6">
+      <div className="flex flex-wrap items-center gap-1.5">
+        {isNova(vaga.created_at) && (
+          <span className="rounded-md bg-accent/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-accent">Nova</span>
+        )}
+        {vaga.urgente && (
+          <span className="inline-flex items-center gap-0.5 rounded-md bg-warning/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-warning">
+            <Zap className="h-2.5 w-2.5" /> Urgente
+          </span>
+        )}
+        <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-primary">
+          {REGIME_LABEL[vaga.regime as Regime] ?? vaga.regime}
+        </span>
+      </div>
+
+      <h2 className="mt-2 text-2xl font-black leading-tight tracking-tight">{vaga.titulo}</h2>
+      <div className="mt-1 flex items-center gap-2">
+        {vaga.empresa_logo_url ? (
+          <img src={vaga.empresa_logo_url} alt={vaga.empresa_nome} className="h-6 w-6 rounded-md object-cover" />
+        ) : (
+          <div className="grid h-6 w-6 place-items-center rounded-md bg-secondary text-muted-foreground"><Building2 className="h-3.5 w-3.5" /></div>
+        )}
+        {vaga.empresa_slug_publico ? (
+          <Link to="/c/$slug" params={{ slug: vaga.empresa_slug_publico }} className="text-sm font-semibold text-muted-foreground hover:text-primary hover:underline">
+            {vaga.empresa_nome}
+          </Link>
+        ) : (
+          <span className="text-sm font-semibold text-muted-foreground">{vaga.empresa_nome}</span>
+        )}
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 border-y border-border py-3 text-sm">
+        <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4 shrink-0 text-muted-foreground" /> {vaga.bairro}, {vaga.cidade}</span>
+        <span className="inline-flex items-center gap-1.5 font-bold text-success"><Wallet className="h-4 w-4 shrink-0" /> {vaga.salario}</span>
+        <span className="inline-flex items-center gap-1.5"><Clock3 className="h-4 w-4 shrink-0 text-muted-foreground" /> {vaga.horario}</span>
+      </div>
+
+      <div className="mt-4">
+        <VagaActions vaga={vaga} empresaId={vaga.empresa_id} />
+      </div>
+
+      {vaga.descricao && (
+        <div className="mt-5">
+          <h3 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Sobre a vaga</h3>
+          <p className="mt-1.5 whitespace-pre-line text-sm text-foreground">{vaga.descricao}</p>
+        </div>
+      )}
+
+      {vaga.requisitos.length > 0 && (
+        <div className="mt-5">
+          <h3 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">
+            <ListChecks className="h-3.5 w-3.5" /> Requisitos
+          </h3>
+          <ul className="mt-1.5 space-y-1 text-sm">
+            {vaga.requisitos.map((r, i) => (
+              <li key={i} className="flex items-start gap-1.5"><span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-muted-foreground" />{r}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {vaga.faixa_salarial_sugerida && (
+        <p className="mt-4 text-xs text-muted-foreground">Faixa de mercado: {vaga.faixa_salarial_sugerida}</p>
+      )}
+
+      <p className="mt-5 text-[11px] text-muted-foreground">Publicada {tempoRelativo(vaga.created_at)}</p>
     </div>
   );
 }
