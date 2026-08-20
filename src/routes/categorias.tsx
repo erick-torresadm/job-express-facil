@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { PROFISSOES, CIDADES, CATEGORIAS } from "@/lib/mock-data";
 import { SITE_URL } from "@/lib/site";
 import { Briefcase, Search } from "lucide-react";
@@ -38,11 +39,26 @@ export const Route = createFileRoute("/categorias")({
   component: CategoriasPage,
 });
 
+function slugify(s: string) {
+  return s.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-");
+}
+
 function CategoriasPage() {
+  const nav = useNavigate();
+  const [busca, setBusca] = useState("");
+  const [cidadeBusca, setCidadeBusca] = useState("");
+
   const porCategoria = CATEGORIAS.map((cat) => ({
     cat,
     profissoes: PROFISSOES.filter((p) => p.categoria === cat),
   }));
+
+  function buscar(e: React.FormEvent) {
+    e.preventDefault();
+    const p = slugify(busca) || "vagas";
+    const c = slugify(cidadeBusca) || "sao-paulo";
+    nav({ to: "/vagas/$slug", params: { slug: `${p}-em-${c}` } });
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -59,6 +75,38 @@ function CategoriasPage() {
             <strong>{CIDADES.length} cidades</strong>. Clique na sua área e encontre vagas
             ou cadastre seu currículo grátis.
           </p>
+
+          <form onSubmit={buscar} className="mt-6 flex flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-soft sm:flex-row">
+            <div className="flex flex-1 items-center gap-2 rounded-xl px-3 py-2.5 sm:border-r sm:border-border">
+              <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <input
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                list="profissoes-lista"
+                placeholder="Cargo ou profissão"
+                className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              />
+              <datalist id="profissoes-lista">
+                {PROFISSOES.map((p) => <option key={p.id} value={p.nome} />)}
+              </datalist>
+            </div>
+            <div className="flex flex-1 items-center gap-2 px-3 py-2.5">
+              <Briefcase className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <input
+                value={cidadeBusca}
+                onChange={(e) => setCidadeBusca(e.target.value)}
+                list="cidades-lista"
+                placeholder="Cidade"
+                className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              />
+              <datalist id="cidades-lista">
+                {CIDADES.map((c) => <option key={c} value={c} />)}
+              </datalist>
+            </div>
+            <button type="submit" className="btn-touch shrink-0 bg-accent px-6 text-accent-foreground sm:w-auto">
+              Buscar vagas
+            </button>
+          </form>
         </header>
 
         <div className="space-y-10">

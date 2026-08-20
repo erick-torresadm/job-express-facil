@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getPaginaPublica, enviarCurriculoEmpresa } from "@/lib/empresa.functions";
 import { SITE_URL } from "@/lib/site";
-import { Building2, MapPin, Send, Share2 } from "lucide-react";
+import { Building2, MapPin, Send, Share2, DollarSign, Clock, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 
@@ -168,14 +168,19 @@ function PaginaPublicaEmpresa() {
 
         {vagas.length > 0 && (
           <section className="space-y-3">
-            <h2 className="font-bold">Vagas abertas</h2>
+            <h2 className="font-bold">{vagas.length} vaga{vagas.length > 1 ? "s" : ""} aberta{vagas.length > 1 ? "s" : ""}</h2>
             {vagas.map((v) => (
               <Link key={v.id} to="/vagas/$slug" params={{ slug: `${v.profissao_slug}-em-${v.cidade.toLowerCase().replace(/\s+/g, "-")}` }}
-                className="block rounded-2xl border border-border bg-card p-4 hover:border-primary">
-                <h3 className="font-bold">{v.titulo}</h3>
-                <p className="text-xs text-muted-foreground">
-                  <MapPin className="mr-1 inline h-3 w-3" />{v.bairro}, {v.cidade} • {v.salario} • {v.horario}
-                </p>
+                className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition hover:border-primary">
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-extrabold leading-tight group-hover:text-primary">{v.titulo}</h3>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{v.bairro}, {v.cidade}</span>
+                    <span className="inline-flex items-center gap-1 font-semibold text-success"><DollarSign className="h-3.5 w-3.5" />{v.salario}</span>
+                    <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{v.horario}</span>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
               </Link>
             ))}
           </section>

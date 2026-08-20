@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Flame, Trash2, Eye, EyeOff, PlusSquare, Loader2, Pencil } from "lucide-react";
+import { ArrowLeft, Flame, Trash2, Eye, EyeOff, PlusSquare, Loader2, Pencil, DollarSign, Clock, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -102,9 +102,11 @@ function MinhasVagas() {
                     )}
                     {!v.ativa && <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase">Pausada</span>}
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {v.salario} • {v.horario} • {v.bairro}, {v.cidade}
-                  </p>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1 font-semibold text-success"><DollarSign className="h-3.5 w-3.5" />{v.salario}</span>
+                    <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{v.horario}</span>
+                    <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{v.bairro}, {v.cidade}</span>
+                  </div>
                   <p className="mt-1 text-[10px] uppercase text-muted-foreground">
                     Publicada em {new Date(v.created_at).toLocaleDateString("pt-BR")}
                   </p>

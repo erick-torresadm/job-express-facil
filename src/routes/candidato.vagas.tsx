@@ -99,7 +99,7 @@ function VagasParaVoce() {
           <p className="mt-1 text-xs text-muted-foreground">Tente remover filtros ou crie um alerta para ser avisado.</p>
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="space-y-3">
           {vagas.map((v) => (
             <VagaCard key={v.id} vaga={{
               ...v,
