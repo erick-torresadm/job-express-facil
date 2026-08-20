@@ -1,14 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import {
   Briefcase, FileText, Activity, Settings, ShieldCheck, Send, Eye, MousePointerClick,
-  MapPin, Phone, Code, Calendar, Building2,
+  MapPin, Phone, Code, Calendar, Building2, Crown, Loader2, Save,
 } from "lucide-react";
+import { toast } from "sonner";
 import { AdminShell } from "@/components/AdminShell";
 import {
   getEmpresaDetail, getEmpresaVagas, getEmpresaCandidaturas, getEmpresaAtividade,
+  getAssinaturaAdmin, salvarAssinaturaAdmin,
 } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/empresas/$id")({
@@ -129,7 +131,7 @@ function EmpresaDetail() {
       {tab === "vagas" && <VagasTab vagas={vagas} isLoading={loadingVagas} />}
       {tab === "candidaturas" && <CandidaturasTab candidaturas={candidaturas} isLoading={loadingCandidaturas} />}
       {tab === "atividade" && <AtividadeTab atividade={atividade} isLoading={loadingAtividade} />}
-      {tab === "configuracao" && <ConfiguracaoTab empresa={empresa} />}
+      {tab === "configuracao" && <ConfiguracaoTab empresa={empresa} empresaId={id} />}
     </AdminShell>
   );
 }
@@ -292,14 +294,17 @@ function AtividadeTab({ atividade, isLoading }: { atividade?: any[]; isLoading: 
   );
 }
 
-function ConfiguracaoTab({ empresa }: { empresa: any }) {
+function ConfiguracaoTab({ empresa, empresaId }: { empresa: any; empresaId: string }) {
   return (
     <div className="space-y-4">
+      <PlanoCard empresaId={empresaId} />
+
       <div className="rounded-2xl border border-border bg-card p-6">
         <h3 className="mb-4 font-bold text-foreground">Informações de Contato</h3>
         <div className="space-y-3">
           <ConfigItem icon={<Phone className="h-4 w-4" />} label="WhatsApp" value={empresa.whatsapp ?? "—"} />
           <ConfigItem icon={<Code className="h-4 w-4" />} label="CNPJ" value={empresa.cnpj ?? "—"} />
+          {empresa.email && <ConfigItem icon={<Send className="h-4 w-4" />} label="E-mail" value={empresa.email} />}
         </div>
       </div>
 
@@ -319,6 +324,111 @@ function ConfiguracaoTab({ empresa }: { empresa: any }) {
           <ConfigItem icon={<ShieldCheck className="h-4 w-4" />} label="Status" value={empresa.verificada ? "Verificada" : "Não verificada"} />
         </div>
       </div>
+    </div>
+  );
+}
+
+function PlanoCard({ empresaId }: { empresaId: string }) {
+  const qc = useQueryClient();
+  const fetchAssinatura = useServerFn(getAssinaturaAdmin);
+  const salvar = useServerFn(salvarAssinaturaAdmin);
+
+  const { data: assinatura, isLoading } = useQuery({
+    queryKey: ["admin-assinatura", empresaId],
+    queryFn: () => fetchAssinatura({ data: { id: empresaId } }),
+  });
+
+  const [plano, setPlano] = useState<"basico" | "full">("basico");
+  const [ciclo, setCiclo] = useState<"mensal" | "anual">("mensal");
+  const [status, setStatus] = useState<"pendente" | "ativa" | "atrasada" | "cancelada">("ativa");
+  const [valor, setValor] = useState("");
+  const [vencimento, setVencimento] = useState("");
+  const [salvando, setSalvando] = useState(false);
+
+  useEffect(() => {
+    if (!assinatura) return;
+    setPlano(assinatura.plano as "basico" | "full");
+    setCiclo(assinatura.ciclo as "mensal" | "anual");
+    setStatus(assinatura.status as typeof status);
+    setValor(assinatura.valor != null ? String(assinatura.valor) : "");
+    setVencimento(assinatura.proximo_vencimento ?? "");
+  }, [assinatura]);
+
+  const handleSalvar = async () => {
+    setSalvando(true);
+    try {
+      await salvar({
+        data: {
+          empresaId,
+          plano,
+          ciclo,
+          status,
+          valor: valor ? parseFloat(valor) : null,
+          proximoVencimento: vencimento || null,
+        },
+      });
+      toast.success("Plano atualizado! A empresa já tem os benefícios liberados.");
+      qc.invalidateQueries({ queryKey: ["admin-assinatura", empresaId] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao salvar plano");
+    } finally {
+      setSalvando(false);
+    }
+  };
+
+  if (isLoading) return <div className="h-48 animate-pulse rounded-2xl border border-border bg-card" />;
+
+  return (
+    <div className="rounded-2xl border-2 border-accent/30 bg-accent/5 p-6">
+      <h3 className="mb-1 flex items-center gap-2 font-bold text-foreground">
+        <Crown className="h-4 w-4 text-accent" /> Plano / Assinatura
+      </h3>
+      <p className="mb-4 text-xs text-muted-foreground">
+        Ative ou ajuste o plano manualmente pra empresas que pagaram por fora da plataforma. Assinatura "ativa" libera contatos ilimitados na hora.
+      </p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="text-sm">
+          <span className="mb-1 block text-xs font-bold uppercase text-muted-foreground">Plano</span>
+          <select value={plano} onChange={(e) => setPlano(e.target.value as typeof plano)}
+            className="w-full rounded-lg border border-border bg-background px-3 py-2">
+            <option value="basico">Básico</option>
+            <option value="full">Full</option>
+          </select>
+        </label>
+        <label className="text-sm">
+          <span className="mb-1 block text-xs font-bold uppercase text-muted-foreground">Ciclo</span>
+          <select value={ciclo} onChange={(e) => setCiclo(e.target.value as typeof ciclo)}
+            className="w-full rounded-lg border border-border bg-background px-3 py-2">
+            <option value="mensal">Mensal</option>
+            <option value="anual">Anual</option>
+          </select>
+        </label>
+        <label className="text-sm">
+          <span className="mb-1 block text-xs font-bold uppercase text-muted-foreground">Status</span>
+          <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)}
+            className="w-full rounded-lg border border-border bg-background px-3 py-2">
+            <option value="ativa">Ativa</option>
+            <option value="pendente">Pendente</option>
+            <option value="atrasada">Atrasada</option>
+            <option value="cancelada">Cancelada</option>
+          </select>
+        </label>
+        <label className="text-sm">
+          <span className="mb-1 block text-xs font-bold uppercase text-muted-foreground">Valor pago (R$, opcional)</span>
+          <input type="number" min={0} step="0.01" value={valor} onChange={(e) => setValor(e.target.value)}
+            placeholder="Ex: 82.40" className="w-full rounded-lg border border-border bg-background px-3 py-2" />
+        </label>
+        <label className="text-sm sm:col-span-2">
+          <span className="mb-1 block text-xs font-bold uppercase text-muted-foreground">Próximo vencimento (opcional)</span>
+          <input type="date" value={vencimento} onChange={(e) => setVencimento(e.target.value)}
+            className="w-full rounded-lg border border-border bg-background px-3 py-2" />
+        </label>
+      </div>
+      <button onClick={handleSalvar} disabled={salvando}
+        className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-foreground disabled:opacity-50">
+        {salvando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+        {salvando ? "Salvando…" : "Salvar plano"}
+      </button>
     </div>
   );
 }

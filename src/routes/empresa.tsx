@@ -216,12 +216,20 @@ function EmpresaSaudacao() {
 function CreditoCard() {
   const { user } = useAuth();
   const fetchInfo = useServerFn(getRevelacoesInfo);
-  const [info, setInfo] = useState<{ usadas: number; limite: number; restantes: number } | null>(null);
+  const [info, setInfo] = useState<Awaited<ReturnType<typeof getRevelacoesInfo>> | null>(null);
   useEffect(() => {
     if (!user) return;
     fetchInfo().then(setInfo).catch(() => setInfo(null));
   }, [user, fetchInfo]);
   if (!info) return null;
+  if (info.ilimitado) {
+    return (
+      <div className="m-3 rounded-2xl bg-accent/15 p-4 text-xs">
+        <p className="font-bold">Contatos ilimitados</p>
+        <p className="opacity-70">Sua assinatura libera contatos sem limite.</p>
+      </div>
+    );
+  }
   const acabou = info.restantes === 0;
   return (
     <Link to="/planos" className="m-3 block rounded-2xl bg-accent/15 p-4 text-xs hover:bg-accent/25">
@@ -247,7 +255,7 @@ function DashboardKPIs() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Kpi icon={<Briefcase className="h-4 w-4" />} label="Vagas ativas" value={d.vagas_ativas} hint={`${d.vagas_totais} no total`} />
         <Kpi icon={<Users className="h-4 w-4" />} label="Candidaturas" value={d.candidaturas_totais} hint={`+${d.candidaturas_7d} em 7 dias`} tone="accent" />
-        <Kpi icon={<TrendingUp className="h-4 w-4" />} label="Contatos restantes" value={d.contatos_restantes} hint={`${d.contatos_usados}/${d.contatos_limite} usados`} tone={d.contatos_restantes === 0 ? "warning" : "default"} />
+        <Kpi icon={<TrendingUp className="h-4 w-4" />} label="Contatos restantes" value={d.contatos_restantes ?? "∞"} hint={d.contatos_limite == null ? "Ilimitado" : `${d.contatos_usados}/${d.contatos_limite} usados`} tone={d.contatos_restantes === 0 ? "warning" : "default"} />
         <Kpi icon={<ShieldCheck className="h-4 w-4" />} label="Verificação" value={d.verificada ? "Aprovada" : "Pendente"} hint={d.verificada ? "Selo ativo" : "Aumenta candidatos"} tone={d.verificada ? "accent" : "warning"} />
       </div>
       {(!d.tem_pagina || !d.verificada) && (

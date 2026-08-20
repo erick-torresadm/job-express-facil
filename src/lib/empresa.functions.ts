@@ -157,18 +157,30 @@ export const enviarCurriculoEmpresa = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-// ---------- Revelação de contato (10 grátis) ----------
+// ---------- Revelação de contato (10 grátis, ilimitado com assinatura ativa) ----------
+
+async function temAssinaturaAtiva(empresaId: string): Promise<boolean> {
+  const { data } = await supabaseAdmin
+    .from("assinaturas")
+    .select("id")
+    .eq("empresa_id", empresaId)
+    .eq("status", "ativa")
+    .limit(1)
+    .maybeSingle();
+  return !!data;
+}
 
 export const getRevelacoesInfo = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    const { count } = await supabase
-      .from("revelacoes")
-      .select("id", { count: "exact", head: true })
-      .eq("empresa_id", userId);
+    const [{ count }, ilimitado] = await Promise.all([
+      supabase.from("revelacoes").select("id", { count: "exact", head: true }).eq("empresa_id", userId),
+      temAssinaturaAtiva(userId),
+    ]);
     const usadas = count ?? 0;
-    return { usadas, limite: FREE_REVELACOES, restantes: Math.max(0, FREE_REVELACOES - usadas) };
+    if (ilimitado) return { usadas, limite: null, restantes: null, ilimitado: true as const };
+    return { usadas, limite: FREE_REVELACOES, restantes: Math.max(0, FREE_REVELACOES - usadas), ilimitado: false as const };
   });
 
 export const revelarContato = createServerFn({ method: "POST" })
@@ -181,10 +193,13 @@ export const revelarContato = createServerFn({ method: "POST" })
       .from("revelacoes").select("id").eq("empresa_id", userId).eq("curriculo_id", data.curriculo_id).maybeSingle();
 
     if (!existente) {
-      const { count } = await supabase
-        .from("revelacoes").select("id", { count: "exact", head: true }).eq("empresa_id", userId);
-      if ((count ?? 0) >= FREE_REVELACOES) {
-        throw new Error(`Você já usou seus ${FREE_REVELACOES} contatos grátis. Assine um plano para continuar.`);
+      const ilimitado = await temAssinaturaAtiva(userId);
+      if (!ilimitado) {
+        const { count } = await supabase
+          .from("revelacoes").select("id", { count: "exact", head: true }).eq("empresa_id", userId);
+        if ((count ?? 0) >= FREE_REVELACOES) {
+          throw new Error(`Você já usou seus ${FREE_REVELACOES} contatos grátis. Assine um plano para continuar.`);
+        }
       }
       const { error } = await supabase.from("revelacoes").insert({
         empresa_id: userId, curriculo_id: data.curriculo_id,
@@ -263,7 +278,7 @@ export const getEmpresaDashboard = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { userId } = context;
-    const [vagasAtivas, vagasTotais, candTotais, candNovas, revel, perfil] = await Promise.all([
+    const [vagasAtivas, vagasTotais, candTotais, candNovas, revel, perfil, ilimitado] = await Promise.all([
       supabaseAdmin.from("vagas").select("id", { count: "exact", head: true }).eq("empresa_id", userId).eq("ativa", true),
       supabaseAdmin.from("vagas").select("id", { count: "exact", head: true }).eq("empresa_id", userId),
       supabaseAdmin.from("candidaturas").select("id", { count: "exact", head: true }).eq("empresa_id", userId),
@@ -272,6 +287,7 @@ export const getEmpresaDashboard = createServerFn({ method: "GET" })
         .gte("created_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
       supabaseAdmin.from("revelacoes").select("id", { count: "exact", head: true }).eq("empresa_id", userId),
       supabaseAdmin.from("profiles").select("verificada,slug_publico").eq("id", userId).maybeSingle(),
+      temAssinaturaAtiva(userId),
     ]);
 
     const usadas = revel.count ?? 0;
@@ -281,8 +297,8 @@ export const getEmpresaDashboard = createServerFn({ method: "GET" })
       candidaturas_totais: candTotais.count ?? 0,
       candidaturas_7d: candNovas.count ?? 0,
       contatos_usados: usadas,
-      contatos_limite: FREE_REVELACOES,
-      contatos_restantes: Math.max(0, FREE_REVELACOES - usadas),
+      contatos_limite: ilimitado ? null : FREE_REVELACOES,
+      contatos_restantes: ilimitado ? null : Math.max(0, FREE_REVELACOES - usadas),
       verificada: perfil.data?.verificada ?? false,
       tem_pagina: !!perfil.data?.slug_publico,
     };

@@ -503,3 +503,64 @@ export const getEmpresaAtividade = createServerFn({ method: "GET" })
 
     return timeline.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   });
+
+// ============ ADMIN: PLANO/ASSINATURA MANUAL ============
+// Pra empresas que pagaram por fora da plataforma — admin ativa/ajusta
+// o plano direto, sem passar pela Asaas.
+
+export const getAssinaturaAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    const { data: assinatura } = await supabaseAdmin
+      .from("assinaturas")
+      .select("id, plano, ciclo, status, valor, proximo_vencimento, created_at")
+      .eq("empresa_id", data.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return assinatura ?? null;
+  });
+
+export const salvarAssinaturaAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({
+      empresaId: z.string().uuid(),
+      plano: z.enum(["basico", "full"]),
+      ciclo: z.enum(["mensal", "anual"]),
+      status: z.enum(["pendente", "ativa", "atrasada", "cancelada"]),
+      valor: z.number().min(0).max(99999).optional().nullable(),
+      proximoVencimento: z.string().optional().nullable(),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+
+    const { data: existente } = await supabaseAdmin
+      .from("assinaturas")
+      .select("id")
+      .eq("empresa_id", data.empresaId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const payload = {
+      plano: data.plano,
+      ciclo: data.ciclo,
+      status: data.status,
+      valor: data.valor ?? 0,
+      proximo_vencimento: data.proximoVencimento || null,
+    };
+
+    if (existente) {
+      const { error } = await supabaseAdmin.from("assinaturas").update(payload).eq("id", existente.id);
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await supabaseAdmin.from("assinaturas").insert({ ...payload, empresa_id: data.empresaId });
+      if (error) throw new Error(error.message);
+    }
+
+    return { ok: true as const };
+  });
