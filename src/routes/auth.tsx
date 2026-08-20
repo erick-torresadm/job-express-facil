@@ -1,11 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Building2, HardHat, Mail, Lock, User as UserIcon, Phone, Loader2, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import type { Role } from "@/hooks/use-auth";
 import { notifyNewSignup } from "@/lib/notify.functions";
+import { loginComRateLimit, checarRateLimitCadastro } from "@/lib/auth.functions";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -20,6 +22,8 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const { user, role: currentRole, loading: authLoading } = useAuth();
+  const login = useServerFn(loginComRateLimit);
+  const checarLimiteCadastro = useServerFn(checarRateLimitCadastro);
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [role, setRole] = useState<Role>("candidato");
   const [email, setEmail] = useState("");
@@ -68,6 +72,7 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
+        await checarLimiteCadastro();
         if (role === "empresa") {
           const digits = cpfCnpj.replace(/\D/g, "");
           if (digits.length !== 11 && digits.length !== 14) {
@@ -117,17 +122,20 @@ function AuthPage() {
           return;
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        // Login passa pelo servidor (rate limit por IP + conta) em vez de
+        // chamar o Supabase direto do client.
+        const { access_token, refresh_token } = await login({ data: { email, password } });
+        const { error } = await supabase.auth.setSession({ access_token, refresh_token });
         if (error) throw error;
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
       if (msg === "JÁ_CADASTRADO") {
         setErr("Esse e-mail já tem conta no VagasAgora. Use a opção \"Entrar\" ou clique em \"Esqueci minha senha\" se não lembrar.");
+      } else if (msg.includes("Muitas requisições")) {
+        setErr(msg);
       } else if (mode === "signup") {
         setErr("Não foi possível concluir o cadastro. Verifique os dados e tente novamente.");
-      } else if (msg.includes("Email not confirmed")) {
-        setErr("Confirme seu e-mail antes de entrar.");
       } else {
         setErr("E-mail ou senha inválidos.");
       }

@@ -81,7 +81,9 @@ export const getFreelancerPublico = createServerFn({ method: "GET" })
     const supa = publicClient();
     const { data: f } = await supa
       .from("freelancers")
-      .select("*")
+      .select(
+        "id, handle, nome, headline, bio, avatar_url, cover_url, categoria_principal, skills, cidade, estado, atende_remoto, nivel, disponibilidade, valor_hora_min, whatsapp, instagram, linkedin, behance, site, verificado, destaque, views, created_at",
+      )
       .eq("handle", data.handle)
       .eq("ativo", true)
       .maybeSingle();
