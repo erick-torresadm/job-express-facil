@@ -103,10 +103,11 @@ function AuthPage() {
           },
         }).catch(() => null);
         // Confirmação de e-mail está ativada no projeto — signUp() não cria
-        // sessão até o link ser clicado. Sem esse aviso a tela fica parada
-        // sem nenhum feedback, parecendo travada.
+        // sessão até o link ser clicado. Sem isso a tela ficava parada sem
+        // nenhum feedback, parecendo travada.
         if (!signUpData.session) {
-          setInfo("Conta criada! Confira seu e-mail e clique no link de confirmação pra entrar.");
+          navigate({ to: "/confirme-seu-email", search: { email } });
+          return;
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });

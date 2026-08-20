@@ -20,6 +20,7 @@ import { Route as FreelasRouteImport } from './routes/freelas'
 import { Route as FreelancerRouteImport } from './routes/freelancer'
 import { Route as EmpresaRouteImport } from './routes/empresa'
 import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as ConfirmeSeuEmailRouteImport } from './routes/confirme-seu-email'
 import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
 import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as CandidatoRouteImport } from './routes/candidato'
@@ -130,6 +131,11 @@ const EmpresaRoute = EmpresaRouteImport.update({
 const ContatoRoute = ContatoRouteImport.update({
   id: '/contato',
   path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfirmeSeuEmailRoute = ConfirmeSeuEmailRouteImport.update({
+  id: '/confirme-seu-email',
+  path: '/confirme-seu-email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComoFuncionaRoute = ComoFuncionaRouteImport.update({
@@ -424,6 +430,7 @@ export interface FileRoutesByFullPath {
   '/candidato': typeof CandidatoRouteWithChildren
   '/categorias': typeof CategoriasRoute
   '/como-funciona': typeof ComoFuncionaRoute
+  '/confirme-seu-email': typeof ConfirmeSeuEmailRoute
   '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
   '/freelancer': typeof FreelancerRouteWithChildren
@@ -492,6 +499,7 @@ export interface FileRoutesByTo {
   '/cadastro': typeof CadastroRoute
   '/categorias': typeof CategoriasRoute
   '/como-funciona': typeof ComoFuncionaRoute
+  '/confirme-seu-email': typeof ConfirmeSeuEmailRoute
   '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
   '/para-empresas': typeof ParaEmpresasRoute
@@ -560,6 +568,7 @@ export interface FileRoutesById {
   '/candidato': typeof CandidatoRouteWithChildren
   '/categorias': typeof CategoriasRoute
   '/como-funciona': typeof ComoFuncionaRoute
+  '/confirme-seu-email': typeof ConfirmeSeuEmailRoute
   '/contato': typeof ContatoRoute
   '/empresa': typeof EmpresaRouteWithChildren
   '/freelancer': typeof FreelancerRouteWithChildren
@@ -631,6 +640,7 @@ export interface FileRouteTypes {
     | '/candidato'
     | '/categorias'
     | '/como-funciona'
+    | '/confirme-seu-email'
     | '/contato'
     | '/empresa'
     | '/freelancer'
@@ -699,6 +709,7 @@ export interface FileRouteTypes {
     | '/cadastro'
     | '/categorias'
     | '/como-funciona'
+    | '/confirme-seu-email'
     | '/contato'
     | '/empresa'
     | '/para-empresas'
@@ -766,6 +777,7 @@ export interface FileRouteTypes {
     | '/candidato'
     | '/categorias'
     | '/como-funciona'
+    | '/confirme-seu-email'
     | '/contato'
     | '/empresa'
     | '/freelancer'
@@ -836,6 +848,7 @@ export interface RootRouteChildren {
   CandidatoRoute: typeof CandidatoRouteWithChildren
   CategoriasRoute: typeof CategoriasRoute
   ComoFuncionaRoute: typeof ComoFuncionaRoute
+  ConfirmeSeuEmailRoute: typeof ConfirmeSeuEmailRoute
   ContatoRoute: typeof ContatoRoute
   EmpresaRoute: typeof EmpresaRouteWithChildren
   FreelancerRoute: typeof FreelancerRouteWithChildren
@@ -954,6 +967,13 @@ declare module '@tanstack/react-router' {
       path: '/contato'
       fullPath: '/contato'
       preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confirme-seu-email': {
+      id: '/confirme-seu-email'
+      path: '/confirme-seu-email'
+      fullPath: '/confirme-seu-email'
+      preLoaderRoute: typeof ConfirmeSeuEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/como-funciona': {
@@ -1459,6 +1479,7 @@ const rootRouteChildren: RootRouteChildren = {
   CandidatoRoute: CandidatoRouteWithChildren,
   CategoriasRoute: CategoriasRoute,
   ComoFuncionaRoute: ComoFuncionaRoute,
+  ConfirmeSeuEmailRoute: ConfirmeSeuEmailRoute,
   ContatoRoute: ContatoRoute,
   EmpresaRoute: EmpresaRouteWithChildren,
   FreelancerRoute: FreelancerRouteWithChildren,
