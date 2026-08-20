@@ -92,6 +92,10 @@ export function AdSlot({ placement, format = "banner", className, adsenseSlot }:
   const aspect = aspectByPlacement[placement] ?? aspectByFormat[format];
   const hasImage = !!ad?.imagem_url;
 
+  // Sem anúncio real e sem AdSense configurado: não renderiza nada
+  // (era um banner "Anuncie aqui" antes — removido a pedido, poluía o site).
+  if (!ad && !adsenseEnabled) return null;
+
   return (
     <aside
       aria-label="Publicidade"
@@ -135,7 +139,7 @@ export function AdSlot({ placement, format = "banner", className, adsenseSlot }:
             )}
           </a>
         )
-      ) : adsenseEnabled ? (
+      ) : (
         <ins
           className="adsbygoogle block h-full w-full"
           style={{ display: "block" }}
@@ -144,26 +148,6 @@ export function AdSlot({ placement, format = "banner", className, adsenseSlot }:
           data-ad-format="auto"
           data-full-width-responsive="true"
         />
-      ) : (
-        // Fallback: banner "Anuncie aqui". O número de WhatsApp NÃO fica no
-        // HTML — o /anuncie faz redirect server-side para o wa.me.
-        <a
-          href="/anuncie"
-          rel="nofollow"
-          className="group flex h-full w-full items-center justify-between gap-3 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 px-4 py-3 transition hover:from-primary/20 hover:to-primary/20"
-        >
-          <div className="flex flex-col">
-            <span className="text-sm font-extrabold text-foreground md:text-base">
-              📣 Anuncie aqui
-            </span>
-            <span className="text-[11px] text-muted-foreground md:text-xs">
-              Fale com a gente no WhatsApp e apareça pra milhares de pessoas.
-            </span>
-          </div>
-          <span className="rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground shadow-pop group-hover:scale-105">
-            Quero anunciar
-          </span>
-        </a>
       )}
     </aside>
   );
