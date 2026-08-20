@@ -49,24 +49,17 @@ export function CookieConsent() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ type: "spring", stiffness: 220, damping: 26 }}
-          className="fixed inset-x-0 bottom-0 z-[100] px-3 pb-3 sm:px-6 sm:pb-6"
+          className="fixed inset-x-0 bottom-0 z-[100] px-2 pb-2 sm:inset-x-auto sm:bottom-3 sm:left-3 sm:px-0 sm:pb-0"
           role="dialog"
           aria-label="Aviso de cookies (LGPD)"
         >
-          <div className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl backdrop-blur-xl">
-            <div className="flex items-start gap-3 p-4 sm:p-5">
-              <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary sm:flex">
-                <Cookie className="h-5 w-5" />
-              </div>
+          <div className="mx-auto max-w-xl overflow-hidden rounded-xl border border-border/70 bg-background/90 shadow-lg backdrop-blur-md sm:mx-0">
+            <div className="flex items-start gap-2.5 p-3">
+              <Cookie className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
               <div className="flex-1">
-                <h3 className="text-sm font-semibold text-foreground sm:text-base">
-                  Sua privacidade é importante 🍪
-                </h3>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                  Usamos cookies para melhorar sua experiência, analisar tráfego e personalizar conteúdo,
-                  em conformidade com a{" "}
-                  <span className="font-medium text-foreground">LGPD (Lei 13.709/2018)</span>. Você pode
-                  aceitar todos, recusar ou escolher suas preferências. Saiba mais em nossa{" "}
+                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                  Usamos cookies conforme a{" "}
+                  <span className="text-foreground">LGPD</span>. Saiba mais na{" "}
                   <Link to="/" className="underline underline-offset-2 hover:text-foreground">
                     Política de Privacidade
                   </Link>
@@ -105,33 +98,33 @@ export function CookieConsent() {
                   )}
                 </AnimatePresence>
 
-                <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end">
+                <div className="mt-2 flex flex-wrap items-center gap-2">
                   {!showPrefs ? (
                     <button
                       onClick={() => setShowPrefs(true)}
-                      className="text-xs font-medium text-muted-foreground hover:text-foreground sm:mr-auto"
+                      className="text-[11px] font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
                     >
                       Personalizar
                     </button>
                   ) : (
                     <button
                       onClick={saveCustom}
-                      className="rounded-lg border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground hover:bg-muted sm:mr-auto"
+                      className="rounded-md border border-border bg-background px-2.5 py-1 text-[11px] font-semibold text-foreground hover:bg-muted"
                     >
-                      Salvar preferências
+                      Salvar
                     </button>
                   )}
                   <button
                     onClick={rejectAll}
-                    className="rounded-lg border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground hover:bg-muted"
+                    className="rounded-md border border-border bg-background px-2.5 py-1 text-[11px] font-semibold text-foreground hover:bg-muted"
                   >
                     Recusar
                   </button>
                   <button
                     onClick={acceptAll}
-                    className="rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-transform hover:scale-[1.02]"
+                    className="rounded-md bg-primary px-2.5 py-1 text-[11px] font-semibold text-primary-foreground"
                   >
-                    Aceitar todos
+                    Aceitar
                   </button>
                 </div>
               </div>

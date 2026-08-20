@@ -104,7 +104,7 @@ function Hero() {
           >
             <motion.span
               variants={fadeUp}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-[11px] font-semibold backdrop-blur-md sm:text-xs"
+              className="mt-14 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-[11px] font-semibold backdrop-blur-md sm:mt-4 sm:text-xs md:mt-0"
             >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[oklch(0.85_0.18_140)] opacity-75" />
