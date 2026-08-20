@@ -1,7 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Search, MapPin, Filter, Briefcase, Zap, ArrowRight, X, Navigation, Loader2 } from "lucide-react";
+import {
+  Search, MapPin, Briefcase, Zap, ArrowRight, X, Navigation, Loader2,
+  Wallet, Clock3, SlidersHorizontal, ShieldCheck,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { listarVagasPublicas } from "@/lib/vagas.functions";
 
@@ -16,11 +19,16 @@ export type VagaPublica = {
   salario: string;
   horario: string;
   profissao_slug: string;
+  descricao?: string | null;
   urgente: boolean;
   created_at: string;
   regime: Regime;
   distancia_km?: number | null;
 };
+
+function isNova(iso: string) {
+  return Date.now() - new Date(iso).getTime() < 48 * 3600_000;
+}
 
 const TABS: Array<{ to: "/vagas" | "/vagas/clt" | "/vagas/pj" | "/vagas/estagio"; label: string; regime: Regime | "todos"; desc: string }> = [
   { to: "/vagas", label: "Todas", regime: "todos", desc: "Todas as oportunidades" },
@@ -133,7 +141,7 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
     (async () => {
       setVagas(null);
       let query = supabase.from("vagas")
-        .select("id,titulo,empresa_nome,bairro,cidade,salario,horario,profissao_slug,urgente,created_at,regime")
+        .select("id,titulo,empresa_nome,bairro,cidade,salario,horario,profissao_slug,descricao,urgente,created_at,regime")
         .eq("ativa", true)
         .lt("risco_fraude", 70)
         .order("urgente", { ascending: false })
@@ -165,16 +173,93 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
     })();
   }, []);
 
+  const [filtrosAbertos, setFiltrosAbertos] = useState(false);
+
   const activeFilters = [
     q && { k: "q", label: `"${q}"`, clear: () => setQ("") },
     cidade && { k: "c", label: cidade, clear: () => setCidade("") },
     urgente && { k: "u", label: "Urgente", clear: () => setUrgente(false) },
   ].filter(Boolean) as { k: string; label: string; clear: () => void }[];
 
+  // Painel de filtros — mesmo bloco serve pra sidebar fixa (desktop) e pra
+  // dentro do drawer mobile, evita duplicar o formulário duas vezes.
+  const painelFiltros = (
+    <div className="space-y-4">
+      <label className="relative block">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <input value={q} onChange={(e) => setQ(e.target.value)}
+          placeholder="Cargo, profissão ou empresa"
+          className="h-11 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none focus:border-primary" />
+      </label>
+      <label className="relative block">
+        <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <input value={cidade} onChange={(e) => setCidade(e.target.value)} disabled={pertoDeMim}
+          placeholder={pertoDeMim ? "Ignorado no modo perto de mim" : "Cidade"}
+          className="h-11 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none focus:border-primary disabled:opacity-50" />
+      </label>
+
+      <div>
+        <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">Distância</p>
+        <button
+          onClick={() => (pertoDeMim ? desativarPertoDeMim() : ativarPertoDeMim())}
+          disabled={buscandoLocal}
+          className={`flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border text-sm font-bold transition disabled:opacity-60 ${
+            pertoDeMim ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground hover:text-foreground"
+          }`}>
+          {buscandoLocal ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
+          {pertoDeMim ? "Perto de mim (ativo)" : "Buscar perto de mim"}
+        </button>
+        {erroLocal && <p className="mt-1.5 text-[11px] text-destructive">{erroLocal}</p>}
+      </div>
+
+      <div>
+        <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">Urgência</p>
+        <button onClick={() => setUrgente((u) => !u)}
+          className={`flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border text-sm font-bold transition ${
+            urgente ? "border-warning bg-warning text-warning-foreground" : "border-border bg-background text-muted-foreground hover:text-foreground"
+          }`}>
+          <Zap className="h-4 w-4" /> Só vagas urgentes
+        </button>
+      </div>
+
+      <div>
+        <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">Regime</p>
+        <div className="space-y-1">
+          {TABS.map((t) => {
+            const active = t.regime === regime;
+            const cnt = totalPorRegime[t.regime];
+            return (
+              <Link key={t.to} to={t.to}
+                className={`flex items-center justify-between rounded-lg px-2.5 py-2 text-sm transition ${
+                  active ? "bg-primary text-primary-foreground font-bold" : "text-foreground hover:bg-secondary"
+                }`}>
+                <span>{t.label}</span>
+                <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${active ? "bg-primary-foreground/20" : "bg-secondary text-secondary-foreground"}`}>
+                  {cnt}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      {activeFilters.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 border-t border-border pt-3">
+          {activeFilters.map((f) => (
+            <button key={f.k} onClick={f.clear}
+              className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-semibold text-secondary-foreground">
+              {f.label} <X className="h-3 w-3" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:py-10">
       {/* Header */}
-      <header className="mb-6">
+      <header className="mb-5">
         <p className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary">
           <Briefcase className="h-3 w-3" /> Vagas abertas
         </p>
@@ -183,12 +268,12 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
       </header>
 
       {/* CTA persistente — cadastro rápido */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-accent/30 bg-gradient-to-r from-accent/10 via-primary/5 to-accent/10 p-4">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-accent/30 bg-gradient-to-r from-accent/10 via-primary/5 to-accent/10 p-4">
         <div className="flex items-start gap-3">
           <Zap className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
           <div>
             <p className="text-sm font-bold">Quer receber as vagas certas no WhatsApp?</p>
-            <p className="text-xs text-muted-foreground">Crie seu perfil em 60s (áudio ou vídeo) e ganhe Pro grátis por 2 anos.</p>
+            <p className="text-xs text-muted-foreground">Crie seu perfil em 60s (áudio ou vídeo), é 100% grátis.</p>
           </div>
         </div>
         <Link to="/cadastro" className="shrink-0 rounded-xl bg-accent px-4 py-2 text-xs font-extrabold text-accent-foreground shadow-pop transition hover:scale-[1.02]">
@@ -196,158 +281,136 @@ export function VagasPublicListing({ regime, titulo, subtitulo }: Props) {
         </Link>
       </div>
 
-
-
-      {/* Tabs (regime) */}
-      <nav className="scrollbar-none -mx-4 mb-4 flex gap-2 overflow-x-auto px-4">
-        {TABS.map((t) => {
-          const active = t.regime === regime;
-          const cnt = totalPorRegime[t.regime];
-          return (
-            <Link key={t.to} to={t.to}
-              className={`group flex min-w-[9rem] shrink-0 flex-col rounded-2xl border p-3 transition ${
-                active
-                  ? "border-primary bg-primary text-primary-foreground shadow-pop"
-                  : "border-border bg-card hover:border-primary/40"
-              }`}>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-sm font-black">{t.label}</span>
-                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                  active ? "bg-primary-foreground/20" : "bg-secondary text-secondary-foreground"
-                }`}>{cnt}</span>
-              </div>
-              <span className={`mt-1 text-[10px] ${active ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
-                {t.desc}
-              </span>
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Filtros */}
-      <div className="mb-4 rounded-2xl border border-border bg-card p-3 shadow-soft sm:p-4">
-        <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto] sm:items-center">
-          <label className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input value={q} onChange={(e) => setQ(e.target.value)}
-              placeholder="Cargo, profissão ou empresa"
-              className="h-11 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none focus:border-primary" />
-          </label>
-          <label className="relative">
-            <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input value={cidade} onChange={(e) => setCidade(e.target.value)} disabled={pertoDeMim}
-              placeholder={pertoDeMim ? "Ignorado no modo perto de mim" : "Cidade"}
-              className="h-11 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none focus:border-primary disabled:opacity-50" />
-          </label>
-          <button onClick={() => setUrgente((u) => !u)}
-            className={`inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border px-4 text-sm font-bold transition ${
-              urgente ? "border-warning bg-warning text-warning-foreground" : "border-border bg-background text-muted-foreground hover:text-foreground"
-            }`}>
-            <Zap className="h-4 w-4" /> Urgentes
-          </button>
-        </div>
-
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => (pertoDeMim ? desativarPertoDeMim() : ativarPertoDeMim())}
-            disabled={buscandoLocal}
-            className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border px-3 text-xs font-bold transition disabled:opacity-60 ${
-              pertoDeMim ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground hover:text-foreground"
-            }`}>
-            {buscandoLocal ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Navigation className="h-3.5 w-3.5" />}
-            {pertoDeMim ? "Perto de mim (ativo)" : "Perto de mim"}
-          </button>
-          {erroLocal && <span className="text-[11px] text-destructive">{erroLocal}</span>}
-        </div>
-
+      {/* Botão de filtros — só mobile/tablet, abre o mesmo painel da sidebar */}
+      <button
+        onClick={() => setFiltrosAbertos(true)}
+        className="mb-4 flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-sm font-bold lg:hidden"
+      >
+        <span className="inline-flex items-center gap-2"><SlidersHorizontal className="h-4 w-4" /> Filtros</span>
         {activeFilters.length > 0 && (
-          <div className="mt-3 flex flex-wrap items-center gap-1.5">
-            <Filter className="h-3 w-3 text-muted-foreground" />
-            {activeFilters.map((f) => (
-              <button key={f.k} onClick={f.clear}
-                className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-semibold text-secondary-foreground">
-                {f.label} <X className="h-3 w-3" />
+          <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">{activeFilters.length}</span>
+        )}
+      </button>
+
+      <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
+        {/* Sidebar de filtros — fixa no desktop */}
+        <aside className="hidden lg:block">
+          <div className="sticky top-24 rounded-2xl border border-border bg-card p-4 shadow-soft">
+            {painelFiltros}
+          </div>
+        </aside>
+
+        {/* Drawer de filtros — mobile/tablet */}
+        {filtrosAbertos && (
+          <div className="fixed inset-0 z-50 flex lg:hidden">
+            <div className="absolute inset-0 bg-black/50" onClick={() => setFiltrosAbertos(false)} />
+            <div className="relative ml-auto flex h-full w-full max-w-sm flex-col overflow-y-auto bg-background p-4 shadow-2xl">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-black">Filtros</h2>
+                <button onClick={() => setFiltrosAbertos(false)} className="grid h-9 w-9 place-items-center rounded-full hover:bg-secondary">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              {painelFiltros}
+              <button onClick={() => setFiltrosAbertos(false)}
+                className="mt-6 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">
+                Ver {vagas?.length ?? ""} vaga{vagas?.length === 1 ? "" : "s"}
               </button>
-            ))}
+            </div>
           </div>
         )}
-      </div>
 
-      {/* Lista */}
-      {vagas === null ? (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-40 animate-pulse rounded-2xl bg-muted/50" />
-          ))}
-        </div>
-      ) : vagas.length === 0 ? (
-        <div className="rounded-2xl border-2 border-dashed border-border bg-card p-10 text-center">
-          <p className="text-base font-bold">Nenhuma vaga encontrada</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Tente remover filtros ou cadastre-se grátis pra ser avisado quando abrir vaga nova.
-          </p>
-          <Link to="/cadastro" className="mt-4 inline-flex rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground">
-            Cadastrar meu currículo grátis
-          </Link>
-        </div>
-      ) : (
-        <>
-          <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
-            <span><strong className="text-foreground">{vagas.length}</strong> vaga{vagas.length > 1 ? "s" : ""} encontrada{vagas.length > 1 ? "s" : ""}</span>
-            <span>{pertoDeMim ? "Ordenado por mais perto" : "Ordenado por urgentes primeiro"}</span>
-          </div>
-          <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {vagas.map((v) => (
-              <li key={v.id}>
-                <Link
-                  to="/vagas/$slug"
-                  params={{ slug: `${v.profissao_slug}-em-${slugCidade(v.cidade)}` }}
-                  className="group flex h-full flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-soft transition hover:border-primary/50 hover:shadow-pop"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
+        {/* Lista */}
+        <div className="min-w-0">
+          {vagas === null ? (
+            <div className="space-y-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-32 animate-pulse rounded-2xl bg-muted/50" />
+              ))}
+            </div>
+          ) : vagas.length === 0 ? (
+            <div className="rounded-2xl border-2 border-dashed border-border bg-card p-10 text-center">
+              <p className="text-base font-bold">Nenhuma vaga encontrada</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Tente remover filtros ou cadastre-se grátis pra ser avisado quando abrir vaga nova.
+              </p>
+              <Link to="/cadastro" className="mt-4 inline-flex rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground">
+                Cadastrar meu currículo grátis
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
+                <span><strong className="text-foreground">{vagas.length}</strong> vaga{vagas.length > 1 ? "s" : ""} encontrada{vagas.length > 1 ? "s" : ""}</span>
+                <span>{pertoDeMim ? "Ordenado por mais perto" : "Ordenado por urgentes primeiro"}</span>
+              </div>
+              <ul className="space-y-3">
+                {vagas.map((v) => (
+                  <li key={v.id}>
+                    <Link
+                      to="/vagas/$slug"
+                      params={{ slug: `${v.profissao_slug}-em-${slugCidade(v.cidade)}` }}
+                      className="group block rounded-2xl border border-border bg-card p-4 shadow-soft transition hover:border-primary/50 hover:shadow-pop sm:p-5"
+                    >
                       <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-primary">
-                          {REGIME_LABEL[v.regime]}
-                        </span>
+                        {isNova(v.created_at) && (
+                          <span className="rounded-md bg-accent/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-accent">
+                            Nova
+                          </span>
+                        )}
                         {v.urgente && (
                           <span className="inline-flex items-center gap-0.5 rounded-md bg-warning/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-warning">
                             <Zap className="h-2.5 w-2.5" /> Urgente
                           </span>
                         )}
+                        <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-primary">
+                          {REGIME_LABEL[v.regime]}
+                        </span>
                         {v.distancia_km != null && (
-                          <span className="inline-flex items-center gap-0.5 rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-primary">
+                          <span className="inline-flex items-center gap-0.5 rounded-md bg-secondary px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-secondary-foreground">
                             <Navigation className="h-2.5 w-2.5" /> {v.distancia_km} km
                           </span>
                         )}
                       </div>
-                      <h2 className="mt-1.5 line-clamp-2 text-[15px] font-bold leading-tight group-hover:text-primary">
+
+                      <h2 className="mt-2 text-lg font-bold leading-tight tracking-tight group-hover:text-primary sm:text-xl">
                         {v.titulo}
                       </h2>
-                      <p className="mt-0.5 truncate text-xs text-muted-foreground">{v.empresa_nome}</p>
-                    </div>
-                  </div>
+                      <p className="mt-0.5 inline-flex items-center gap-1 text-sm text-muted-foreground">
+                        {v.empresa_nome}
+                        <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground/50" />
+                      </p>
 
-                  <div className="space-y-1 text-xs text-muted-foreground">
-                    <p className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3" /> {v.bairro}, {v.cidade}
-                    </p>
-                    <p className="line-clamp-1"><strong className="text-foreground">💰 {v.salario}</strong></p>
-                    <p className="line-clamp-1">🕒 {v.horario}</p>
-                  </div>
+                      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground sm:text-sm">
+                        <span className="inline-flex items-center gap-1.5">
+                          <MapPin className="h-3.5 w-3.5 shrink-0" /> {v.bairro}, {v.cidade}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 font-bold text-foreground">
+                          <Wallet className="h-3.5 w-3.5 shrink-0 text-muted-foreground" /> {v.salario}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5">
+                          <Clock3 className="h-3.5 w-3.5 shrink-0" /> {v.horario}
+                        </span>
+                      </div>
 
-                  <footer className="mt-auto flex items-center justify-between border-t border-border pt-2 text-[11px]">
-                    <span className="text-muted-foreground">{tempoRelativo(v.created_at)}</span>
-                    <span className="inline-flex items-center gap-1 font-bold text-primary">
-                      Ver vaga <ArrowRight className="h-3 w-3 transition group-hover:translate-x-0.5" />
-                    </span>
-                  </footer>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+                      {v.descricao && (
+                        <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{v.descricao}</p>
+                      )}
+
+                      <footer className="mt-4 flex items-center justify-between border-t border-border pt-3 text-[11px]">
+                        <span className="text-muted-foreground">{tempoRelativo(v.created_at)}</span>
+                        <span className="inline-flex items-center gap-1 font-bold text-primary">
+                          Ver vaga <ArrowRight className="h-3 w-3 transition group-hover:translate-x-0.5" />
+                        </span>
+                      </footer>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      </div>
 
       {/* CTA final */}
       <section className="mt-10 rounded-3xl border border-border bg-gradient-to-br from-primary/10 via-card to-accent/10 p-6 text-center shadow-soft sm:p-8">
