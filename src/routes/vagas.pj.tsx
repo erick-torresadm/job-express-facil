@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { VagasPublicListing } from "@/components/VagasPublicListing";
+import { VagasPublicListing, validateVagasSearch } from "@/components/VagasPublicListing";
 
 const TITLE = "Vagas PJ, MEI e Autônomo — Trabalhe como micro empresa | VagasAgora";
 const DESC = "Oportunidades PJ, MEI e autônomas para prestadores de serviço e microempresas. Ganhe mais mantendo sua liberdade — contratos flexíveis e diretos.";
 
 export const Route = createFileRoute("/vagas/pj")({
+  validateSearch: validateVagasSearch,
   head: () => ({
     meta: [
       { title: TITLE },
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/vagas/pj")({
 function Page() {
   return (
     <VagasPublicListing
+      basePath="/vagas/pj"
       regime="pj"
       titulo="Vagas PJ / MEI / Autônomo"
       subtitulo="Espaço exclusivo pra microempresas, MEIs e profissionais autônomos. Contratos por projeto, mensalidade fixa ou diária — sem se misturar com vagas CLT."

@@ -16,7 +16,7 @@ function canonicalRouteRedirect(request: Request): Response | undefined {
   const redirectTo =
     url.pathname === "/index" ? "/" :
     url.pathname === "/login" ? "/auth" :
-    url.pathname === "/vagas" || url.pathname === "/buscar" ? "/vagas/pedreiro-em-sao-paulo" :
+    url.pathname === "/buscar" ? "/vagas" :
     undefined;
 
   if (!redirectTo) return undefined;
