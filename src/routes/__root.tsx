@@ -11,7 +11,6 @@ import {
 
 import appCss from "../styles.css?url";
 import { SiteHeader } from "@/components/SiteHeader";
-import { TrendingMenu } from "@/components/TrendingMenu";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { CookieConsent } from "@/components/CookieConsent";
@@ -207,7 +206,6 @@ function RootComponent() {
       <div className="flex min-h-screen flex-col bg-background">
         {showPromo && <PromoLancamentoBanner compact />}
         {!hideChrome && <SiteHeader />}
-        {pathname === "/" && <TrendingMenu />}
         <div className="flex-1">
           <Outlet />
         </div>
