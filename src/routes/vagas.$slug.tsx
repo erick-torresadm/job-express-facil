@@ -138,9 +138,20 @@ export const Route = createFileRoute("/vagas/$slug")({
             "@type": "PostalAddress",
             streetAddress: v.endereco ?? v.bairro ?? undefined,
             addressLocality: v.cidade,
-            addressRegion: "BR",
             addressCountry: "BR",
           },
+          // Coordenadas reais (já geocodificadas na criação da vaga) dão ao
+          // Google mais precisão pra casar a vaga com buscas "perto de mim"
+          // de cidades vizinhas — o schema não tem campo de raio, quem decide
+          // isso é o algoritmo de proximidade do próprio Google, e ele
+          // funciona melhor com lat/long do que só texto de endereço.
+          ...(v.latitude != null && v.longitude != null && {
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: v.latitude,
+              longitude: v.longitude,
+            },
+          }),
         },
         ...(baseSalaryValue && {
           baseSalary: {
