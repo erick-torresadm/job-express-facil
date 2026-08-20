@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/use-auth";
 import { getEmpresaPagina, salvarEmpresaPagina, sugerirSlugEmpresa } from "@/lib/empresa.functions";
 import { geocodificarEndereco } from "@/lib/intel.functions";
-import { Copy, ExternalLink, Plus, Trash2, Save, MapPin } from "lucide-react";
+import { Copy, ExternalLink, Plus, Trash2, Save, MapPin, MessageCircle, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 type CampoExtra = { label: string; tipo: "texto" | "numero" | "sim_nao"; obrigatorio: boolean };
@@ -109,20 +109,38 @@ function EmpresaPaginaEditor() {
         <Link to="/empresa" className="text-sm text-muted-foreground hover:text-foreground">← Voltar</Link>
         <h1 className="mt-2 text-2xl font-extrabold">Sua página de captação</h1>
         <p className="text-sm text-muted-foreground">
-          Coloque esse link no seu site, redes sociais ou cartão. Candidatos que se cadastrarem aqui vão direto para sua lista.
+          Página com a cara da sua empresa (logo, cores). Ótima pra indicação: se alguém do seu time quer indicar
+          uma pessoa, é só mandar esse link por WhatsApp ou e-mail — ela aplica direto, sem sair da sua marca.
         </p>
       </header>
 
       {slug && (
-        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-4">
-          <code className="flex-1 break-all text-sm">{linkPublico}</code>
-          <button onClick={copiar} className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs font-bold">
-            <Copy className="h-3 w-3" /> Copiar
-          </button>
-          <a href={linkPublico} target="_blank" rel="noreferrer"
-            className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground">
-            <ExternalLink className="h-3 w-3" /> Abrir
-          </a>
+        <div className="space-y-2 rounded-2xl border border-border bg-card p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <code className="flex-1 break-all text-sm">{linkPublico}</code>
+            <button onClick={copiar} className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs font-bold">
+              <Copy className="h-3 w-3" /> Copiar
+            </button>
+            <a href={linkPublico} target="_blank" rel="noreferrer"
+              className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground">
+              <ExternalLink className="h-3 w-3" /> Abrir
+            </a>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(`Vaga aberta na ${companyName || "nossa empresa"}! Se conhece alguém, é só clicar e se candidatar: ${linkPublico}`)}`}
+              target="_blank" rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-1.5 text-xs font-bold text-white"
+            >
+              <MessageCircle className="h-3.5 w-3.5" /> Compartilhar no WhatsApp
+            </a>
+            <a
+              href={`mailto:?subject=${encodeURIComponent(`Vaga aberta na ${companyName || "nossa empresa"}`)}&body=${encodeURIComponent(`Vaga aberta! Se conhece alguém interessado, é só clicar no link e se candidatar:\n\n${linkPublico}`)}`}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-bold"
+            >
+              <Mail className="h-3.5 w-3.5" /> Compartilhar por e-mail
+            </a>
+          </div>
         </div>
       )}
 

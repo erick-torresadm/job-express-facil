@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getPaginaPublica, enviarCurriculoEmpresa } from "@/lib/empresa.functions";
 import { SITE_URL } from "@/lib/site";
-import { Building2, MapPin, Send } from "lucide-react";
+import { Building2, MapPin, Send, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 
@@ -91,13 +91,26 @@ function PaginaPublicaEmpresa() {
               <Building2 className="h-8 w-8" />
             </div>
           )}
-          <div>
+          <div className="flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-extrabold leading-tight">{empresa.company_name}</h1>
               {empresa.verificada && <VerifiedBadge size="md" />}
             </div>
             <p className="text-sm opacity-80">Trabalhe com a gente • Envie seu currículo grátis</p>
           </div>
+          <button
+            onClick={async () => {
+              const url = typeof window !== "undefined" ? window.location.href : "";
+              const texto = `Vaga aberta na ${empresa.company_name}! Se conhece alguém, é só clicar e se candidatar: ${url}`;
+              if (typeof navigator !== "undefined" && navigator.share) {
+                try { await navigator.share({ title: `Trabalhe na ${empresa.company_name}`, text: texto, url }); return; } catch { /* cancelado */ }
+              }
+              window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, "_blank");
+            }}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-white/20 px-3 py-2 text-xs font-bold hover:bg-white/30"
+          >
+            <Share2 className="h-3.5 w-3.5" /> Indicar alguém
+          </button>
         </div>
       </header>
 
