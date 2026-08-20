@@ -1,6 +1,9 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
-import { MailCheck, Inbox, Trash2, ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import { MailCheck, Inbox, Trash2, ArrowLeft, RotateCw, Loader2 } from "lucide-react";
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/confirme-seu-email")({
   validateSearch: z.object({ email: z.string().optional() }),
@@ -13,8 +16,36 @@ export const Route = createFileRoute("/confirme-seu-email")({
   component: ConfirmeSeuEmail,
 });
 
+const COOLDOWN_SEGUNDOS = 5 * 60;
+
 function ConfirmeSeuEmail() {
   const { email } = useSearch({ from: "/confirme-seu-email" });
+  const [restante, setRestante] = useState(COOLDOWN_SEGUNDOS);
+  const [reenviando, setReenviando] = useState(false);
+
+  useEffect(() => {
+    if (restante <= 0) return;
+    const t = setInterval(() => setRestante((s) => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(t);
+  }, [restante > 0]);
+
+  const reenviar = async () => {
+    if (!email) return;
+    setReenviando(true);
+    try {
+      const { error } = await supabase.auth.resend({ type: "signup", email });
+      if (error) throw error;
+      toast.success("Reenviado! Confira sua caixa de entrada (e o spam).");
+      setRestante(COOLDOWN_SEGUNDOS);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não deu pra reenviar agora, tenta de novo em alguns minutos.");
+    } finally {
+      setReenviando(false);
+    }
+  };
+
+  const minutos = String(Math.floor(restante / 60)).padStart(2, "0");
+  const segundos = String(restante % 60).padStart(2, "0");
 
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-4 py-16 text-center">
@@ -44,6 +75,19 @@ function ConfirmeSeuEmail() {
           </p>
         </div>
       </div>
+
+      {email && (
+        <div className="mt-6">
+          <button
+            onClick={reenviar}
+            disabled={restante > 0 || reenviando}
+            className="inline-flex items-center gap-2 rounded-xl border-2 border-border bg-card px-5 py-2.5 text-sm font-bold disabled:opacity-50"
+          >
+            {reenviando ? <Loader2 className="h-4 w-4 animate-spin" /> : <RotateCw className="h-4 w-4" />}
+            {restante > 0 ? `Reenviar em ${minutos}:${segundos}` : "Reenviar e-mail de confirmação"}
+          </button>
+        </div>
+      )}
 
       <Link to="/auth" className="mt-8 inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:underline">
         <ArrowLeft className="h-4 w-4" /> Voltar pra tela de entrar
