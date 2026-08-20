@@ -1,8 +1,10 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Camera, Image as ImageIcon, Check, ArrowLeft, AtSign } from "lucide-react";
+import { Loader2, Camera, Image as ImageIcon, Check, ArrowLeft, AtSign, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getMeuPerfil, updateMeuPerfil, sugerirHandle, type PerfilSocial } from "@/lib/social.functions";
+import { getMinhaLocalizacao, salvarMinhaLocalizacao } from "@/lib/curriculo.functions";
+import { geocodificarEndereco } from "@/lib/intel.functions";
 
 export const Route = createFileRoute("/perfil")({
   head: () => ({
@@ -31,6 +33,11 @@ function PerfilEditPage() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
 
+  const [endereco, setEndereco] = useState("");
+  const [enderecoCidade, setEnderecoCidade] = useState("");
+  const [temLocalizacao, setTemLocalizacao] = useState(false);
+  const [geocodificando, setGeocodificando] = useState(false);
+
   useEffect(() => {
     (async () => {
       const { data: u } = await supabase.auth.getUser();
@@ -51,6 +58,10 @@ function PerfilEditPage() {
         } else {
           const sug = await sugerirHandle();
           setHandle(sug.handle);
+        }
+        if (p.role === "candidato") {
+          const loc = await getMinhaLocalizacao();
+          setTemLocalizacao(loc.latitude != null && loc.longitude != null);
         }
       } catch (e) {
         setErro(e instanceof Error ? e.message : "Erro ao carregar");
@@ -131,6 +142,29 @@ function PerfilEditPage() {
       setErro(e instanceof Error ? e.message : "Erro ao salvar");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const salvarLocalizacao = async () => {
+    if (!endereco.trim() || !enderecoCidade.trim()) {
+      setErro("Preencha endereço e cidade pra localizar");
+      return;
+    }
+    setErro(null);
+    setGeocodificando(true);
+    try {
+      const r = await geocodificarEndereco({ data: { endereco: endereco.trim(), cidade: enderecoCidade.trim() } });
+      if (r.latitude == null || r.longitude == null) {
+        setErro("Não encontramos esse endereço. Tente ser mais específico.");
+        return;
+      }
+      await salvarMinhaLocalizacao({ data: { latitude: r.latitude, longitude: r.longitude } });
+      setTemLocalizacao(true);
+      setSavedAt(Date.now());
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : "Erro ao salvar localização");
+    } finally {
+      setGeocodificando(false);
     }
   };
 
@@ -232,6 +266,27 @@ function PerfilEditPage() {
                 className="w-full rounded-xl border-2 border-border bg-background p-3 text-sm outline-none focus:border-primary"
               />
             </Field>
+
+            {perfil.role === "candidato" && (
+              <div className="space-y-3 rounded-xl border border-border bg-secondary/30 p-4">
+                <div>
+                  <p className="text-sm font-bold">Sua localização</p>
+                  <p className="text-xs text-muted-foreground">
+                    Usada pra buscar vagas "perto de mim" mesmo sem ativar o GPS na hora. {temLocalizacao && "✓ Já configurada."}
+                  </p>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <input value={endereco} onChange={(e) => setEndereco(e.target.value)} placeholder="Rua, número, bairro"
+                    className="h-10 rounded-lg border border-border bg-background px-3 text-sm" />
+                  <input value={enderecoCidade} onChange={(e) => setEnderecoCidade(e.target.value)} placeholder="Cidade"
+                    className="h-10 rounded-lg border border-border bg-background px-3 text-sm" />
+                </div>
+                <button onClick={salvarLocalizacao} disabled={geocodificando}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-bold disabled:opacity-50">
+                  <MapPin className="h-3.5 w-3.5" /> {geocodificando ? "Localizando…" : "Salvar localização"}
+                </button>
+              </div>
+            )}
 
             {erro && <p className="text-sm font-medium text-destructive">{erro}</p>}
 

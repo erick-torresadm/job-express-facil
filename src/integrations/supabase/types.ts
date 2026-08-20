@@ -197,6 +197,116 @@ export type Database = {
           },
         ]
       }
+      recruiter_events: {
+        Row: {
+          id: string
+          empresa_id: string
+          vaga_id: string | null
+          tipo: "vaga_view" | "cv_click" | "candidatura_received"
+          candidato_id: string | null
+          curriculo_id: string | null
+          timestamp: string
+          lido: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          empresa_id: string
+          vaga_id?: string | null
+          tipo: "vaga_view" | "cv_click" | "candidatura_received"
+          candidato_id?: string | null
+          curriculo_id?: string | null
+          timestamp?: string
+          lido?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          empresa_id?: string
+          vaga_id?: string | null
+          tipo?: "vaga_view" | "cv_click" | "candidatura_received"
+          candidato_id?: string | null
+          curriculo_id?: string | null
+          timestamp?: string
+          lido?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recruiter_events_vaga_id_fkey"
+            columns: ["vaga_id"]
+            isOneToOne: false
+            referencedRelation: "vagas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recruiter_events_curriculo_id_fkey"
+            columns: ["curriculo_id"]
+            isOneToOne: false
+            referencedRelation: "curriculos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      entrevistas: {
+        Row: {
+          id: string
+          vaga_id: string
+          candidato_id: string
+          empresa_id: string
+          tipo: "presencial" | "online"
+          data_sugerida: string
+          data_confirmada: string | null
+          link_video: string | null
+          instrucoes: string | null
+          email_enviado: boolean
+          whatsapp_enviado: boolean
+          status: "convite_enviado" | "aceita" | "recusada" | "reagendada" | "completada"
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          vaga_id: string
+          candidato_id: string
+          empresa_id: string
+          tipo: "presencial" | "online"
+          data_sugerida: string
+          data_confirmada?: string | null
+          link_video?: string | null
+          instrucoes?: string | null
+          email_enviado?: boolean
+          whatsapp_enviado?: boolean
+          status?: "convite_enviado" | "aceita" | "recusada" | "reagendada" | "completada"
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          vaga_id?: string
+          candidato_id?: string
+          empresa_id?: string
+          tipo?: "presencial" | "online"
+          data_sugerida?: string
+          data_confirmada?: string | null
+          link_video?: string | null
+          instrucoes?: string | null
+          email_enviado?: boolean
+          whatsapp_enviado?: boolean
+          status?: "convite_enviado" | "aceita" | "recusada" | "reagendada" | "completada"
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entrevistas_vaga_id_fkey"
+            columns: ["vaga_id"]
+            isOneToOne: false
+            referencedRelation: "vagas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       curriculos: {
         Row: {
           bairro: string | null
@@ -760,8 +870,11 @@ export type Database = {
           full_name: string | null
           handle: string | null
           id: string
+          latitude: number | null
           logo_url: string | null
+          longitude: number | null
           promo_pro_ate: string | null
+          raio_km_padrao: number | null
           slug_publico: string | null
           sobre: string | null
           updated_at: string
@@ -782,8 +895,11 @@ export type Database = {
           full_name?: string | null
           handle?: string | null
           id: string
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           promo_pro_ate?: string | null
+          raio_km_padrao?: number | null
           slug_publico?: string | null
           sobre?: string | null
           updated_at?: string
@@ -804,8 +920,11 @@ export type Database = {
           full_name?: string | null
           handle?: string | null
           id?: string
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           promo_pro_ate?: string | null
+          raio_km_padrao?: number | null
           slug_publico?: string | null
           sobre?: string | null
           updated_at?: string
@@ -917,6 +1036,7 @@ export type Database = {
           perguntas_triagem: Json
           profissao: string
           profissao_slug: string
+          raio_km: number | null
           regime: Database["public"]["Enums"]["vaga_regime"]
           requisitos: Json
           risco_fraude: number
@@ -946,6 +1066,7 @@ export type Database = {
           perguntas_triagem?: Json
           profissao: string
           profissao_slug: string
+          raio_km?: number | null
           regime?: Database["public"]["Enums"]["vaga_regime"]
           requisitos?: Json
           risco_fraude?: number
@@ -975,6 +1096,7 @@ export type Database = {
           perguntas_triagem?: Json
           profissao?: string
           profissao_slug?: string
+          raio_km?: number | null
           regime?: Database["public"]["Enums"]["vaga_regime"]
           requisitos?: Json
           risco_fraude?: number

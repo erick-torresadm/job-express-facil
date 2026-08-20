@@ -1,10 +1,11 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Building2, Users, PlusSquare, BarChart3, Briefcase, Globe, ShieldCheck, TrendingUp, ShieldAlert, Link2, Gift, Bell, Mail } from "lucide-react";
+import { Building2, Users, PlusSquare, BarChart3, Briefcase, Globe, ShieldCheck, TrendingUp, ShieldAlert, Link2, Gift, Bell, Mail, Activity } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/use-auth";
 import { getRevelacoesInfo, getEmpresaDashboard } from "@/lib/empresa.functions";
+import { countUnreadEvents } from "@/lib/recruiter-notifications.server";
 import { toggleDigestOptOut } from "@/lib/promo.functions";
 import { CandidatosList } from "@/components/CandidatosList";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +42,7 @@ function EmpresaLayout() {
         </div>
         <nav className="flex-1 space-y-1 px-3">
           <NavItem to="/empresa" icon={<Users className="h-4 w-4" />} label="Candidatos" exact />
+          <NavItem to="/empresa/atividade" icon={<Activity className="h-4 w-4" />} label="Atividade" badge />
           <NavItem to="/empresa/nova-vaga" icon={<PlusSquare className="h-4 w-4" />} label="Nova vaga" />
           <NavItem to="/empresa/minhas-vagas" icon={<Briefcase className="h-4 w-4" />} label="Minhas vagas" />
           <NavItem to="/empresa/pagina" icon={<Globe className="h-4 w-4" />} label="Minha página" />
@@ -143,20 +145,65 @@ function DigestToggle() {
 }
 
 
-function NavItem({ to, icon, label, exact, disabled }: { to: string; icon: React.ReactNode; label: string; exact?: boolean; disabled?: boolean }) {
+function NavItem({ to, icon, label, exact, disabled, badge }: { to: string; icon: React.ReactNode; label: string; exact?: boolean; disabled?: boolean; badge?: boolean }) {
   if (disabled) {
     return (
-      <span className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm opacity-40">
-        {icon} {label}
+      <span className="flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm opacity-40">
+        <span className="flex items-center gap-2">{icon} {label}</span>
       </span>
     );
   }
   return (
     <Link to={to} activeOptions={{ exact }}
       activeProps={{ className: "bg-accent text-accent-foreground" }}
-      className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium hover:bg-primary-foreground/10">
-      {icon} {label}
+      className="flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm font-medium hover:bg-primary-foreground/10">
+      <span className="flex items-center gap-2">{icon} {label}</span>
+      {badge && <ActivityBadge />}
     </Link>
+  );
+}
+
+function ActivityBadge() {
+  const { user } = useAuth();
+  const [unread, setUnread] = useState(0);
+  const fetchUnread = useServerFn(countUnreadEvents);
+
+  useEffect(() => {
+    if (!user) return;
+    fetchUnread()
+      .then((r) => setUnread(r.unread))
+      .catch(() => setUnread(0));
+
+    // Subscribe to real-time updates
+    const subscription = supabase
+      .channel(`recruiter_events:empresa_id=eq.${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "recruiter_events",
+          filter: `empresa_id=eq.${user.id}`,
+        },
+        () => {
+          // Refresh unread count
+          fetchUnread()
+            .then((r) => setUnread(r.unread))
+            .catch(() => setUnread(0));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user, fetchUnread]);
+
+  if (unread === 0) return null;
+  return (
+    <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-red-500 text-white text-[10px] font-bold">
+      {unread > 9 ? "9+" : unread}
+    </span>
   );
 }
 

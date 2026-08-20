@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { PROFISSOES, CIDADES } from "@/lib/mock-data";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const BASE_URL = "https://vagasagora.com.br";
@@ -21,15 +20,11 @@ export const Route = createFileRoute("/sitemap.xml")({
           "/blog", "/categorias", "/planos", "/termos", "/privacidade",
         ];
 
-        // Vagas facetadas (profissão × cidade)
-        const vagaPaths = PROFISSOES.flatMap((p) =>
-          CIDADES.map((c) => `/vagas/${p.slug}-em-${slugifyCidade(c)}`)
-        );
-        const profissionaisPaths = PROFISSOES.flatMap((p) =>
-          CIDADES.map((c) => `/profissionais/${p.slug}-em-${slugifyCidade(c)}`)
-        );
-
-        // Vagas reais ativas → para JobPosting indexável
+        // Só entram no sitemap combinações profissão×cidade com conteúdo real
+        // (vaga ativa ou profissional cadastrado). Antes gerávamos o produto
+        // cartesiano cego (profissões × cidades, milhares de URLs vazias) —
+        // isso inflava o site com páginas finas/duplicadas e o Google passou
+        // a ignorar nossa tag canônica em ~470 delas (Search Console).
         type Entry = { path: string; lastmod?: string };
         const dynamic: Entry[] = [];
 
@@ -49,6 +44,23 @@ export const Route = createFileRoute("/sitemap.xml")({
         } catch {}
 
         try {
+          const { data: profissionais } = await supabaseAdmin
+            .from("curriculos")
+            .select("profissao, cidade, updated_at")
+            .not("cidade", "is", null)
+            .limit(5000);
+          const seen = new Set<string>();
+          for (const p of profissionais ?? []) {
+            if (!p.profissao || !p.cidade) continue;
+            const slug = p.profissao.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-");
+            const path = `/profissionais/${slug}-em-${slugifyCidade(p.cidade)}`;
+            if (seen.has(path)) continue;
+            seen.add(path);
+            dynamic.push({ path, lastmod: p.updated_at?.split("T")[0] });
+          }
+        } catch {}
+
+        try {
           const { data: posts } = await supabaseAdmin
             .from("posts")
             .select("slug, updated_at")
@@ -58,11 +70,8 @@ export const Route = createFileRoute("/sitemap.xml")({
           }
         } catch {}
 
-        // Dedup por path (vagas reais sobrescrevem facetadas com lastmod)
         const map = new Map<string, Entry>();
         for (const p of staticPaths) map.set(p, { path: p, lastmod: today });
-        for (const p of vagaPaths) map.set(p, { path: p });
-        for (const p of profissionaisPaths) map.set(p, { path: p });
         for (const e of dynamic) map.set(e.path, e);
 
         const urls = Array.from(map.values())

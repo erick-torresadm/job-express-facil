@@ -275,3 +275,231 @@ export const getVisitStats = createServerFn({ method: "GET" })
       funil,
     };
   });
+
+// ============ ADMIN EMPRESAS ============
+
+export const listarEmpresasAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({
+      busca: z.string().trim().max(120).optional(),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+
+    // pega todas as empresas (perfis com company_name)
+    let q = supabaseAdmin
+      .from("profiles")
+      .select("id,company_name,whatsapp,verificada,created_at,cpf_cnpj")
+      .order("created_at", { ascending: false })
+      .limit(500);
+
+    if (data.busca) {
+      q = q.or(`company_name.ilike.%${data.busca}%,cpf_cnpj.ilike.%${data.busca}%,whatsapp.ilike.%${data.busca}%`);
+    }
+
+    const { data: empresas, error } = await q;
+    if (error) throw new Error(error.message);
+
+    const empresaIds = (empresas ?? []).map((e) => e.id);
+
+    // contadores de vagas ativas e candidaturas dos últimos 7 dias por empresa
+    const [
+      { data: vagasData },
+      { data: candidaturasData },
+    ] = await Promise.all([
+      supabaseAdmin
+        .from("vagas")
+        .select("empresa_id,id")
+        .in("empresa_id", empresaIds)
+        .eq("ativa", true),
+      supabaseAdmin
+        .from("candidaturas")
+        .select("empresa_id,id,created_at")
+        .in("empresa_id", empresaIds)
+        .gte("created_at", new Date(Date.now() - 7 * 86400000).toISOString()),
+    ]);
+
+    const vagasCount = new Map<string, number>();
+    for (const v of vagasData ?? []) {
+      vagasCount.set(v.empresa_id, (vagasCount.get(v.empresa_id) ?? 0) + 1);
+    }
+
+    const candidaturasCount = new Map<string, number>();
+    for (const c of candidaturasData ?? []) {
+      candidaturasCount.set(c.empresa_id, (candidaturasCount.get(c.empresa_id) ?? 0) + 1);
+    }
+
+    return (empresas ?? []).map((e) => ({
+      ...e,
+      cnpj: e.cpf_cnpj,
+      email: undefined,
+      vagas_ativas: vagasCount.get(e.id) ?? 0,
+      candidaturas_7d: candidaturasCount.get(e.id) ?? 0,
+    }));
+  });
+
+export const getEmpresaDetail = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    const { data: empresa, error } = await supabaseAdmin
+      .from("profiles")
+      .select("id,company_name,whatsapp,logo_url,cor_primaria,sobre,slug_publico,verificada,created_at,cpf_cnpj,raio_km_padrao,latitude,longitude")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!empresa) throw new Error("Empresa não encontrada");
+    const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(data.id);
+    return { ...empresa, email: authUser?.user?.email ?? null, cnpj: empresa.cpf_cnpj };
+  });
+
+export const getEmpresaVagas = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+
+    const { data: vagas, error } = await supabaseAdmin
+      .from("vagas")
+      .select("id,titulo,ativa,created_at")
+      .eq("empresa_id", data.id)
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (error) throw new Error(error.message);
+
+    const vagaIds = (vagas ?? []).map((v) => v.id);
+
+    // contar candidaturas + eventos (visualização/clique) por vaga
+    const [{ data: candData }, { data: eventsData }] = await Promise.all([
+      vagaIds.length
+        ? supabaseAdmin.from("candidaturas").select("vaga_id,id").in("vaga_id", vagaIds)
+        : Promise.resolve({ data: [] as { vaga_id: string; id: string }[] }),
+      vagaIds.length
+        ? supabaseAdmin.from("recruiter_events").select("vaga_id,tipo").in("vaga_id", vagaIds)
+        : Promise.resolve({ data: [] as { vaga_id: string | null; tipo: string }[] }),
+    ]);
+
+    const candCount = new Map<string, number>();
+    for (const c of candData ?? []) {
+      candCount.set(c.vaga_id, (candCount.get(c.vaga_id) ?? 0) + 1);
+    }
+
+    const viewCount = new Map<string, number>();
+    const clickCount = new Map<string, number>();
+    for (const e of eventsData ?? []) {
+      if (!e.vaga_id) continue;
+      if (e.tipo === "vaga_view") viewCount.set(e.vaga_id, (viewCount.get(e.vaga_id) ?? 0) + 1);
+      else if (e.tipo === "cv_click") clickCount.set(e.vaga_id, (clickCount.get(e.vaga_id) ?? 0) + 1);
+    }
+
+    return (vagas ?? []).map((v) => ({
+      ...v,
+      status: v.ativa,
+      candidaturas_total: candCount.get(v.id) ?? 0,
+      visualizacoes: viewCount.get(v.id) ?? 0,
+      cliques: clickCount.get(v.id) ?? 0,
+    }));
+  });
+
+export const getEmpresaCandidaturas = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+
+    const { data: candidaturas, error } = await supabaseAdmin
+      .from("candidaturas")
+      .select("id,status,created_at,curriculo_id")
+      .eq("empresa_id", data.id)
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) throw new Error(error.message);
+
+    const curriculoIds = (candidaturas ?? []).map((c) => c.curriculo_id);
+    const { data: curriculos } = curriculoIds.length
+      ? await supabaseAdmin.from("curriculos").select("id,nome,profissao").in("id", curriculoIds)
+      : { data: [] as { id: string; nome: string; profissao: string }[] };
+
+    const curriculoMap = new Map<string, { nome: string; profissao: string }>();
+    for (const c of curriculos ?? []) {
+      curriculoMap.set(c.id, { nome: c.nome, profissao: c.profissao });
+    }
+
+    return (candidaturas ?? []).map((c) => {
+      const curriculo = curriculoMap.get(c.curriculo_id);
+      return {
+        ...c,
+        nome_candidato: curriculo?.nome ?? "(desconhecido)",
+        profissao_candidato: curriculo?.profissao ?? "(não informado)",
+      };
+    });
+  });
+
+export const getEmpresaAtividade = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+
+    // pega vagas, candidaturas e atualizações de perfil da empresa
+    const [
+      { data: vagasData },
+      { data: candidaturasData },
+      { data: profileData },
+    ] = await Promise.all([
+      supabaseAdmin
+        .from("vagas")
+        .select("id,titulo,created_at")
+        .eq("empresa_id", data.id)
+        .order("created_at", { ascending: false })
+        .limit(50),
+      supabaseAdmin
+        .from("candidaturas")
+        .select("id,created_at")
+        .eq("empresa_id", data.id)
+        .order("created_at", { ascending: false })
+        .limit(50),
+      supabaseAdmin
+        .from("profiles")
+        .select("id,updated_at")
+        .eq("id", data.id)
+        .maybeSingle(),
+    ]);
+
+    const timeline: Array<{
+      timestamp: string;
+      tipo: "nova_vaga" | "candidatura" | "atualizacao_perfil";
+      titulo: string;
+      descricao?: string;
+    }> = [];
+
+    for (const v of vagasData ?? []) {
+      timeline.push({
+        timestamp: v.created_at,
+        tipo: "nova_vaga",
+        titulo: "Nova vaga publicada",
+        descricao: v.titulo,
+      });
+    }
+
+    for (const c of candidaturasData ?? []) {
+      timeline.push({
+        timestamp: c.created_at,
+        tipo: "candidatura",
+        titulo: "Nova candidatura",
+      });
+    }
+
+    if (profileData?.updated_at) {
+      timeline.push({
+        timestamp: profileData.updated_at,
+        tipo: "atualizacao_perfil",
+        titulo: "Perfil atualizado",
+      });
+    }
+
+    return timeline.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  });

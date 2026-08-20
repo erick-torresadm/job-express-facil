@@ -19,6 +19,7 @@ import { SoundProvider } from "@/components/SoundProvider";
 import { PageViewTracker } from "@/components/PageViewTracker";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { PromoLancamentoBanner } from "@/components/PromoLancamentoBanner";
+import { PwaUpdater } from "@/components/PwaUpdater";
 
 function NotFoundComponent() {
   return (
@@ -215,6 +216,7 @@ function RootComponent() {
       <Toaster position="top-right" richColors />
       <CookieConsent />
       <SoundProvider />
+      <PwaUpdater />
         <PageViewTracker />
         {showWhatsApp && <WhatsAppFloat />}
     </QueryClientProvider>

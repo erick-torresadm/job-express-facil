@@ -48,6 +48,7 @@ import { Route as EmpresaVerificacaoRouteImport } from './routes/empresa.verific
 import { Route as EmpresaPaginaRouteImport } from './routes/empresa.pagina'
 import { Route as EmpresaNovaVagaRouteImport } from './routes/empresa.nova-vaga'
 import { Route as EmpresaMinhasVagasRouteImport } from './routes/empresa.minhas-vagas'
+import { Route as EmpresaAtividadeRouteImport } from './routes/empresa.atividade'
 import { Route as CvSlugRouteImport } from './routes/cv.$slug'
 import { Route as CandidatoVagasRouteImport } from './routes/candidato.vagas'
 import { Route as CandidatoSalvasRouteImport } from './routes/candidato.salvas'
@@ -59,15 +60,18 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminVerificacoesRouteImport } from './routes/admin.verificacoes'
 import { Route as AdminVagasRouteImport } from './routes/admin.vagas'
 import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
+import { Route as AdminEmpresasRouteImport } from './routes/admin.empresas'
 import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminAnunciosRouteImport } from './routes/admin.anuncios'
 import { Route as FreelasPHandleRouteImport } from './routes/freelas.p.$handle'
+import { Route as EmpresaEditarVagaIdRouteImport } from './routes/empresa.editar-vaga.$id'
 import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 import { Route as ApiPublicAsaasWebhookRouteImport } from './routes/api/public/asaas-webhook'
+import { Route as AdminEmpresasIdRouteImport } from './routes/admin.empresas.$id'
 import { Route as AdminBlogNovoRouteImport } from './routes/admin.blog.novo'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
 import { Route as ApiPublicPushRenewRouteImport } from './routes/api/public/push.renew'
-import { Route as ApiPublicCronReindexVagasRouteImport } from './routes/api/public/cron/reindex-vagas'
+import { Route as ApiPublicHooksNotificarCandidaturaRouteImport } from './routes/api/public/hooks/notificar-candidatura'
 import { Route as ApiPublicCronReindexGoogleRouteImport } from './routes/api/public/cron.reindex-google'
 import { Route as ApiPublicCronGerarPostRouteImport } from './routes/api/public/cron.gerar-post'
 import { Route as ApiPublicCronEmpresaDailyRouteImport } from './routes/api/public/cron/empresa-daily'
@@ -268,6 +272,11 @@ const EmpresaMinhasVagasRoute = EmpresaMinhasVagasRouteImport.update({
   path: '/minhas-vagas',
   getParentRoute: () => EmpresaRoute,
 } as any)
+const EmpresaAtividadeRoute = EmpresaAtividadeRouteImport.update({
+  id: '/atividade',
+  path: '/atividade',
+  getParentRoute: () => EmpresaRoute,
+} as any)
 const CvSlugRoute = CvSlugRouteImport.update({
   id: '/cv/$slug',
   path: '/cv/$slug',
@@ -323,6 +332,11 @@ const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
   path: '/admin/usuarios',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminEmpresasRoute = AdminEmpresasRouteImport.update({
+  id: '/admin/empresas',
+  path: '/admin/empresas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminBlogRoute = AdminBlogRouteImport.update({
   id: '/admin/blog',
   path: '/admin/blog',
@@ -338,6 +352,11 @@ const FreelasPHandleRoute = FreelasPHandleRouteImport.update({
   path: '/p/$handle',
   getParentRoute: () => FreelasRoute,
 } as any)
+const EmpresaEditarVagaIdRoute = EmpresaEditarVagaIdRouteImport.update({
+  id: '/editar-vaga/$id',
+  path: '/editar-vaga/$id',
+  getParentRoute: () => EmpresaRoute,
+} as any)
 const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
   id: '/api/public/track',
   path: '/api/public/track',
@@ -347,6 +366,11 @@ const ApiPublicAsaasWebhookRoute = ApiPublicAsaasWebhookRouteImport.update({
   id: '/api/public/asaas-webhook',
   path: '/api/public/asaas-webhook',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminEmpresasIdRoute = AdminEmpresasIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminEmpresasRoute,
 } as any)
 const AdminBlogNovoRoute = AdminBlogNovoRouteImport.update({
   id: '/novo',
@@ -363,10 +387,10 @@ const ApiPublicPushRenewRoute = ApiPublicPushRenewRouteImport.update({
   path: '/api/public/push/renew',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicCronReindexVagasRoute =
-  ApiPublicCronReindexVagasRouteImport.update({
-    id: '/api/public/cron/reindex-vagas',
-    path: '/api/public/cron/reindex-vagas',
+const ApiPublicHooksNotificarCandidaturaRoute =
+  ApiPublicHooksNotificarCandidaturaRouteImport.update({
+    id: '/api/public/hooks/notificar-candidatura',
+    path: '/api/public/hooks/notificar-candidatura',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicCronReindexGoogleRoute =
@@ -413,6 +437,7 @@ export interface FileRoutesByFullPath {
   '/termos': typeof TermosRoute
   '/admin/anuncios': typeof AdminAnunciosRoute
   '/admin/blog': typeof AdminBlogRouteWithChildren
+  '/admin/empresas': typeof AdminEmpresasRouteWithChildren
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/vagas': typeof AdminVagasRoute
   '/admin/verificacoes': typeof AdminVerificacoesRoute
@@ -424,6 +449,7 @@ export interface FileRoutesByFullPath {
   '/candidato/salvas': typeof CandidatoSalvasRoute
   '/candidato/vagas': typeof CandidatoVagasRoute
   '/cv/$slug': typeof CvSlugRoute
+  '/empresa/atividade': typeof EmpresaAtividadeRoute
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
@@ -447,14 +473,16 @@ export interface FileRoutesByFullPath {
   '/vagas/': typeof VagasIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
+  '/admin/empresas/$id': typeof AdminEmpresasIdRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/empresa/editar-vaga/$id': typeof EmpresaEditarVagaIdRoute
   '/freelas/p/$handle': typeof FreelasPHandleRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
   '/api/public/cron/reindex-google': typeof ApiPublicCronReindexGoogleRoute
-  '/api/public/cron/reindex-vagas': typeof ApiPublicCronReindexVagasRoute
+  '/api/public/hooks/notificar-candidatura': typeof ApiPublicHooksNotificarCandidaturaRoute
   '/api/public/push/renew': typeof ApiPublicPushRenewRoute
 }
 export interface FileRoutesByTo {
@@ -475,6 +503,7 @@ export interface FileRoutesByTo {
   '/termos': typeof TermosRoute
   '/admin/anuncios': typeof AdminAnunciosRoute
   '/admin/blog': typeof AdminBlogRouteWithChildren
+  '/admin/empresas': typeof AdminEmpresasRouteWithChildren
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/vagas': typeof AdminVagasRoute
   '/admin/verificacoes': typeof AdminVerificacoesRoute
@@ -486,6 +515,7 @@ export interface FileRoutesByTo {
   '/candidato/salvas': typeof CandidatoSalvasRoute
   '/candidato/vagas': typeof CandidatoVagasRoute
   '/cv/$slug': typeof CvSlugRoute
+  '/empresa/atividade': typeof EmpresaAtividadeRoute
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
@@ -509,14 +539,16 @@ export interface FileRoutesByTo {
   '/vagas': typeof VagasIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
+  '/admin/empresas/$id': typeof AdminEmpresasIdRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/empresa/editar-vaga/$id': typeof EmpresaEditarVagaIdRoute
   '/freelas/p/$handle': typeof FreelasPHandleRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
   '/api/public/cron/reindex-google': typeof ApiPublicCronReindexGoogleRoute
-  '/api/public/cron/reindex-vagas': typeof ApiPublicCronReindexVagasRoute
+  '/api/public/hooks/notificar-candidatura': typeof ApiPublicHooksNotificarCandidaturaRoute
   '/api/public/push/renew': typeof ApiPublicPushRenewRoute
 }
 export interface FileRoutesById {
@@ -541,6 +573,7 @@ export interface FileRoutesById {
   '/termos': typeof TermosRoute
   '/admin/anuncios': typeof AdminAnunciosRoute
   '/admin/blog': typeof AdminBlogRouteWithChildren
+  '/admin/empresas': typeof AdminEmpresasRouteWithChildren
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/admin/vagas': typeof AdminVagasRoute
   '/admin/verificacoes': typeof AdminVerificacoesRoute
@@ -552,6 +585,7 @@ export interface FileRoutesById {
   '/candidato/salvas': typeof CandidatoSalvasRoute
   '/candidato/vagas': typeof CandidatoVagasRoute
   '/cv/$slug': typeof CvSlugRoute
+  '/empresa/atividade': typeof EmpresaAtividadeRoute
   '/empresa/minhas-vagas': typeof EmpresaMinhasVagasRoute
   '/empresa/nova-vaga': typeof EmpresaNovaVagaRoute
   '/empresa/pagina': typeof EmpresaPaginaRoute
@@ -575,14 +609,16 @@ export interface FileRoutesById {
   '/vagas/': typeof VagasIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
+  '/admin/empresas/$id': typeof AdminEmpresasIdRoute
   '/api/public/asaas-webhook': typeof ApiPublicAsaasWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/empresa/editar-vaga/$id': typeof EmpresaEditarVagaIdRoute
   '/freelas/p/$handle': typeof FreelasPHandleRoute
   '/api/public/blog/ingest': typeof ApiPublicBlogIngestRoute
   '/api/public/cron/empresa-daily': typeof ApiPublicCronEmpresaDailyRoute
   '/api/public/cron/gerar-post': typeof ApiPublicCronGerarPostRoute
   '/api/public/cron/reindex-google': typeof ApiPublicCronReindexGoogleRoute
-  '/api/public/cron/reindex-vagas': typeof ApiPublicCronReindexVagasRoute
+  '/api/public/hooks/notificar-candidatura': typeof ApiPublicHooksNotificarCandidaturaRoute
   '/api/public/push/renew': typeof ApiPublicPushRenewRoute
 }
 export interface FileRouteTypes {
@@ -608,6 +644,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/admin/anuncios'
     | '/admin/blog'
+    | '/admin/empresas'
     | '/admin/usuarios'
     | '/admin/vagas'
     | '/admin/verificacoes'
@@ -619,6 +656,7 @@ export interface FileRouteTypes {
     | '/candidato/salvas'
     | '/candidato/vagas'
     | '/cv/$slug'
+    | '/empresa/atividade'
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
@@ -642,14 +680,16 @@ export interface FileRouteTypes {
     | '/vagas/'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
+    | '/admin/empresas/$id'
     | '/api/public/asaas-webhook'
     | '/api/public/track'
+    | '/empresa/editar-vaga/$id'
     | '/freelas/p/$handle'
     | '/api/public/blog/ingest'
     | '/api/public/cron/empresa-daily'
     | '/api/public/cron/gerar-post'
     | '/api/public/cron/reindex-google'
-    | '/api/public/cron/reindex-vagas'
+    | '/api/public/hooks/notificar-candidatura'
     | '/api/public/push/renew'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -670,6 +710,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/admin/anuncios'
     | '/admin/blog'
+    | '/admin/empresas'
     | '/admin/usuarios'
     | '/admin/vagas'
     | '/admin/verificacoes'
@@ -681,6 +722,7 @@ export interface FileRouteTypes {
     | '/candidato/salvas'
     | '/candidato/vagas'
     | '/cv/$slug'
+    | '/empresa/atividade'
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
@@ -704,14 +746,16 @@ export interface FileRouteTypes {
     | '/vagas'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
+    | '/admin/empresas/$id'
     | '/api/public/asaas-webhook'
     | '/api/public/track'
+    | '/empresa/editar-vaga/$id'
     | '/freelas/p/$handle'
     | '/api/public/blog/ingest'
     | '/api/public/cron/empresa-daily'
     | '/api/public/cron/gerar-post'
     | '/api/public/cron/reindex-google'
-    | '/api/public/cron/reindex-vagas'
+    | '/api/public/hooks/notificar-candidatura'
     | '/api/public/push/renew'
   id:
     | '__root__'
@@ -735,6 +779,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/admin/anuncios'
     | '/admin/blog'
+    | '/admin/empresas'
     | '/admin/usuarios'
     | '/admin/vagas'
     | '/admin/verificacoes'
@@ -746,6 +791,7 @@ export interface FileRouteTypes {
     | '/candidato/salvas'
     | '/candidato/vagas'
     | '/cv/$slug'
+    | '/empresa/atividade'
     | '/empresa/minhas-vagas'
     | '/empresa/nova-vaga'
     | '/empresa/pagina'
@@ -769,14 +815,16 @@ export interface FileRouteTypes {
     | '/vagas/'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
+    | '/admin/empresas/$id'
     | '/api/public/asaas-webhook'
     | '/api/public/track'
+    | '/empresa/editar-vaga/$id'
     | '/freelas/p/$handle'
     | '/api/public/blog/ingest'
     | '/api/public/cron/empresa-daily'
     | '/api/public/cron/gerar-post'
     | '/api/public/cron/reindex-google'
-    | '/api/public/cron/reindex-vagas'
+    | '/api/public/hooks/notificar-candidatura'
     | '/api/public/push/renew'
   fileRoutesById: FileRoutesById
 }
@@ -801,6 +849,7 @@ export interface RootRouteChildren {
   TermosRoute: typeof TermosRoute
   AdminAnunciosRoute: typeof AdminAnunciosRoute
   AdminBlogRoute: typeof AdminBlogRouteWithChildren
+  AdminEmpresasRoute: typeof AdminEmpresasRouteWithChildren
   AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminVagasRoute: typeof AdminVagasRoute
   AdminVerificacoesRoute: typeof AdminVerificacoesRoute
@@ -824,7 +873,7 @@ export interface RootRouteChildren {
   ApiPublicCronEmpresaDailyRoute: typeof ApiPublicCronEmpresaDailyRoute
   ApiPublicCronGerarPostRoute: typeof ApiPublicCronGerarPostRoute
   ApiPublicCronReindexGoogleRoute: typeof ApiPublicCronReindexGoogleRoute
-  ApiPublicCronReindexVagasRoute: typeof ApiPublicCronReindexVagasRoute
+  ApiPublicHooksNotificarCandidaturaRoute: typeof ApiPublicHooksNotificarCandidaturaRoute
   ApiPublicPushRenewRoute: typeof ApiPublicPushRenewRoute
 }
 
@@ -1103,6 +1152,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmpresaMinhasVagasRouteImport
       parentRoute: typeof EmpresaRoute
     }
+    '/empresa/atividade': {
+      id: '/empresa/atividade'
+      path: '/atividade'
+      fullPath: '/empresa/atividade'
+      preLoaderRoute: typeof EmpresaAtividadeRouteImport
+      parentRoute: typeof EmpresaRoute
+    }
     '/cv/$slug': {
       id: '/cv/$slug'
       path: '/cv/$slug'
@@ -1180,6 +1236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsuariosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/empresas': {
+      id: '/admin/empresas'
+      path: '/admin/empresas'
+      fullPath: '/admin/empresas'
+      preLoaderRoute: typeof AdminEmpresasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/blog': {
       id: '/admin/blog'
       path: '/admin/blog'
@@ -1201,6 +1264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FreelasPHandleRouteImport
       parentRoute: typeof FreelasRoute
     }
+    '/empresa/editar-vaga/$id': {
+      id: '/empresa/editar-vaga/$id'
+      path: '/editar-vaga/$id'
+      fullPath: '/empresa/editar-vaga/$id'
+      preLoaderRoute: typeof EmpresaEditarVagaIdRouteImport
+      parentRoute: typeof EmpresaRoute
+    }
     '/api/public/track': {
       id: '/api/public/track'
       path: '/api/public/track'
@@ -1214,6 +1284,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/asaas-webhook'
       preLoaderRoute: typeof ApiPublicAsaasWebhookRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/empresas/$id': {
+      id: '/admin/empresas/$id'
+      path: '/$id'
+      fullPath: '/admin/empresas/$id'
+      preLoaderRoute: typeof AdminEmpresasIdRouteImport
+      parentRoute: typeof AdminEmpresasRoute
     }
     '/admin/blog/novo': {
       id: '/admin/blog/novo'
@@ -1236,11 +1313,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPushRenewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/cron/reindex-vagas': {
-      id: '/api/public/cron/reindex-vagas'
-      path: '/api/public/cron/reindex-vagas'
-      fullPath: '/api/public/cron/reindex-vagas'
-      preLoaderRoute: typeof ApiPublicCronReindexVagasRouteImport
+    '/api/public/hooks/notificar-candidatura': {
+      id: '/api/public/hooks/notificar-candidatura'
+      path: '/api/public/hooks/notificar-candidatura'
+      fullPath: '/api/public/hooks/notificar-candidatura'
+      preLoaderRoute: typeof ApiPublicHooksNotificarCandidaturaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/cron/reindex-google': {
@@ -1297,17 +1374,21 @@ const CandidatoRouteWithChildren = CandidatoRoute._addFileChildren(
 )
 
 interface EmpresaRouteChildren {
+  EmpresaAtividadeRoute: typeof EmpresaAtividadeRoute
   EmpresaMinhasVagasRoute: typeof EmpresaMinhasVagasRoute
   EmpresaNovaVagaRoute: typeof EmpresaNovaVagaRoute
   EmpresaPaginaRoute: typeof EmpresaPaginaRoute
   EmpresaVerificacaoRoute: typeof EmpresaVerificacaoRoute
+  EmpresaEditarVagaIdRoute: typeof EmpresaEditarVagaIdRoute
 }
 
 const EmpresaRouteChildren: EmpresaRouteChildren = {
+  EmpresaAtividadeRoute: EmpresaAtividadeRoute,
   EmpresaMinhasVagasRoute: EmpresaMinhasVagasRoute,
   EmpresaNovaVagaRoute: EmpresaNovaVagaRoute,
   EmpresaPaginaRoute: EmpresaPaginaRoute,
   EmpresaVerificacaoRoute: EmpresaVerificacaoRoute,
+  EmpresaEditarVagaIdRoute: EmpresaEditarVagaIdRoute,
 }
 
 const EmpresaRouteWithChildren =
@@ -1358,6 +1439,18 @@ const AdminBlogRouteWithChildren = AdminBlogRoute._addFileChildren(
   AdminBlogRouteChildren,
 )
 
+interface AdminEmpresasRouteChildren {
+  AdminEmpresasIdRoute: typeof AdminEmpresasIdRoute
+}
+
+const AdminEmpresasRouteChildren: AdminEmpresasRouteChildren = {
+  AdminEmpresasIdRoute: AdminEmpresasIdRoute,
+}
+
+const AdminEmpresasRouteWithChildren = AdminEmpresasRoute._addFileChildren(
+  AdminEmpresasRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnuncieRoute: AnuncieRoute,
@@ -1379,6 +1472,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermosRoute: TermosRoute,
   AdminAnunciosRoute: AdminAnunciosRoute,
   AdminBlogRoute: AdminBlogRouteWithChildren,
+  AdminEmpresasRoute: AdminEmpresasRouteWithChildren,
   AdminUsuariosRoute: AdminUsuariosRoute,
   AdminVagasRoute: AdminVagasRoute,
   AdminVerificacoesRoute: AdminVerificacoesRoute,
@@ -1402,7 +1496,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicCronEmpresaDailyRoute: ApiPublicCronEmpresaDailyRoute,
   ApiPublicCronGerarPostRoute: ApiPublicCronGerarPostRoute,
   ApiPublicCronReindexGoogleRoute: ApiPublicCronReindexGoogleRoute,
-  ApiPublicCronReindexVagasRoute: ApiPublicCronReindexVagasRoute,
+  ApiPublicHooksNotificarCandidaturaRoute:
+    ApiPublicHooksNotificarCandidaturaRoute,
   ApiPublicPushRenewRoute: ApiPublicPushRenewRoute,
 }
 export const routeTree = rootRouteImport

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdSlot } from "@/components/AdSlot";
+import { SITE_URL } from "@/lib/site";
 
 
 export const Route = createFileRoute("/blog/")({
@@ -12,9 +13,9 @@ export const Route = createFileRoute("/blog/")({
       { name: "description", content: "Guias práticos para conseguir emprego rápido: currículo em vídeo, vagas perto de você, direitos trabalhistas e mais. Atualizado toda semana." },
       { property: "og:title", content: "Blog VagasAgora" },
       { property: "og:description", content: "Dicas de emprego, currículo e carreira para quem quer começar a trabalhar agora." },
-      { property: "og:url", content: "https://job-express-facil.lovable.app/blog" },
+      { property: "og:url", content: `${SITE_URL}/blog` },
     ],
-    links: [{ rel: "canonical", href: "https://job-express-facil.lovable.app/blog" }],
+    links: [{ rel: "canonical", href: `${SITE_URL}/blog` }],
   }),
   component: BlogIndex,
 });

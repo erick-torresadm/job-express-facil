@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PROFISSOES, CIDADES, CATEGORIAS } from "@/lib/mock-data";
+import { SITE_URL } from "@/lib/site";
 import { Briefcase, Search } from "lucide-react";
 
 export const Route = createFileRoute("/categorias")({
@@ -24,13 +25,13 @@ export const Route = createFileRoute("/categorias")({
       },
       {
         property: "og:url",
-        content: "https://job-express-facil.lovable.app/categorias",
+        content: `${SITE_URL}/categorias`,
       },
     ],
     links: [
       {
         rel: "canonical",
-        href: "https://job-express-facil.lovable.app/categorias",
+        href: `${SITE_URL}/categorias`,
       },
     ],
   }),

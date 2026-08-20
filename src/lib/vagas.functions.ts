@@ -1,9 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { haversineKm } from "@/lib/intel.functions";
+
+// Raio (km) usado quando nem a vaga nem a empresa configuraram um valor.
+export const RAIO_KM_DEFAULT = 20;
 
 export type VagaPublica = {
   id: string;
+  empresa_id: string;
   titulo: string;
   empresa_nome: string;
   salario: string;
@@ -24,6 +29,9 @@ export type VagaPublica = {
   risco_fraude: number;
   risco_motivo: string | null;
   custo_alimentacao_mes: number | null;
+  raio_km: number | null;
+  regime: string;
+  distancia_km: number | null;
 };
 
 export const listarVagasPublicas = createServerFn({ method: "GET" })
@@ -32,7 +40,14 @@ export const listarVagasPublicas = createServerFn({ method: "GET" })
       .object({
         profissaoSlug: z.string().min(1).max(100).optional(),
         cidade: z.string().min(1).max(100).optional(),
-        limit: z.number().int().min(1).max(50).default(20),
+        regime: z.enum(["clt", "pj", "estagio", "outros"]).optional(),
+        q: z.string().trim().min(1).max(100).optional(),
+        urgente: z.boolean().optional(),
+        limit: z.number().int().min(1).max(80).default(20),
+        // Quando informados, ativa o modo "perto de mim": filtra pelo raio
+        // de cada vaga (ou o padrão da empresa/global) e ordena por distância.
+        lat: z.number().min(-90).max(90).optional(),
+        lng: z.number().min(-180).max(180).optional(),
       })
       .parse(input ?? {}),
   )
@@ -40,21 +55,49 @@ export const listarVagasPublicas = createServerFn({ method: "GET" })
     let q = supabaseAdmin
       .from("vagas")
       .select(
-        "id,titulo,empresa_nome,salario,horario,bairro,cidade,profissao,profissao_slug,descricao,urgente,created_at,latitude,longitude,endereco,requisitos,perguntas_triagem,faixa_salarial_sugerida,risco_fraude,risco_motivo,custo_alimentacao_mes",
+        "id,empresa_id,titulo,empresa_nome,salario,horario,bairro,cidade,profissao,profissao_slug,descricao,urgente,created_at,latitude,longitude,endereco,requisitos,perguntas_triagem,faixa_salarial_sugerida,risco_fraude,risco_motivo,custo_alimentacao_mes,raio_km,regime",
       )
       .eq("ativa", true)
       .lt("risco_fraude", 70) // esconde vagas com forte indício de golpe
       .order("urgente", { ascending: false })
       .order("created_at", { ascending: false })
-      .limit(data.limit);
+      .limit(data.lat != null && data.lng != null ? 300 : data.limit);
     if (data.profissaoSlug) q = q.eq("profissao_slug", data.profissaoSlug);
     if (data.cidade) q = q.ilike("cidade", data.cidade);
+    if (data.regime) q = q.eq("regime", data.regime);
+    if (data.urgente) q = q.eq("urgente", true);
+    if (data.q) q = q.or(`titulo.ilike.%${data.q}%,empresa_nome.ilike.%${data.q}%,profissao.ilike.%${data.q}%`);
     const { data: rows, error } = await q;
     if (error) throw new Error(error.message);
-    const vagas: VagaPublica[] = (rows ?? []).map((r) => ({
+
+    let vagas: VagaPublica[] = (rows ?? []).map((r) => ({
       ...(r as Record<string, unknown>),
       requisitos: Array.isArray(r.requisitos) ? (r.requisitos as unknown[]).map(String) : [],
       perguntas_triagem: Array.isArray(r.perguntas_triagem) ? (r.perguntas_triagem as unknown[]).map(String) : [],
+      distancia_km: null,
     })) as VagaPublica[];
+
+    if (data.lat != null && data.lng != null) {
+      const empresaIds = [...new Set(vagas.map((v) => v.empresa_id))];
+      const { data: empresas } = await supabaseAdmin
+        .from("profiles")
+        .select("id, raio_km_padrao")
+        .in("id", empresaIds);
+      const raioPorEmpresa = new Map((empresas ?? []).map((e) => [e.id, e.raio_km_padrao as number | null]));
+
+      vagas = vagas
+        .filter((v) => v.latitude != null && v.longitude != null)
+        .map((v) => {
+          const dist = haversineKm(data.lat!, data.lng!, v.latitude!, v.longitude!);
+          return { ...v, distancia_km: Math.round(dist * 10) / 10 };
+        })
+        .filter((v) => {
+          const raio = v.raio_km ?? raioPorEmpresa.get(v.empresa_id) ?? RAIO_KM_DEFAULT;
+          return v.distancia_km! <= raio;
+        })
+        .sort((a, b) => a.distancia_km! - b.distancia_km!)
+        .slice(0, data.limit);
+    }
+
     return { vagas };
   });

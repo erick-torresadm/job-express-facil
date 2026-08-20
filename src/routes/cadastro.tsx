@@ -7,8 +7,10 @@ import {
 import { PROFISSOES } from "@/lib/mock-data";
 import { analisarCandidato, type PerfilGerado } from "@/lib/ai.functions";
 import { claimCurriculo, updateLinkedin } from "@/lib/curriculo.functions";
+import { salvarSelfie } from "@/lib/perfil.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyNewSignup } from "@/lib/notify.functions";
+import { CameraSelfie } from "@/components/CameraSelfie";
 
 export const Route = createFileRoute("/cadastro")({
   head: () => ({
@@ -24,7 +26,7 @@ export const Route = createFileRoute("/cadastro")({
   component: CandidatoFlow,
 });
 
-type Step = "profissao" | "local" | "curriculo" | "contato" | "perfil";
+type Step = "profissao" | "selfie" | "local" | "curriculo" | "contato" | "perfil";
 type Midia = { tipo: "audio" | "video"; duracao: number; blob: Blob; mimeType: string } | null;
 type Contato = { nome: string; email: string; whatsapp: string; senha: string };
 
@@ -41,6 +43,7 @@ async function blobToBase64(blob: Blob): Promise<string> {
 function CandidatoFlow() {
   const [step, setStep] = useState<Step>("profissao");
   const [profissao, setProfissao] = useState<string | null>(null);
+  const [selfie, setSelfie] = useState<string | null>(null);
   const [local, setLocal] = useState<{ bairro: string; cidade: string } | null>(null);
   const [midia, setMidia] = useState<Midia>(null);
   const [texto, setTexto] = useState<string>("");
@@ -63,10 +66,13 @@ function CandidatoFlow() {
         </div>
         <Progress step={step} />
         {step === "profissao" && (
-          <StepProfissao onPick={(p) => { setProfissao(p); setStep("local"); }} />
+          <StepProfissao onPick={(p) => { setProfissao(p); setStep("selfie"); }} />
+        )}
+        {step === "selfie" && (
+          <StepSelfie onBack={() => setStep("profissao")} onDone={(s) => { setSelfie(s); setStep("local"); }} />
         )}
         {step === "local" && (
-          <StepLocal onBack={() => setStep("profissao")} onDone={(l) => { setLocal(l); setStep("curriculo"); }} />
+          <StepLocal onBack={() => setStep("selfie")} onDone={(l) => { setLocal(l); setStep("curriculo"); }} />
         )}
         {step === "curriculo" && (
           <StepCurriculo
@@ -79,7 +85,7 @@ function CandidatoFlow() {
           <StepContato onBack={() => setStep("curriculo")} onDone={(c) => { setContato(c); setStep("perfil"); }} />
         )}
         {step === "perfil" && profissao && local && contato && (
-          <StepPerfil profissao={profissao} local={local} midia={midia} texto={texto} contato={contato} />
+          <StepPerfil profissao={profissao} local={local} midia={midia} texto={texto} contato={contato} selfie={selfie} />
         )}
       </main>
     </div>
@@ -87,7 +93,7 @@ function CandidatoFlow() {
 }
 
 function Progress({ step }: { step: Step }) {
-  const order: Step[] = ["profissao", "local", "curriculo", "contato", "perfil"];
+  const order: Step[] = ["profissao", "selfie", "local", "curriculo", "contato", "perfil"];
   const idx = order.indexOf(step);
   return (
     <div className="mb-6 flex gap-1.5">
@@ -111,6 +117,28 @@ function Narrator({ text }: { text: string }) {
       className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
       <Volume2 className="h-3.5 w-3.5" /> Ouvir
     </button>
+  );
+}
+
+function StepSelfie({ onBack, onDone }: { onBack: () => void; onDone: (dataUri: string) => void }) {
+  const instr = "Tire uma selfie clara para confirmar sua conta. Precisa estar bem iluminado e seu rosto visível.";
+
+  return (
+    <section>
+      <button onClick={onBack} className="mb-3 inline-flex items-center gap-1 text-sm text-muted-foreground">
+        <ArrowLeft className="h-4 w-4" /> Voltar
+      </button>
+      <div className="mb-1 flex items-center justify-between">
+        <h1 className="text-2xl font-extrabold">Tire uma selfie</h1>
+        <Narrator text={instr} />
+      </div>
+      <p className="mb-5 text-sm text-muted-foreground">Tire uma selfie pra confirmar sua conta. Precisa estar bem iluminado e seu rosto visível.</p>
+
+      <CameraSelfie
+        onCapture={(dataUri) => onDone(dataUri)}
+        onError={(error) => console.error("Camera error:", error)}
+      />
+    </section>
   );
 }
 
@@ -761,18 +789,20 @@ function Campo({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function StepPerfil({ profissao, local, midia, texto, contato }: {
+function StepPerfil({ profissao, local, midia, texto, contato, selfie }: {
   profissao: string;
   local: { bairro: string; cidade: string };
   midia: Midia;
   texto: string;
   contato: Contato;
+  selfie: string | null;
 }) {
   const [perfil, setPerfil] = useState<PerfilGerado | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<PerfilGerado | null>(null);
   const [salvando, setSalvando] = useState(false);
+  const [salvandoSelfie, setSalvandoSelfie] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -799,6 +829,24 @@ function StepPerfil({ profissao, local, midia, texto, contato }: {
         const { data: userData } = await supabase.auth.getUser();
         if (userData.user) {
           try { await claimCurriculo({ data: { slug: p.slug } }); } catch { /* ignora se já reivindicado */ }
+
+          // Save selfie if available
+          if (selfie) {
+            try {
+              setSalvandoSelfie(true);
+              await salvarSelfie({
+                data: {
+                  dataUri: selfie,
+                  whatsapp: contato.whatsapp,
+                },
+              });
+            } catch (err) {
+              console.error("Erro ao salvar selfie:", err);
+              // Don't block profile generation if selfie fails
+            } finally {
+              setSalvandoSelfie(false);
+            }
+          }
         }
         if (!cancel) { setPerfil(p); setDraft(p); }
       } catch (e) {
@@ -806,7 +854,7 @@ function StepPerfil({ profissao, local, midia, texto, contato }: {
       }
     })();
     return () => { cancel = true; };
-  }, [contato, profissao, local, midia, texto]);
+  }, [contato, profissao, local, midia, texto, selfie]);
 
   const salvarEdicao = async () => {
     if (!draft) return;
@@ -833,7 +881,9 @@ function StepPerfil({ profissao, local, midia, texto, contato }: {
       <section className="py-12 text-center">
         <Loader2 className="mx-auto h-12 w-12 animate-spin text-accent" />
         <p className="mt-4 text-lg font-bold">Montando seu currículo…</p>
-        <p className="text-sm text-muted-foreground">Leva uns segundos.</p>
+        <p className="text-sm text-muted-foreground">
+          {salvandoSelfie ? "Salvando sua selfie…" : "Leva uns segundos."}
+        </p>
       </section>
     );
   }

@@ -1,6 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, MapPin, Briefcase, Clock } from "lucide-react";
 import { PROFISSOES, CIDADES } from "@/lib/mock-data";
+import { SITE_URL } from "@/lib/site";
 import { listarProfissionaisPublicos } from "@/lib/profissionais.functions";
 
 // SEO route: /profissionais/{profissao-slug}-em-{cidade-slug}
@@ -13,11 +14,11 @@ function parseSlug(slug: string) {
   const profPart = (parts[0] ?? "").replace(/-/g, " ");
   const locPart = (parts[1] ?? "").replace(/-/g, " ");
   const prof = PROFISSOES.find((p) => clean.includes(p.slug)) ?? null;
-  const cidade =
-    CIDADES.find((c) => locPart.includes(c.toLowerCase())) ??
-    (locPart ? capitalize(locPart) : "Brasil");
+  const cidadeMatch = CIDADES.find((c) => locPart.includes(c.toLowerCase())) ?? null;
+  const cidade = cidadeMatch ?? (locPart ? capitalize(locPart) : "Brasil");
   const profissao = prof?.nome ?? capitalize(profPart);
-  return { profissao, cidade, profSlug: prof?.slug ?? clean, prof };
+  const reconhecido = !!prof || !!cidadeMatch;
+  return { profissao, cidade, profSlug: prof?.slug ?? clean, prof, reconhecido };
 }
 function capitalize(s: string) {
   return s
@@ -28,7 +29,8 @@ function capitalize(s: string) {
 
 export const Route = createFileRoute("/profissionais/$slug")({
   loader: async ({ params }) => {
-    const { profissao, cidade, profSlug, prof } = parseSlug(params.slug);
+    const { profissao, cidade, profSlug, prof, reconhecido } = parseSlug(params.slug);
+    if (!reconhecido) throw notFound();
     const { profissionais } = await listarProfissionaisPublicos({
       data: {
         profissao: prof?.nome ?? profissao,
@@ -51,11 +53,13 @@ export const Route = createFileRoute("/profissionais/$slug")({
       count > 0
         ? `Encontre ${count} profissionais de ${profissao} disponíveis em ${cidade} agora. Currículos verificados, contato direto. Cadastre sua vaga grátis.`
         : `Procurando ${profissao} em ${cidade}? Veja profissionais cadastrados e disponíveis para contratação imediata. Sem taxa, sem burocracia.`;
-    const url = `https://job-express-facil.lovable.app/profissionais/${params.slug}`;
+    const url = `${SITE_URL}/profissionais/${params.slug}`;
+    const robots = count > 0 ? "index, follow" : "noindex, follow";
     return {
       meta: [
         { title },
         { name: "description", content: description },
+        { name: "robots", content: robots },
         { name: "keywords", content: `${profissao}, ${profissao} ${cidade}, contratar ${profissao}, ${profissao} disponível, vaga ${profissao}, currículo ${profissao} ${cidade}` },
         { property: "og:title", content: title },
         { property: "og:description", content: description },

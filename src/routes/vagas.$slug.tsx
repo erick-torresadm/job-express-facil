@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MapPin, Clock, DollarSign, Flame, ArrowLeft, ChevronDown } from "lucide-react";
 import { PROFISSOES, CIDADES } from "@/lib/mock-data";
@@ -22,9 +22,14 @@ function parseSlug(slug: string) {
   const profPart = (parts[0] ?? "vagas").replace(/-/g, " ");
   const locPart = (parts[1] ?? "").replace(/-/g, " ");
   const prof = PROFISSOES.find((p) => clean.includes(p.slug)) ?? null;
-  const cidade = CIDADES.find((c) => locPart.includes(c.toLowerCase())) ?? (locPart ? capitalize(locPart) : "Brasil");
+  const cidadeMatch = CIDADES.find((c) => locPart.includes(c.toLowerCase())) ?? null;
+  const cidade = cidadeMatch ?? (locPart ? capitalize(locPart) : "Brasil");
   const profissao = prof?.nome ?? capitalize(profPart);
-  return { profissao, cidade, profSlug: prof?.slug ?? clean };
+  // Reconhecido = achou profissão OU cidade de verdade no catálogo. Slug com
+  // as duas partes desconhecidas é lixo (typo, URL antiga do Lovable etc.) —
+  // não deve virar página 200 (soft-404 confunde o Google).
+  const reconhecido = !!prof || !!cidadeMatch;
+  return { profissao, cidade, profSlug: prof?.slug ?? clean, reconhecido };
 }
 function capitalize(s: string) {
   return s.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
@@ -59,7 +64,8 @@ function buildFAQ(profissao: string, cidade: string) {
 
 export const Route = createFileRoute("/vagas/$slug")({
   loader: async ({ params }) => {
-    const { profissao, cidade, profSlug } = parseSlug(params.slug);
+    const { profissao, cidade, profSlug, reconhecido } = parseSlug(params.slug);
+    if (!reconhecido) throw notFound();
     const { vagas } = await listarVagasPublicas({ data: { profissaoSlug: profSlug, limit: 30 } });
     const count = vagas.length > 0 ? vagas.length : 0;
     return { profissao, cidade, vagas, count };
@@ -67,6 +73,7 @@ export const Route = createFileRoute("/vagas/$slug")({
   head: ({ params, loaderData }) => {
     const d = loaderData ?? { profissao: "Vagas", cidade: "Brasil", count: 0, vagas: [] as VagaPublica[] };
     const { profissao, cidade, count } = d;
+    const robots = count > 0 ? "index, follow" : "noindex, follow";
     const year = new Date().getFullYear();
     const title = count > 0
       ? `${count} vagas de ${profissao} em ${cidade} — ${year} | VagasAgora`
@@ -78,48 +85,78 @@ export const Route = createFileRoute("/vagas/$slug")({
 
     const validThrough = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-    const jobPostings = d.vagas.map((v) => ({
-      "@context": "https://schema.org",
-      "@type": "JobPosting",
-      title: v.titulo,
-      description: v.descricao
-        ? v.descricao
-        : `${v.titulo} na empresa ${v.empresa_nome}. Horário: ${v.horario}. Salário: ${v.salario}. Localização: ${v.bairro}, ${v.cidade}.`,
-      identifier: {
-        "@type": "PropertyValue",
-        name: "VagasAgora",
-        value: v.id,
-      },
-      datePosted: v.created_at,
-      validThrough,
-      employmentType: "FULL_TIME",
-      hiringOrganization: {
-        "@type": "Organization",
-        name: v.empresa_nome,
-        sameAs: SITE_URL,
-      },
-      jobLocation: {
-        "@type": "Place",
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: v.endereco ?? undefined,
-          addressLocality: v.cidade,
-          addressRegion: "BR",
-          addressCountry: "BR",
+    // Helper: Parse salary string (e.g., "1500-2500" or "1500" or "R$ 1500") to extract first number
+    const parseSalary = (salarioStr: string): number | null => {
+      if (!salarioStr) return null;
+      const match = salarioStr.match(/\d+/);
+      return match ? parseInt(match[0], 10) : null;
+    };
+
+    // Helper: Map regime to Google JobPosting employmentType
+    const getEmploymentType = (regime: string): string => {
+      const regimeMap: Record<string, string> = {
+        clt: "FULL_TIME",
+        pj: "CONTRACTOR",
+        estagio: "INTERN",
+        outros: "OTHER",
+      };
+      return regimeMap[regime.toLowerCase()] || "FULL_TIME";
+    };
+
+    // Esta página é uma listagem faceada (profissão × cidade), não a página de
+    // uma vaga específica — não existe URL única por vaga no site ainda. Emitir
+    // um JobPosting por vaga aqui violaria as diretrizes do Google (todas
+    // apontariam pra mesma URL canônica), então publicamos só a mais relevante
+    // como representativa da página.
+    const jobPostings = d.vagas.slice(0, 1).map((v) => {
+      const baseSalaryValue = parseSalary(v.salario);
+
+      return {
+        "@context": "https://schema.org",
+        "@type": "JobPosting",
+        title: v.titulo,
+        description: v.descricao
+          ? v.descricao
+          : `${v.titulo} na empresa ${v.empresa_nome}. Horário: ${v.horario}. Salário: ${v.salario}. Localização: ${v.bairro}, ${v.cidade}.`,
+        identifier: {
+          "@type": "PropertyValue",
+          name: "VagasAgora",
+          value: v.id,
         },
-      },
-      baseSalary: {
-        "@type": "MonetaryAmount",
-        currency: "BRL",
-        value: {
-          "@type": "QuantitativeValue",
-          value: v.salario,
-          unitText: "MONTH",
+        datePosted: v.created_at,
+        validThrough,
+        employmentType: getEmploymentType(v.regime),
+        jobTitle: v.titulo,
+        hiringOrganization: {
+          "@type": "Organization",
+          name: v.empresa_nome,
+          url: SITE_URL,
         },
-      },
-      url: canonical,
-      directApply: true,
-    }));
+        jobLocation: {
+          "@type": "Place",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: v.endereco ?? v.bairro ?? undefined,
+            addressLocality: v.cidade,
+            addressRegion: "BR",
+            addressCountry: "BR",
+          },
+        },
+        ...(baseSalaryValue && {
+          baseSalary: {
+            "@type": "PriceSpecification",
+            currency: "BRL",
+            value: {
+              "@type": "QuantitativeValue",
+              value: baseSalaryValue,
+              unitText: "MONTH",
+            },
+          },
+        }),
+        url: canonical,
+        directApply: true,
+      };
+    });
 
     const faq = buildFAQ(profissao, cidade);
 
@@ -127,6 +164,7 @@ export const Route = createFileRoute("/vagas/$slug")({
       meta: [
         { title },
         { name: "description", content: description },
+        { name: "robots", content: robots },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },

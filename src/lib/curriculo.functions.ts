@@ -17,6 +17,37 @@ export const getCurriculoPublico = createServerFn({ method: "GET" })
     return cv ?? null;
   });
 
+// Localização privada do candidato (profiles.latitude/longitude), usada só
+// pra calcular "vagas perto de mim". NUNCA exposta em perfis públicos.
+export const getMinhaLocalizacao = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data } = await supabaseAdmin
+      .from("profiles")
+      .select("latitude, longitude")
+      .eq("id", context.userId)
+      .maybeSingle();
+    return { latitude: data?.latitude ?? null, longitude: data?.longitude ?? null };
+  });
+
+export const salvarMinhaLocalizacao = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({
+      latitude: z.number().min(-90).max(90),
+      longitude: z.number().min(-180).max(180),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    rateLimit(`salvar-localizacao:${context.userId}`, 10, 60_000);
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({ latitude: data.latitude, longitude: data.longitude })
+      .eq("id", context.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  });
+
 // Claim seguro: só currículos sem dono criados há menos de 30 min.
 export const claimCurriculo = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
