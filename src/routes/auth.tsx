@@ -77,7 +77,7 @@ function AuthPage() {
             throw new Error("Informe um WhatsApp válido com DDD.");
           }
         }
-        const { error } = await supabase.auth.signUp({
+        const { data: signUpData, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -102,6 +102,12 @@ function AuthPage() {
             empresa: role === "empresa" ? companyName || null : null,
           },
         }).catch(() => null);
+        // Confirmação de e-mail está ativada no projeto — signUp() não cria
+        // sessão até o link ser clicado. Sem esse aviso a tela fica parada
+        // sem nenhum feedback, parecendo travada.
+        if (!signUpData.session) {
+          setInfo("Conta criada! Confira seu e-mail e clique no link de confirmação pra entrar.");
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
