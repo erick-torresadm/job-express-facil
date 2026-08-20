@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Camera, Check, RotateCcw, Loader2 } from "lucide-react";
+import { Camera, Check, RotateCcw, Loader2, Upload } from "lucide-react";
 
 interface CameraSelfieProps {
   onCapture: (dataUri: string) => void;
@@ -13,6 +13,7 @@ export function CameraSelfie({ onCapture, onError }: CameraSelfieProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -77,6 +78,50 @@ export function CameraSelfie({ onCapture, onError }: CameraSelfieProps) {
     await startCamera();
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Envie uma imagem (jpg, png, webp).");
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setError("Imagem muito grande. Escolha uma de até 8MB.");
+      return;
+    }
+    setError(null);
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = () => {
+      img.onload = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        // Corta pro mesmo formato 4:5 do enquadramento da câmera, redimensiona
+        // e comprime — mantém consistência com quem tira foto ao vivo.
+        const targetRatio = 4 / 5;
+        let sw = img.width, sh = img.height, sx = 0, sy = 0;
+        const srcRatio = sw / sh;
+        if (srcRatio > targetRatio) {
+          sw = sh * targetRatio;
+          sx = (img.width - sw) / 2;
+        } else {
+          sh = sw / targetRatio;
+          sy = (img.height - sh) / 2;
+        }
+        canvas.width = 800;
+        canvas.height = 1000;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+        setCapturedImage(canvas.toDataURL("image/jpeg", 0.8));
+        setStage("captured");
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const confirmPhoto = async () => {
     if (!capturedImage) return;
     setCompressing(true);
@@ -113,17 +158,26 @@ export function CameraSelfie({ onCapture, onError }: CameraSelfieProps) {
       </div>
 
       <canvas ref={canvasRef} className="hidden" />
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
 
       {error && <p className="text-sm font-medium text-destructive text-center">{error}</p>}
 
       <div className="space-y-2">
         {stage === "idle" && (
-          <button
-            onClick={startCamera}
-            className="btn-touch shadow-pop flex w-full items-center justify-center gap-3 bg-accent text-accent-foreground"
-          >
-            <Camera className="h-6 w-6" /> Abrir câmera
-          </button>
+          <>
+            <button
+              onClick={startCamera}
+              className="btn-touch shadow-pop flex w-full items-center justify-center gap-3 bg-accent text-accent-foreground"
+            >
+              <Camera className="h-6 w-6" /> Abrir câmera
+            </button>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className={`btn-touch flex w-full items-center justify-center gap-2 border-2 ${error ? "border-primary bg-primary/5 text-primary" : "border-border bg-card"}`}
+            >
+              <Upload className="h-5 w-5" /> {error ? "Enviar foto da galeria" : "Prefiro enviar uma foto"}
+            </button>
+          </>
         )}
 
         {stage === "preview" && (
