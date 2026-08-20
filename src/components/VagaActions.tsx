@@ -9,7 +9,7 @@ import type { VagaPublica } from "@/lib/vagas.functions";
 import { notifyAdminsCandidatura } from "@/lib/admin-notify.functions";
 import { trackVagaViewFn } from "@/lib/recruiter-notifications.server";
 
-export function VagaActions({ vaga, empresaId }: { vaga: VagaPublica; empresaId?: string }) {
+export function VagaActions({ vaga, empresaId, compact }: { vaga: VagaPublica; empresaId?: string; compact?: boolean }) {
   const { user, role } = useAuth();
   const [fav, setFav] = useState(false);
   const [candidatado, setCandidatado] = useState(false);
@@ -58,7 +58,7 @@ export function VagaActions({ vaga, empresaId }: { vaga: VagaPublica; empresaId?
   if (!isCandidato) return null;
 
   return (
-    <div className="mt-3 flex gap-2">
+    <div className={compact ? "flex gap-2" : "mt-3 flex gap-2"}>
       <button onClick={() => { if (user) { setShowApply(true); trackView({ data: { vaga_id: vaga.id } }).catch(() => {}); } }}
         disabled={candidatado}
         data-sound={candidatado ? "none" : "pop"}
@@ -72,15 +72,19 @@ export function VagaActions({ vaga, empresaId }: { vaga: VagaPublica; empresaId?
           Entrar
         </Link>
       )}
-      <button onClick={toggleFav} title={fav ? "Remover" : "Salvar"}
-        data-sound={fav ? "pop" : "like"}
-        className={`grid h-10 w-10 place-items-center rounded-xl border border-border ${fav ? "bg-destructive/10 text-destructive" : "bg-card"}`}>
-        <Heart className={`h-4 w-4 ${fav ? "fill-current" : ""}`} />
-      </button>
-      <button onClick={compartilhar} title="Compartilhar"
-        className="grid h-10 w-10 place-items-center rounded-xl border border-border bg-card">
-        <Share2 className="h-4 w-4" />
-      </button>
+      {!compact && (
+        <button onClick={toggleFav} title={fav ? "Remover" : "Salvar"}
+          data-sound={fav ? "pop" : "like"}
+          className={`grid h-10 w-10 place-items-center rounded-xl border border-border ${fav ? "bg-destructive/10 text-destructive" : "bg-card"}`}>
+          <Heart className={`h-4 w-4 ${fav ? "fill-current" : ""}`} />
+        </button>
+      )}
+      {!compact && (
+        <button onClick={compartilhar} title="Compartilhar"
+          className="grid h-10 w-10 place-items-center rounded-xl border border-border bg-card">
+          <Share2 className="h-4 w-4" />
+        </button>
+      )}
 
       {showApply && user && (
         <ApplyModal vaga={vaga} empresaId={empresaId} userId={user.id}

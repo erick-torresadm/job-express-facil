@@ -246,6 +246,8 @@ function VagasPage() {
 
   const faq = buildFAQ(profissao, cidade);
 
+  const vagaPrincipal = vagas[0];
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur">
@@ -257,7 +259,7 @@ function VagasPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-2xl px-4 py-6">
+      <main className={`mx-auto max-w-2xl px-4 py-6 ${vagaPrincipal ? "pb-24 lg:pb-6" : ""}`}>
         <nav aria-label="Breadcrumb" className="mb-2 text-xs text-muted-foreground">
           <Link to="/" className="hover:text-foreground">Início</Link> ·{" "}
           <Link to="/categorias" className="hover:text-foreground">Vagas</Link> ·{" "}
@@ -284,18 +286,20 @@ function VagasPage() {
 
         {vagas.length > 0 && (
           <>
-            <div className="mt-8 mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-bold">Vagas em destaque</h2>
-              <div className="flex gap-1 rounded-full bg-secondary p-1 text-xs font-bold">
-                {(["todos", "urgente", "recentes"] as FiltroTipo[]).map((f) => (
-                  <button key={f} onClick={() => setFiltro(f)}
-                    className={`rounded-full px-3 py-1 transition ${filtro === f ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-                    {f === "todos" ? "Todas" : f === "urgente" ? "🔥 Urgentes" : "🆕 Hoje"}
-                  </button>
-                ))}
+            {vagas.length > 1 && (
+              <div className="mt-8 mb-3 flex items-center justify-between">
+                <h2 className="text-lg font-bold">Vagas em destaque</h2>
+                <div className="flex gap-1 rounded-full bg-secondary p-1 text-xs font-bold">
+                  {(["todos", "urgente", "recentes"] as FiltroTipo[]).map((f) => (
+                    <button key={f} onClick={() => setFiltro(f)}
+                      className={`rounded-full px-3 py-1 transition ${filtro === f ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                      {f === "todos" ? "Todas" : f === "urgente" ? "🔥 Urgentes" : "🆕 Hoje"}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-            <ul className="space-y-3">
+            )}
+            <ul className={`space-y-3 ${vagas.length === 1 ? "mt-6" : ""}`}>
               {vagasFiltradas.map((v: VagaPublica) => (
                 <li key={v.id} className="rounded-2xl border border-border bg-card p-4 shadow-soft transition hover:border-accent/40">
                   <div className="flex gap-3">
@@ -421,6 +425,18 @@ function VagasPage() {
           </details>
         </section>
       </main>
+
+      {vagaPrincipal && (
+        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/95 p-3 shadow-pop backdrop-blur lg:hidden">
+          <div className="mx-auto flex max-w-2xl items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-bold leading-tight">{vagaPrincipal.titulo}</p>
+              <p className="truncate text-xs font-semibold text-success">{vagaPrincipal.salario}</p>
+            </div>
+            <VagaActions vaga={vagaPrincipal} compact />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

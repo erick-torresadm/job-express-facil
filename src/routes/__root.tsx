@@ -207,7 +207,7 @@ function RootComponent() {
       <div className="flex min-h-screen flex-col bg-background">
         {showPromo && <PromoLancamentoBanner compact />}
         {!hideChrome && <SiteHeader />}
-        {!hideChrome && <TrendingMenu />}
+        {pathname === "/" && <TrendingMenu />}
         <div className="flex-1">
           <Outlet />
         </div>
