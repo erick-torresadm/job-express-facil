@@ -18,7 +18,7 @@ const navLinks = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { user, role, signOut } = useAuth();
+  const { user, role, profile, signOut } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isHome = pathname === "/";
@@ -32,19 +32,40 @@ export function SiteHeader() {
   if (!isHome) {
     return (
       <>
-        <button
-          onClick={() => setOpen(true)}
-          aria-label="Abrir menu"
-          className="fixed left-3 top-3 z-40 grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-primary/85 text-primary-foreground shadow-pop backdrop-blur-xl md:left-5 md:top-5"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
+        <div className="fixed inset-x-3 top-3 z-40 flex items-center justify-between md:inset-x-5 md:top-5">
+          <button
+            onClick={() => setOpen(true)}
+            aria-label="Abrir menu"
+            className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-primary/85 text-primary-foreground shadow-pop backdrop-blur-xl"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          {user ? (
+            <Link
+              to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-primary/85 py-1.5 pl-1.5 pr-3 text-primary-foreground shadow-pop backdrop-blur-xl"
+            >
+              <UserAvatar profile={profile} email={user.email} className="h-8 w-8" />
+              <span className="max-w-[9rem] truncate text-sm font-semibold">
+                {profile?.full_name || profile?.company_name || user.email}
+              </span>
+            </Link>
+          ) : (
+            <Link
+              to="/auth"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-primary/85 px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-pop backdrop-blur-xl"
+            >
+              <UserIcon className="h-4 w-4" /> Entrar
+            </Link>
+          )}
+        </div>
 
         {open && (
           <Drawer
             onClose={() => setOpen(false)}
             user={user}
             role={role}
+            profile={profile}
             onSignOut={handleSignOut}
           />
         )}
@@ -92,9 +113,10 @@ export function SiteHeader() {
               <NotificationBell />
               <Link
                 to={role === "empresa" ? "/empresa" : role === "candidato" ? "/candidato" : "/cadastro"}
-                className="hidden lg:inline-flex items-center gap-1.5 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-white/25"
+                className="hidden lg:inline-flex items-center gap-2 rounded-full bg-white/15 py-1 pl-1 pr-4 text-sm font-semibold text-primary-foreground hover:bg-white/25"
               >
-                <UserIcon className="h-4 w-4" /> Minha conta
+                <UserAvatar profile={profile} email={user.email} className="h-7 w-7" />
+                <span className="max-w-[8rem] truncate">{profile?.full_name || profile?.company_name || user.email}</span>
               </Link>
               <button onClick={handleSignOut} aria-label="Sair" title="Sair"
                 className="hidden lg:grid h-9 w-9 place-items-center rounded-full text-primary-foreground/80 hover:bg-white/15">
@@ -136,6 +158,7 @@ export function SiteHeader() {
           onClose={() => setOpen(false)}
           user={user}
           role={role}
+          profile={profile}
           onSignOut={handleSignOut}
         />
       )}
@@ -143,15 +166,29 @@ export function SiteHeader() {
   );
 }
 
+export function UserAvatar({ profile, email, className = "h-8 w-8" }: { profile: { avatar_url: string | null } | null; email?: string | null; className?: string }) {
+  if (profile?.avatar_url) {
+    return <img src={profile.avatar_url} alt="" className={`${className} shrink-0 rounded-full object-cover`} />;
+  }
+  const inicial = email ? email.charAt(0).toUpperCase() : "?";
+  return (
+    <div className={`${className} grid shrink-0 place-items-center rounded-full bg-white/20 font-bold`}>
+      {inicial}
+    </div>
+  );
+}
+
 function Drawer({
   onClose,
   user,
   role,
+  profile,
   onSignOut,
 }: {
   onClose: () => void;
   user: any;
   role: string | null | undefined;
+  profile: { avatar_url: string | null; full_name: string | null; company_name: string | null } | null;
   onSignOut: () => void;
 }) {
   return (
@@ -166,6 +203,15 @@ function Drawer({
             <X className="h-5 w-5" />
           </button>
         </div>
+        {user && (
+          <div className="flex items-center gap-3 rounded-2xl bg-secondary/50 px-3 py-3">
+            <UserAvatar profile={profile} email={user.email} className="h-10 w-10 text-foreground" />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold text-foreground">{profile?.full_name || profile?.company_name || "Minha conta"}</p>
+              <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+            </div>
+          </div>
+        )}
         <div className="px-1 py-2">
           <GlobalSearch variant="hero" />
         </div>

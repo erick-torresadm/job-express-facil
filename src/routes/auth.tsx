@@ -92,6 +92,13 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        // Supabase não retorna erro pra e-mail já cadastrado (evita vazar
+        // quem tem conta) — o sinal documentado é identities vazio no user
+        // retornado. Sem essa checagem o usuário achava que criou conta nova
+        // e ficava esperando um e-mail que nunca chegaria.
+        if (signUpData.user && signUpData.user.identities && signUpData.user.identities.length === 0) {
+          throw new Error("JÁ_CADASTRADO");
+        }
         // Fire-and-forget: notifica admin do novo cadastro
         notifyNewSignup({
           data: {
@@ -115,11 +122,10 @@ function AuthPage() {
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
-      // Mensagens genéricas — não revelam se o e-mail existe/está cadastrado
-      // (previne enumeração de usuários).
-      if (mode === "signup") {
-        // Independente de e-mail já existir ou não, mesma resposta.
-        setErr("Não foi possível concluir o cadastro. Verifique os dados e tente novamente. Se o e-mail já estiver cadastrado, use a opção Entrar.");
+      if (msg === "JÁ_CADASTRADO") {
+        setErr("Esse e-mail já tem conta no VagasAgora. Use a opção \"Entrar\" ou clique em \"Esqueci minha senha\" se não lembrar.");
+      } else if (mode === "signup") {
+        setErr("Não foi possível concluir o cadastro. Verifique os dados e tente novamente.");
       } else if (msg.includes("Email not confirmed")) {
         setErr("Confirme seu e-mail antes de entrar.");
       } else {
