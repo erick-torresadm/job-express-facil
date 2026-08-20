@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-ro
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getPaginaPublica, enviarCurriculoEmpresa } from "@/lib/empresa.functions";
+import { SITE_URL } from "@/lib/site";
 import { Building2, MapPin, Send } from "lucide-react";
 import { toast } from "sonner";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
@@ -15,15 +16,24 @@ export const Route = createFileRoute("/c/$slug")({
     if (!data) throw notFound();
     return data;
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     const nome = loaderData?.empresa.company_name ?? "Empresa";
+    const canonical = `${SITE_URL}/c/${params.slug}`;
+    const vagasAbertas = loaderData?.vagas.length ?? 0;
+    const description = vagasAbertas > 0
+      ? `${vagasAbertas} vaga(s) aberta(s) na ${nome}. Envie seu currículo direto e cadastre-se em 2 minutos.`
+      : `Envie seu currículo direto para ${nome}. Cadastro em 2 minutos.`;
     return {
       meta: [
         { title: `Trabalhe na ${nome} — VagasAgora` },
-        { name: "description", content: `Envie seu currículo direto para ${nome}. Vagas abertas e cadastro em 2 minutos.` },
+        { name: "description", content: description },
         { property: "og:title", content: `Trabalhe na ${nome}` },
-        { property: "og:description", content: `Envie seu currículo direto para ${nome}.` },
+        { property: "og:description", content: description },
+        { property: "og:url", content: canonical },
+        { property: "og:type", content: "website" },
+        ...(loaderData?.empresa.logo_url ? [{ property: "og:image", content: loaderData.empresa.logo_url }] : []),
       ],
+      links: [{ rel: "canonical", href: canonical }],
     };
   },
   component: PaginaPublicaEmpresa,

@@ -32,6 +32,8 @@ export type VagaPublica = {
   raio_km: number | null;
   regime: string;
   distancia_km: number | null;
+  empresa_logo_url: string | null;
+  empresa_slug_publico: string | null;
 };
 
 export const listarVagasPublicas = createServerFn({ method: "GET" })
@@ -75,7 +77,25 @@ export const listarVagasPublicas = createServerFn({ method: "GET" })
       requisitos: Array.isArray(r.requisitos) ? (r.requisitos as unknown[]).map(String) : [],
       perguntas_triagem: Array.isArray(r.perguntas_triagem) ? (r.perguntas_triagem as unknown[]).map(String) : [],
       distancia_km: null,
+      empresa_logo_url: null,
+      empresa_slug_publico: null,
     })) as VagaPublica[];
+
+    // Logo + link da página de captação — enriquece o schema JobPosting
+    // (hiringOrganization.logo) e conecta a vaga de volta à página da
+    // empresa, sem custo extra relevante.
+    if (vagas.length > 0) {
+      const empresaIdsAll = [...new Set(vagas.map((v) => v.empresa_id))];
+      const { data: perfis } = await supabaseAdmin
+        .from("profiles")
+        .select("id, logo_url, slug_publico")
+        .in("id", empresaIdsAll);
+      const perfilPorEmpresa = new Map((perfis ?? []).map((p) => [p.id, p]));
+      vagas = vagas.map((v) => {
+        const p = perfilPorEmpresa.get(v.empresa_id);
+        return { ...v, empresa_logo_url: p?.logo_url ?? null, empresa_slug_publico: p?.slug_publico ?? null };
+      });
+    }
 
     if (data.lat != null && data.lng != null) {
       const empresaIds = [...new Set(vagas.map((v) => v.empresa_id))];

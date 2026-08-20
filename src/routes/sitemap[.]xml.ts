@@ -70,6 +70,20 @@ export const Route = createFileRoute("/sitemap.xml")({
           }
         } catch {}
 
+        // Páginas de captação das empresas (/c/{slug}) — toda vaga nova
+        // publicada aparece automaticamente ali, então precisam ser
+        // encontráveis pelo Google como qualquer outra página do site.
+        try {
+          const { data: empresas } = await supabaseAdmin
+            .from("profiles")
+            .select("slug_publico, updated_at")
+            .not("slug_publico", "is", null);
+          for (const e of empresas ?? []) {
+            if (!e.slug_publico) continue;
+            dynamic.push({ path: `/c/${e.slug_publico}`, lastmod: e.updated_at?.split("T")[0] });
+          }
+        } catch {}
+
         const map = new Map<string, Entry>();
         for (const p of staticPaths) map.set(p, { path: p, lastmod: today });
         for (const e of dynamic) map.set(e.path, e);

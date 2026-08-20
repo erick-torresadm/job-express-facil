@@ -130,7 +130,11 @@ export const Route = createFileRoute("/vagas/$slug")({
         hiringOrganization: {
           "@type": "Organization",
           name: v.empresa_nome,
-          url: SITE_URL,
+          // Página personalizada da empresa quando ela tem uma configurada
+          // (toda vaga que ela publica aparece lá automaticamente) — só cai
+          // pro site genérico se ela ainda não criou a própria página.
+          url: v.empresa_slug_publico ? `${SITE_URL}/c/${v.empresa_slug_publico}` : SITE_URL,
+          ...(v.empresa_logo_url && { logo: v.empresa_logo_url }),
         },
         jobLocation: {
           "@type": "Place",
