@@ -4,6 +4,7 @@ import { MapPin, Clock, DollarSign, Flame, ChevronDown, Sparkles, Building2, Lis
 import { PROFISSOES, CIDADES } from "@/lib/mock-data";
 import { SITE_URL } from "@/lib/site";
 import { listarVagasPublicas, type VagaPublica } from "@/lib/vagas.functions";
+import { getSalarioInfo } from "@/lib/salarios-data";
 import { calcularRotaCusto, calcularMatchScore } from "@/lib/intel.functions";
 import { DistanciaCustoCard, MatchScoreBadge, FraudBadge } from "@/components/VagaCards";
 import { VagaActions } from "@/components/VagaActions";
@@ -68,7 +69,7 @@ export const Route = createFileRoute("/vagas/$slug")({
     if (!reconhecido) throw notFound();
     const { vagas } = await listarVagasPublicas({ data: { profissaoSlug: profSlug, limit: 30 } });
     const count = vagas.length > 0 ? vagas.length : 0;
-    return { profissao, cidade, vagas, count };
+    return { profissao, cidade, vagas, count, profSlug };
   },
   head: ({ params, loaderData }) => {
     const d = loaderData ?? { profissao: "Vagas", cidade: "Brasil", count: 0, vagas: [] as VagaPublica[] };
@@ -232,7 +233,8 @@ type FiltroTipo = "todos" | "urgente" | "recentes";
 
 function VagasPage() {
   const data = Route.useLoaderData();
-  const { profissao, cidade, vagas, count } = data ?? { profissao: "Vagas", cidade: "Brasil", vagas: [] as VagaPublica[], count: 0 };
+  const { profissao, cidade, vagas, count, profSlug } = data ?? { profissao: "Vagas", cidade: "Brasil", vagas: [] as VagaPublica[], count: 0, profSlug: "" };
+  const salarioInfo = profSlug ? getSalarioInfo(profSlug) : null;
   const [filtro, setFiltro] = useState<FiltroTipo>("todos");
 
   const vagasFiltradas = vagas.filter((v: VagaPublica) => {
@@ -368,6 +370,20 @@ function VagasPage() {
               )}
             </ul>
           </>
+        )}
+
+        {/* Guia de salário da profissão — link cruzado com /salarios */}
+        {salarioInfo && (
+          <Link to="/salarios/$slug" params={{ slug: salarioInfo.slug }}
+            className="group mt-8 flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4 transition hover:border-primary">
+            <div>
+              <p className="text-sm font-bold group-hover:text-primary">Quanto ganha um {salarioInfo.nome}?</p>
+              <p className="text-xs text-muted-foreground">
+                Média nacional, piso, teto e o que faz o salário subir — guia completo {new Date().getFullYear()}.
+              </p>
+            </div>
+            <span className="shrink-0 text-xs font-bold text-primary">Ver guia →</span>
+          </Link>
         )}
 
         {/* Conteúdo de apoio (SEO) — deliberadamente discreto, abaixo das vagas de verdade */}

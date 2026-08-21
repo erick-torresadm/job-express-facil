@@ -29,6 +29,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnuncieRouteImport } from './routes/anuncie'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VagasIndexRouteImport } from './routes/vagas.index'
+import { Route as SalariosIndexRouteImport } from './routes/salarios.index'
 import { Route as PreviewIndexRouteImport } from './routes/preview.index'
 import { Route as FreelasIndexRouteImport } from './routes/freelas.index'
 import { Route as FreelancerIndexRouteImport } from './routes/freelancer.index'
@@ -40,6 +41,7 @@ import { Route as VagasEstagioRouteImport } from './routes/vagas.estagio'
 import { Route as VagasCltRouteImport } from './routes/vagas.clt'
 import { Route as VagasSlugRouteImport } from './routes/vagas.$slug'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
+import { Route as SalariosSlugRouteImport } from './routes/salarios.$slug'
 import { Route as ProfissionaisSlugRouteImport } from './routes/profissionais.$slug'
 import { Route as PreviewStyleRouteImport } from './routes/preview.$style'
 import { Route as FreelancerPortfolioRouteImport } from './routes/freelancer.portfolio'
@@ -178,6 +180,11 @@ const VagasIndexRoute = VagasIndexRouteImport.update({
   path: '/vagas/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SalariosIndexRoute = SalariosIndexRouteImport.update({
+  id: '/salarios/',
+  path: '/salarios/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PreviewIndexRoute = PreviewIndexRouteImport.update({
   id: '/preview/',
   path: '/preview/',
@@ -231,6 +238,11 @@ const VagasSlugRoute = VagasSlugRouteImport.update({
 const UHandleRoute = UHandleRouteImport.update({
   id: '/u/$handle',
   path: '/u/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SalariosSlugRoute = SalariosSlugRouteImport.update({
+  id: '/salarios/$slug',
+  path: '/salarios/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfissionaisSlugRoute = ProfissionaisSlugRouteImport.update({
@@ -466,6 +478,7 @@ export interface FileRoutesByFullPath {
   '/freelancer/portfolio': typeof FreelancerPortfolioRoute
   '/preview/$style': typeof PreviewStyleRoute
   '/profissionais/$slug': typeof ProfissionaisSlugRoute
+  '/salarios/$slug': typeof SalariosSlugRoute
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/vagas/clt': typeof VagasCltRoute
@@ -477,6 +490,7 @@ export interface FileRoutesByFullPath {
   '/freelancer/': typeof FreelancerIndexRoute
   '/freelas/': typeof FreelasIndexRoute
   '/preview/': typeof PreviewIndexRoute
+  '/salarios/': typeof SalariosIndexRoute
   '/vagas/': typeof VagasIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
@@ -533,6 +547,7 @@ export interface FileRoutesByTo {
   '/freelancer/portfolio': typeof FreelancerPortfolioRoute
   '/preview/$style': typeof PreviewStyleRoute
   '/profissionais/$slug': typeof ProfissionaisSlugRoute
+  '/salarios/$slug': typeof SalariosSlugRoute
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/vagas/clt': typeof VagasCltRoute
@@ -544,6 +559,7 @@ export interface FileRoutesByTo {
   '/freelancer': typeof FreelancerIndexRoute
   '/freelas': typeof FreelasIndexRoute
   '/preview': typeof PreviewIndexRoute
+  '/salarios': typeof SalariosIndexRoute
   '/vagas': typeof VagasIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
@@ -604,6 +620,7 @@ export interface FileRoutesById {
   '/freelancer/portfolio': typeof FreelancerPortfolioRoute
   '/preview/$style': typeof PreviewStyleRoute
   '/profissionais/$slug': typeof ProfissionaisSlugRoute
+  '/salarios/$slug': typeof SalariosSlugRoute
   '/u/$handle': typeof UHandleRoute
   '/vagas/$slug': typeof VagasSlugRoute
   '/vagas/clt': typeof VagasCltRoute
@@ -615,6 +632,7 @@ export interface FileRoutesById {
   '/freelancer/': typeof FreelancerIndexRoute
   '/freelas/': typeof FreelasIndexRoute
   '/preview/': typeof PreviewIndexRoute
+  '/salarios/': typeof SalariosIndexRoute
   '/vagas/': typeof VagasIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/novo': typeof AdminBlogNovoRoute
@@ -676,6 +694,7 @@ export interface FileRouteTypes {
     | '/freelancer/portfolio'
     | '/preview/$style'
     | '/profissionais/$slug'
+    | '/salarios/$slug'
     | '/u/$handle'
     | '/vagas/$slug'
     | '/vagas/clt'
@@ -687,6 +706,7 @@ export interface FileRouteTypes {
     | '/freelancer/'
     | '/freelas/'
     | '/preview/'
+    | '/salarios/'
     | '/vagas/'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
@@ -743,6 +763,7 @@ export interface FileRouteTypes {
     | '/freelancer/portfolio'
     | '/preview/$style'
     | '/profissionais/$slug'
+    | '/salarios/$slug'
     | '/u/$handle'
     | '/vagas/$slug'
     | '/vagas/clt'
@@ -754,6 +775,7 @@ export interface FileRouteTypes {
     | '/freelancer'
     | '/freelas'
     | '/preview'
+    | '/salarios'
     | '/vagas'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
@@ -813,6 +835,7 @@ export interface FileRouteTypes {
     | '/freelancer/portfolio'
     | '/preview/$style'
     | '/profissionais/$slug'
+    | '/salarios/$slug'
     | '/u/$handle'
     | '/vagas/$slug'
     | '/vagas/clt'
@@ -824,6 +847,7 @@ export interface FileRouteTypes {
     | '/freelancer/'
     | '/freelas/'
     | '/preview/'
+    | '/salarios/'
     | '/vagas/'
     | '/admin/blog/$id'
     | '/admin/blog/novo'
@@ -871,6 +895,7 @@ export interface RootRouteChildren {
   CvSlugRoute: typeof CvSlugRoute
   PreviewStyleRoute: typeof PreviewStyleRoute
   ProfissionaisSlugRoute: typeof ProfissionaisSlugRoute
+  SalariosSlugRoute: typeof SalariosSlugRoute
   UHandleRoute: typeof UHandleRoute
   VagasSlugRoute: typeof VagasSlugRoute
   VagasCltRoute: typeof VagasCltRoute
@@ -879,6 +904,7 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   PreviewIndexRoute: typeof PreviewIndexRoute
+  SalariosIndexRoute: typeof SalariosIndexRoute
   VagasIndexRoute: typeof VagasIndexRoute
   ApiPublicAsaasWebhookRoute: typeof ApiPublicAsaasWebhookRoute
   ApiPublicTrackRoute: typeof ApiPublicTrackRoute
@@ -1032,6 +1058,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VagasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/salarios/': {
+      id: '/salarios/'
+      path: '/salarios'
+      fullPath: '/salarios/'
+      preLoaderRoute: typeof SalariosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/preview/': {
       id: '/preview/'
       path: '/preview'
@@ -1107,6 +1140,13 @@ declare module '@tanstack/react-router' {
       path: '/u/$handle'
       fullPath: '/u/$handle'
       preLoaderRoute: typeof UHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/salarios/$slug': {
+      id: '/salarios/$slug'
+      path: '/salarios/$slug'
+      fullPath: '/salarios/$slug'
+      preLoaderRoute: typeof SalariosSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profissionais/$slug': {
@@ -1502,6 +1542,7 @@ const rootRouteChildren: RootRouteChildren = {
   CvSlugRoute: CvSlugRoute,
   PreviewStyleRoute: PreviewStyleRoute,
   ProfissionaisSlugRoute: ProfissionaisSlugRoute,
+  SalariosSlugRoute: SalariosSlugRoute,
   UHandleRoute: UHandleRoute,
   VagasSlugRoute: VagasSlugRoute,
   VagasCltRoute: VagasCltRoute,
@@ -1510,6 +1551,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   PreviewIndexRoute: PreviewIndexRoute,
+  SalariosIndexRoute: SalariosIndexRoute,
   VagasIndexRoute: VagasIndexRoute,
   ApiPublicAsaasWebhookRoute: ApiPublicAsaasWebhookRoute,
   ApiPublicTrackRoute: ApiPublicTrackRoute,

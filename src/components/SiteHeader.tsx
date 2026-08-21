@@ -8,6 +8,7 @@ import { GlobalSearch } from "@/components/GlobalSearch";
 const navLinks = [
   { to: "/", label: "Início" },
   { to: "/vagas", label: "Vagas" },
+  { to: "/salarios", label: "Salários" },
   { to: "/freelas", label: "Freelas" },
   { to: "/como-funciona", label: "Como funciona" },
   { to: "/para-empresas", label: "Para empresas" },

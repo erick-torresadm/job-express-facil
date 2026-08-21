@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { SALARIOS } from "@/lib/salarios-data";
 
 const BASE_URL = "https://vagasagora.com.br";
 
@@ -19,6 +20,8 @@ export const Route = createFileRoute("/sitemap.xml")({
           "/como-funciona", "/para-empresas", "/contato",
           "/blog", "/categorias", "/planos", "/termos", "/privacidade",
           "/freelas",
+          "/salarios",
+          ...SALARIOS.map((s) => `/salarios/${s.slug}`),
         ];
 
         // Só entram no sitemap combinações profissão×cidade com conteúdo real
