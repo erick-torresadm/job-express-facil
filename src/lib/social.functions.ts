@@ -19,6 +19,7 @@ export type PerfilSocial = {
   avatar_url: string | null;
   cover_url: string | null;
   bio_social: string | null;
+  whatsapp: string | null;
   role: "candidato" | "empresa" | "admin" | null;
   followers_count: number;
   following_count: number;
@@ -29,7 +30,7 @@ export type PerfilSocial = {
 async function buildPerfil(profileId: string, viewerId: string | null): Promise<PerfilSocial | null> {
   const { data: p } = await supabaseAdmin
     .from("profiles")
-    .select("id, handle, full_name, company_name, avatar_url, cover_url, bio_social")
+    .select("id, handle, full_name, company_name, avatar_url, cover_url, bio_social, whatsapp")
     .eq("id", profileId)
     .maybeSingle();
   if (!p) return null;
@@ -60,6 +61,8 @@ async function buildPerfil(profileId: string, viewerId: string | null): Promise<
     avatar_url: p.avatar_url,
     cover_url: p.cover_url,
     bio_social: p.bio_social,
+    // WhatsApp é PII — só o próprio dono vê; no perfil público vai null.
+    whatsapp: viewerId === profileId ? (p.whatsapp ?? null) : null,
     role: (role?.role as PerfilSocial["role"]) ?? null,
     followers_count: followers ?? 0,
     following_count: following ?? 0,
@@ -98,6 +101,9 @@ export const updateMeuPerfil = createServerFn({ method: "POST" })
       avatar_url: z.string().url().max(500).optional().nullable(),
       cover_url: z.string().url().max(500).optional().nullable(),
       full_name: z.string().trim().min(1).max(120).optional(),
+      whatsapp: z.string().trim().transform((s) => s.replace(/\D/g, ""))
+        .refine((s) => s === "" || (s.length >= 10 && s.length <= 13), "WhatsApp inválido — use DDD + número")
+        .optional().nullable(),
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
@@ -107,12 +113,14 @@ export const updateMeuPerfil = createServerFn({ method: "POST" })
       avatar_url?: string | null;
       cover_url?: string | null;
       full_name?: string;
+      whatsapp?: string | null;
     } = {};
     if (data.handle !== undefined) patch.handle = data.handle;
     if (data.bio_social !== undefined) patch.bio_social = data.bio_social;
     if (data.avatar_url !== undefined) patch.avatar_url = data.avatar_url;
     if (data.cover_url !== undefined) patch.cover_url = data.cover_url;
     if (data.full_name !== undefined) patch.full_name = data.full_name;
+    if (data.whatsapp !== undefined) patch.whatsapp = data.whatsapp || null;
 
     // Verifica unicidade de handle
     if (data.handle) {

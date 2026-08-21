@@ -24,6 +24,7 @@ function PerfilEditPage() {
   const [handle, setHandle] = useState("");
   const [bio, setBio] = useState("");
   const [fullName, setFullName] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
   const [cover, setCover] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -51,6 +52,7 @@ function PerfilEditPage() {
         setPerfil(p);
         setBio(p.bio_social ?? "");
         setFullName(p.full_name ?? p.company_name ?? "");
+        setWhatsapp(p.whatsapp ?? "");
         setAvatar(p.avatar_url);
         setCover(p.cover_url);
         if (p.handle) {
@@ -135,6 +137,7 @@ function PerfilEditPage() {
           avatar_url: avatar,
           cover_url: cover,
           full_name: fullName.trim() || undefined,
+          whatsapp: whatsapp.trim() || null,
         },
       });
       setSavedAt(Date.now());
@@ -254,6 +257,20 @@ function PerfilEditPage() {
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
                 Seu perfil ficará em: <span className="font-mono font-bold text-foreground">/u/{handle || "..."}</span>
+              </p>
+            </Field>
+
+            <Field label="WhatsApp (com DDD)">
+              <input
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(e.target.value.replace(/[^\d\s()+-]/g, ""))}
+                maxLength={20}
+                inputMode="tel"
+                placeholder="(11) 9 0000-0000"
+                className="h-12 w-full rounded-xl border-2 border-border bg-background px-3 text-sm outline-none focus:border-primary"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                É por aqui que as empresas entram em contato quando você se candidata. Só quem você autorizar vê.
               </p>
             </Field>
 
