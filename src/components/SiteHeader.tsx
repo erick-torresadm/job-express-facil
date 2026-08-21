@@ -37,36 +37,62 @@ export function SiteHeader() {
     navigate({ to: "/auth", replace: true });
   };
 
+  // Fora da home: barra sticky sólida — nada flutuando sobre o conteúdo.
   if (!isHome) {
     return (
       <>
-        <div className="fixed inset-x-3 top-3 z-40 flex items-center justify-between md:inset-x-5 md:top-5">
-          <button
-            onClick={() => setOpen(true)}
-            aria-label="Abrir menu"
-            className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-primary/85 text-primary-foreground shadow-pop backdrop-blur-xl"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-          {user ? (
-            <Link
-              to={dashboardTo}
-              className="flex items-center gap-2 rounded-full border border-white/10 bg-primary/85 py-1.5 pl-1.5 pr-3 text-primary-foreground shadow-pop backdrop-blur-xl"
-            >
-              <UserAvatar profile={profile} email={user.email} className="h-8 w-8" />
-              <span className="max-w-[9rem] truncate text-sm font-semibold">
-                {profile?.full_name || profile?.company_name || user.email}
-              </span>
+        <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+          <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 md:px-6">
+            <Link to="/" className="shrink-0 font-display text-lg font-extrabold tracking-tight text-foreground">
+              VagasAgora
             </Link>
-          ) : (
-            <Link
-              to="/auth"
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-primary/85 px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-pop backdrop-blur-xl"
-            >
-              <UserIcon className="h-4 w-4" /> Entrar
-            </Link>
-          )}
-        </div>
+
+            <nav className="ml-4 hidden items-center gap-0.5 lg:flex">
+              {navLinks.slice(1).map((l) => (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  activeProps={{ className: "text-foreground bg-secondary" }}
+                  inactiveProps={{ className: "text-muted-foreground" }}
+                  className="whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold transition-colors hover:bg-secondary hover:text-foreground"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="ml-auto flex items-center gap-1.5">
+              {user ? (
+                <>
+                  <NotificationBell />
+                  <Link
+                    to={dashboardTo}
+                    className="flex items-center gap-2 rounded-full border border-border bg-card py-1 pl-1 pr-3 text-sm font-semibold text-foreground hover:bg-secondary"
+                  >
+                    <UserAvatar profile={profile} email={user.email} className="h-7 w-7 text-foreground" />
+                    <span className="hidden max-w-[9rem] truncate sm:inline">
+                      {profile?.full_name || profile?.company_name || user.email}
+                    </span>
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  to="/auth"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90"
+                >
+                  <UserIcon className="h-4 w-4" /> Entrar
+                </Link>
+              )}
+              <button
+                onClick={() => setOpen(true)}
+                aria-label="Abrir menu"
+                className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-foreground hover:bg-secondary lg:hidden"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        </header>
 
         {open && (
           <Drawer

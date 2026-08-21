@@ -18,6 +18,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           "/", "/vagas", "/vagas/clt", "/vagas/pj", "/vagas/estagio",
           "/como-funciona", "/para-empresas", "/contato",
           "/blog", "/categorias", "/planos", "/termos", "/privacidade",
+          "/freelas",
         ];
 
         // Só entram no sitemap combinações profissão×cidade com conteúdo real
@@ -81,6 +82,21 @@ export const Route = createFileRoute("/sitemap.xml")({
           for (const e of empresas ?? []) {
             if (!e.slug_publico) continue;
             dynamic.push({ path: `/c/${e.slug_publico}`, lastmod: e.updated_at?.split("T")[0] });
+          }
+        } catch {}
+
+        // Perfis públicos de freelancers (/freelas/p/{handle}) — conteúdo
+        // criado pelos próprios usuários, também precisa ser indexável.
+        try {
+          const { data: freelas } = await supabaseAdmin
+            .from("freelancers")
+            .select("handle, updated_at")
+            .eq("ativo", true)
+            .not("handle", "is", null)
+            .limit(5000);
+          for (const f of freelas ?? []) {
+            if (!f.handle) continue;
+            dynamic.push({ path: `/freelas/p/${f.handle}`, lastmod: f.updated_at?.split("T")[0] });
           }
         } catch {}
 

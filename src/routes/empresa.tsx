@@ -57,6 +57,16 @@ function EmpresaLayout() {
           <EmpresaSaudacao />
           <NotificationBell />
         </header>
+
+        {/* Navegação mobile — a sidebar só existe em lg+, sem isto o painel fica sem menu no celular */}
+        <nav className="scrollbar-none flex gap-1.5 overflow-x-auto border-b border-border bg-background px-3 py-2 lg:hidden">
+          <MobileNavItem to="/empresa" label="Candidatos" exact />
+          <MobileNavItem to="/empresa/atividade" label="Atividade" />
+          <MobileNavItem to="/empresa/nova-vaga" label="Nova vaga" />
+          <MobileNavItem to="/empresa/minhas-vagas" label="Minhas vagas" />
+          <MobileNavItem to="/empresa/pagina" label="Minha página" />
+          <MobileNavItem to="/empresa/verificacao" label="Verificação" />
+        </nav>
         <main className="p-4 lg:p-8">
           {isRoot && (
             <>
@@ -144,6 +154,20 @@ function DigestToggle() {
   );
 }
 
+
+function MobileNavItem({ to, label, exact }: { to: string; label: string; exact?: boolean }) {
+  return (
+    <Link
+      to={to}
+      activeOptions={{ exact }}
+      activeProps={{ className: "bg-primary text-primary-foreground" }}
+      inactiveProps={{ className: "bg-secondary text-foreground" }}
+      className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-bold transition"
+    >
+      {label}
+    </Link>
+  );
+}
 
 function NavItem({ to, icon, label, exact, disabled, badge }: { to: string; icon: React.ReactNode; label: string; exact?: boolean; disabled?: boolean; badge?: boolean }) {
   if (disabled) {

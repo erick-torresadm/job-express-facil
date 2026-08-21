@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { MapPin, Clock, DollarSign, Flame, ArrowLeft, ChevronDown, Sparkles, Building2 } from "lucide-react";
+import { MapPin, Clock, DollarSign, Flame, ChevronDown, Sparkles, Building2, ListChecks } from "lucide-react";
 import { PROFISSOES, CIDADES } from "@/lib/mock-data";
 import { SITE_URL } from "@/lib/site";
 import { listarVagasPublicas, type VagaPublica } from "@/lib/vagas.functions";
@@ -250,15 +250,6 @@ function VagasPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur">
-        <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
-          <Link to="/" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground">
-            <ArrowLeft className="h-4 w-4" /> Voltar
-          </Link>
-          <p className="text-sm font-bold">VagasAgora</p>
-        </div>
-      </header>
-
       <main className={`mx-auto max-w-2xl px-4 py-6 ${vagaPrincipal ? "pb-24 lg:pb-6" : ""}`}>
         <nav aria-label="Breadcrumb" className="mb-2 text-xs text-muted-foreground">
           <Link to="/" className="hover:text-foreground">Início</Link> ·{" "}
@@ -340,7 +331,30 @@ function VagasPage() {
                   </div>
 
                   {v.descricao && (
-                    <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{v.descricao}</p>
+                    <p className={`mt-3 text-sm text-muted-foreground ${vagas.length > 1 ? "line-clamp-2" : "whitespace-pre-line"}`}>
+                      {v.descricao}
+                    </p>
+                  )}
+
+                  {v.requisitos.length > 0 && (
+                    <div className="mt-3">
+                      <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                        <ListChecks className="h-3.5 w-3.5" /> Requisitos
+                      </p>
+                      <ul className="mt-1 space-y-0.5 text-sm text-foreground">
+                        {v.requisitos.map((r, i) => (
+                          <li key={i} className="flex items-start gap-1.5">
+                            <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-muted-foreground" />{r}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {(v.endereco || v.bairro) && (
+                    <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <MapPin className="h-3.5 w-3.5" /> {v.endereco || `${v.bairro}, ${v.cidade}`}
+                    </p>
                   )}
 
                   <VagaDistancia vaga={v} />
@@ -492,6 +506,9 @@ function VagaDistancia({ vaga }: { vaga: VagaPublica }) {
         <ChevronDown className="h-3.5 w-3.5 shrink-0 transition group-open:rotate-180" />
       </summary>
       <div className="space-y-2 px-3 pb-3">
+        <p className="text-[11px] text-muted-foreground">
+          Compatibilidade estimada com seu perfil — é só uma dica, não afeta sua candidatura.
+        </p>
         {match && <MatchScoreBadge score={match.score} fatores={match.fatores} />}
         {rota && (
           <DistanciaCustoCard
